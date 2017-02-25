@@ -18,6 +18,9 @@ classdef GetNumber < mic.interface.device.GetNumber
         
         % {double 1x1} the value (updated onClock)
         dVal = 0 
+        
+        % {logical 1x1} if the initialize command has been called
+        lIsInitialized
     end
 
 
@@ -48,9 +51,7 @@ classdef GetNumber < mic.interface.device.GetNumber
             dReturn = this.dVal;
         end
 
-        function onClock(this)
-            this.dVal = this.dMean + this.dSig * randn(1);
-        end
+        
             
         function delete(this)
 
@@ -64,11 +65,24 @@ classdef GetNumber < mic.interface.device.GetNumber
 
         end
         
-        function l = isInitialized(true)
-            l = false;
+        
+        function initialize(this)
+            this.lIsInitialized = true;
+        end
+        
+        function l = isInitialized(this)
+            l = this.lIsInitialized;
         end
 
     end %methods
+    
+    methods (Access = protected)
+        
+        function onClock(this)
+            this.dVal = this.dMean + this.dSig * randn(1);
+        end
+        
+    end
 end %class
     
 

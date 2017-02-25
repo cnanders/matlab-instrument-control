@@ -1,12 +1,11 @@
-classdef GetNumber < mic.Base
+classdef GetText < mic.Base
 
     methods (Abstract)
         
-       % @return {double 1x1} - the numeric value
-       d = get(this)
+       % @return {char 1xm} - the text value
+       c = get(this) 
        
-       
-       % Take care of any initialization
+       % Command the device to initialize.
        initialize(this)
        
        % @return {logical 1x1} 

@@ -41,5 +41,6 @@ ui = mic.ui.device.GetSetLogical(...
 h = figure();
 ui.build(h, 10, 10);
 
+
  
 

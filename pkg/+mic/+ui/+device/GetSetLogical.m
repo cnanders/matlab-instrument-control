@@ -45,6 +45,12 @@ classdef GetSetLogical < mic.Base
         uitxLabelInit
         uitxLabelCommand
         
+        
+        
+        % {logical 1x1} - disable the "set" part of GetSet (removes jog,
+        % play, dest, stores)
+        lDisableSet = false
+        
         lShowLabels = true
         
         % {logical 1x1} show the API toggle on the left
@@ -157,6 +163,11 @@ classdef GetSetLogical < mic.Base
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
+            
+            if this.lDisableSet == true
+                this.lShowCommand = false; 
+            end
+            
              
             this.init()            
         end
@@ -357,7 +368,11 @@ classdef GetSetLogical < mic.Base
     methods (Access = protected)
                     
         function api = newApiv(this)
-            api = mic.device.GetSetLogical();
+            if this.lDisableSet
+                api = mic.device.GetLogical();
+            else
+                api = mic.device.GetSetLogical();
+            end
         end
         
         function dOut = getWidth(this)
@@ -496,7 +511,9 @@ classdef GetSetLogical < mic.Base
                 % Force the toggle back to the current state without it
                 % notifying eChange
                 
-                this.uitCommand.setValWithoutNotification(this.lVal);
+                if ~this.lDisableSet
+                    this.uitCommand.setValWithoutNotification(this.lVal);
+                end
                 
                 this.uiilValue.setVal(this.lVal);
                 

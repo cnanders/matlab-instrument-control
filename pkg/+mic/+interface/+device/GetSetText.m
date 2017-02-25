@@ -2,10 +2,13 @@ classdef GetSetText < mic.Base
 
     methods (Abstract)
         
-       c = get(this) % retrieve value
-       set(this, cVal) % set new value
+       % @return {char 1xm} the value 
+       c = get(this)
        
-       % Command the device to initialize.
+       % @param {char 1xm} cVal - the new value
+       set(this, cVal)
+       
+       % Take care of any initialization
        initialize(this)
        
        % @return {logical 1x1} 

@@ -1,4 +1,4 @@
-classdef GetNumber < mic.ui.device.GetSetNumber
+classdef GetText < mic.ui.device.GetSetText
     
 
     
@@ -32,7 +32,7 @@ classdef GetNumber < mic.ui.device.GetSetNumber
     
     methods       
         
-        function this = GetNumber(varargin)  
+        function this = GetText(varargin)  
         % This is a HardwareIOPlus with several optional features disabled.  
         % See HardwareIOPlus for required inputs.  This is the lazy
         % approach but I think it is a decent one.
@@ -51,7 +51,7 @@ classdef GetNumber < mic.ui.device.GetSetNumber
             % directly, because this is equivalent to only passing in one argument.
             % The trick is to use varargin{:} which somehow works.
             
-            this@mic.ui.device.GetSetNumber(varargin{:});
+            this@mic.ui.device.GetSetText(varargin{:});
             
         end
  

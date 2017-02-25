@@ -230,9 +230,9 @@ classdef GetSetNumber < mic.Base
         % {logical 1x1} - show allowed range (config.min - config.max)
         lShowRange = false
         
-        % {logical 1x1} - disable the "I" part of HardwareIO (removes jog,
+        % {logical 1x1} - disable the "set" part of GetSet (removes jog,
         % play, dest, stores)
-        lDisableI = false
+        lDisableSet = false
         
         % {logical 1x1} - ask the user if they are sure when clicking API
         % button/toggle
@@ -312,12 +312,11 @@ classdef GetSetNumber < mic.Base
             );
                 
             
-            if this.lDisableI == true
+            if this.lDisableSet == true
                 this.lShowJog = false; 
                 this.lShowStores = false; 
                 this.lShowPlay = false; 
                 this.lShowDest = false; 
-                this.lShowInitButton = false;
             end
             
             this.init();
@@ -903,7 +902,7 @@ classdef GetSetNumber < mic.Base
                 % stage if it's ready, which means that it's either stopped
                 % or reached its target.
                 
-                if ~this.lDisableI
+                if ~this.lDisableSet
                     this.lReady = this.getApi().isReady();
                     this.updatePlayButton()
                 else
@@ -1546,7 +1545,7 @@ classdef GetSetNumber < mic.Base
            this.uitxVal.cVal = cVal;
            
            % Update text color for IO (not O) when value is changing
-           if ~this.lDisableI
+           if ~this.lDisableSet
                if this.lReady
                    this.uitxVal.setColor(this.dColorTextStopped);
                else

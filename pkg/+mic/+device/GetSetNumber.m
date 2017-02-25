@@ -102,6 +102,36 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
         end
 
        
+        function delete(this)
+
+            this.msg('delete()', 5);
+
+            % Clean up clock tasks
+            if isvalid(this.clock) && ...
+               this.clock.has(this.id())
+                this.clock.remove(this.id());
+            end
+
+
+        end
+        
+        
+        
+        function initialize(this)
+            this.lIsInitialized = true;
+        end
+        
+        function l = isInitialized(this)
+            l = this.lIsInitialized;
+        end
+        
+        
+
+    end %methods
+    
+    methods (Access = protected)
+        
+        
         function onClock(this)
 
             try
@@ -127,45 +157,8 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
             end
 
         end
-
-        function delete(this)
-
-            this.msg('delete()', 5);
-
-            % Clean up clock tasks
-            if isvalid(this.clock) && ...
-               this.clock.has(this.id())
-                this.clock.remove(this.id());
-            end
-
-            %{
-            if isvalid(this.t)
-                % stop timer and delete
-                if strcmp(this.t.Running, 'on')
-                    stop(this.t);
-                end
-                % set(this.t, 'TimerFcn', null);
-                delete(this.t);
-            end
-            %}
-
-        end
-        
-        function index(this)
-            % Need to implement this
-        end
-        
-        function initialize(this)
-            this.lIsInitialized = true;
-        end
-        
-        function l = isInitialized(this)
-            l = this.lIsInitialized;
-        end
-        
-        
-
-    end %methods
+    end
+    
 end %class
     
 

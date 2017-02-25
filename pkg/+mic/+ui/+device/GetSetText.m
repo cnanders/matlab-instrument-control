@@ -109,7 +109,7 @@ classdef GetSetText < mic.Base
         lShowLabels = true
         lShowStores = true
         lShowApi = true
-        lDisableI = false
+        lDisableSet = false
         lShowInitButton = true
                 
         uitxLabelName
@@ -176,7 +176,7 @@ classdef GetSetText < mic.Base
                 'get-set-text' ...
             );
             
-            if this.lDisableI == true
+            if this.lDisableSet == true
                 this.lShowJog = false; 
                 this.lShowStores = false; 
                 this.lShowPlay = false; 
@@ -778,7 +778,11 @@ classdef GetSetText < mic.Base
         end
         
         function api = newApiv(this)
-            api = mic.device.GetSetText();
+            if this.lDisableSet
+                api = mic.device.GetText();
+            else
+                api = mic.device.GetSetText();
+            end
         end
         
         function onInitChange(this, src, evt)
