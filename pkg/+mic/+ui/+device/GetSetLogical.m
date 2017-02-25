@@ -1,4 +1,4 @@
-classdef GetSetLogical < mic.Base
+classdef GetSetLogical < mic.ui.device.Base
 
     % mic.ui.common.Toggle lets you issue commands set(true/false)
     % there will be an indicator that shows a red/green dot baset on the
@@ -42,7 +42,7 @@ classdef GetSetLogical < mic.Base
         config
         
         
-        cLabelDevice = 'Device'
+        cLabelDevice = 'Api'
         cLabelInit = 'Init'
         cLabelName = 'Name'
         cLabelValue = 'Val'
@@ -97,17 +97,12 @@ classdef GetSetLogical < mic.Base
         dWidthPadCommand = 0;
         
         % {uint8 24x24} image when device.get() returns true
-        u8ImgTrue = imread(fullfile(mic.Utils.pathAssets(), 'hiot-true-24.png'));
+        u8ImgTrue = imread(fullfile(mic.Utils.pathImg(), 'hiot-true-24.png'));
        
         % {uint8 24x24} image when device.get() returns false
-        u8ImgFalse = imread(fullfile(mic.Utils.pathAssets(), 'hiot-false-24.png'));
+        u8ImgFalse = imread(fullfile(mic.Utils.pathImg(), 'hiot-false-24.png'));
         
-        % {uint8 24x24} images for Device toggle
-        u8ToggleOn = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-true.png'));
-        u8ToggleOff = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-false-yellow.png'));
-
-        u8InitTrue = imread(fullfile(mic.Utils.pathAssets(), 'init-button-true.png'));
-        u8InitFalse = imread(fullfile(mic.Utils.pathAssets(), 'init-button-false-yellow.png'));
+        
         
         
         % { < mic.interface.device.GetSetLogical 1x1}  

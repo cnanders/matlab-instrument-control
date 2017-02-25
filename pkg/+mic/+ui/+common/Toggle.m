@@ -17,10 +17,10 @@ classdef Toggle < mic.Base
        
             
         % @param {u8 m x n} u8ImgOn - the image to show when toggle is on
-        u8ImgOn = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-true.png'))
+        u8ImgOn = imread(fullfile(mic.Utils.pathImg(), 'hiot-horiz-24-true.png'))
         
         % @param {u8 m x n} u8ImgOff - the image to show when toggle is off
-        u8ImgOff = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-false-yellow.png'))
+        u8ImgOff = imread(fullfile(mic.Utils.pathImg(), 'hiot-horiz-24-false-yellow.png'))
         
         % @param {char} cTextOn - the text to show when the toggle is on
         cTextOn = 'On'

@@ -102,9 +102,9 @@ classdef Utils
         end
         
         
-        function c = pathAssets()
+        function c = pathImg()
             [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
-            c = fullfile(cDirThis, '..', 'assets');
+            c = fullfile(cDirThis, '..', 'img');
             
         end
         

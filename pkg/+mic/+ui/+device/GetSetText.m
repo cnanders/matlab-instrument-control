@@ -1,4 +1,4 @@
-classdef GetSetText < mic.Base
+classdef GetSetText < mic.ui.device.Base
     
     properties (Constant)
        
@@ -47,7 +47,7 @@ classdef GetSetText < mic.Base
         
         dWidthStatus = 5;
         
-        cLabelDevice = 'Device'
+        cLabelDevice = 'Api'
         cLabelInit = 'Init'
         cLabelName = 'Name'
         cLabelValue = 'Value'
@@ -83,15 +83,6 @@ classdef GetSetText < mic.Base
         dColorOff   = [244 245 169]./255;
         dColorOn    = [241 241 241]./255; 
         
-            
-        u8Play = imread(fullfile(mic.Utils.pathAssets(), 'axis-play-24-3.png'))
-        u8Pause = imread(fullfile(mic.Utils.pathAssets(), 'axis-pause-24-3.png'))
-        u8Active = imread(fullfile(mic.Utils.pathAssets(), 'hiot-true-24.png'))
-        u8Inactive = imread(fullfile(mic.Utils.pathAssets(), 'hiot-false-24.png'))
-        u8ToggleOn = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-true.png'))
-        u8ToggleOff = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-false-yellow.png'))
-        u8InitTrue = imread(fullfile(mic.Utils.pathAssets(), 'init-button-true.png'));
-        u8InitFalse = imread(fullfile(mic.Utils.pathAssets(), 'init-button-false-yellow.png'));
                 
         config
         dZeroRaw = 0;

@@ -1,4 +1,4 @@
-classdef GetSetNumber < mic.Base
+classdef GetSetNumber < mic.ui.device.Base
     
 %HARDWAREIO Class that creates the controls to a specific piece of hardware
 % Contrary to Axis Class, this class is meant to have direct access to the
@@ -82,7 +82,7 @@ classdef GetSetNumber < mic.Base
         dPad2 = 0;
         dWidthStatus = 5;
         
-        cLabelDevice = 'API'
+        cLabelDevice = 'Api'
         cLabelInit = 'Init'
         cLabelInitState = 'Init'
         cLabelName = 'Name';
@@ -152,25 +152,16 @@ classdef GetSetNumber < mic.Base
         u8Bg
         
                 
-        u8Play = imread(fullfile(mic.Utils.pathAssets(), 'axis-play-24-3.png'));
-        u8Pause = imread(fullfile(mic.Utils.pathAssets(), 'axis-pause-24-3.png'));
-        %u8Plus = imread(fullfile(mic.Utils.pathAssets(), 'axis-plus-24.png'));
-        %u8Minus = imread(fullfile(mic.Utils.pathAssets(), 'axis-minus-24.png'));
-        u8Plus = imread(fullfile(mic.Utils.pathAssets(), 'axis-step-forward-24-7.png'));
-        u8Minus = imread(fullfile(mic.Utils.pathAssets(), 'axis-step-back-24-7.png'));
         
-        u8Rel = imread(fullfile(mic.Utils.pathAssets(), 'axis-rel-24-3.png'));
-        u8Abs = imread(fullfile(mic.Utils.pathAssets(), 'axis-abs-24-3.png'));
-        u8Zero = imread(fullfile(mic.Utils.pathAssets(), 'axis-zero-24-2.png'));
-
-        u8ToggleOn = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-true.png'));
-        u8ToggleOff = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-false-yellow.png'));
-
-        u8Active = imread(fullfile(mic.Utils.pathAssets(), 'hiot-true-24.png'));
-        u8Inactive = imread(fullfile(mic.Utils.pathAssets(), 'hiot-false-24.png'));
-
-        u8InitTrue = imread(fullfile(mic.Utils.pathAssets(), 'init-button-true.png'));
-        u8InitFalse = imread(fullfile(mic.Utils.pathAssets(), 'init-button-false-yellow.png'));
+        %u8Plus = imread(fullfile(mic.Utils.pathImg(), 'axis-plus-24.png'));
+        %u8Minus = imread(fullfile(mic.Utils.pathImg(), 'axis-minus-24.png'));
+        u8Plus = imread(fullfile(mic.Utils.pathImg(), 'jog', 'axis-step-forward-24-7.png'));
+        u8Minus = imread(fullfile(mic.Utils.pathImg(), 'jog', 'axis-step-back-24-7.png'));
+        
+        u8Rel = imread(fullfile(mic.Utils.pathImg(), 'axis-rel-24-3.png'));
+        u8Abs = imread(fullfile(mic.Utils.pathImg(), 'axis-abs-24-3.png'));
+        u8Zero = imread(fullfile(mic.Utils.pathImg(), 'axis-zero-24-2.png'));
+        
         
         % @param {ConfigGetSetNumber 1x1} [config = new ConfigGetSetNumber()] - the config instance
         %   !!! WARNING !!!
@@ -370,7 +361,7 @@ classdef GetSetNumber < mic.Base
             %}
 
 
-            % set(this.hImage, 'CData', imread(fullfile(mic.Utils.pathAssets(), 'HardwareIO.png')));
+            % set(this.hImage, 'CData', imread(fullfile(mic.Utils.pathImg(), 'HardwareIO.png')));
 
             axis('image');
             axis('off');
@@ -1230,8 +1221,8 @@ classdef GetSetNumber < mic.Base
                 'u8Img', this.u8Zero ...
              );
 
-            % imread(fullfile(mic.Utils.pathAssets(), 'movingoff.png')), ...
-            % imread(fullfile(mic.Utils.pathAssets(), 'movingon.png')) ...           
+            % imread(fullfile(mic.Utils.pathImg(), 'movingoff.png')), ...
+            % imread(fullfile(mic.Utils.pathImg(), 'movingon.png')) ...           
             
             %Jog+ button
             this.uibStepPos = mic.ui.common.Button( ...

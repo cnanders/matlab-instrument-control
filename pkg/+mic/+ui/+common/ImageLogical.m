@@ -28,8 +28,8 @@ classdef ImageLogical < mic.Base
         function this= ImageLogical(varargin)
 
             % Defaults
-            this.u8ImgTrue = imread(fullfile(mic.Utils.pathAssets(), 'image-logical-true-1.png'));
-            this.u8ImgFalse = imread(fullfile(mic.Utils.pathAssets(), 'image-logical-false-1.png'));
+            this.u8ImgTrue = imread(fullfile(mic.Utils.pathImg(), 'image-logical-true-1.png'));
+            this.u8ImgFalse = imread(fullfile(mic.Utils.pathImg(), 'image-logical-false-1.png'));
             
             for k = 1 : 2: length(varargin)
                 % this.msg(sprintf('passed in %s', varargin{k}));
