@@ -4,7 +4,12 @@ MATLAB library for programmatically creating GUIs that control scientific instru
 
 # Motivation
 
-[Guide](https://www.mathworks.com/discovery/matlab-gui.html) and [MATLAB App Designer](https://www.mathworks.com/products/matlab/app-designer.html) (released in 2015) can be used to create simple GUIs to manipulate data within MATLAB.  These two options make it possible to get something simple up and running quickly, but lack the organizational structure that large, complicated projects and instruments require. 
+[Guide](https://www.mathworks.com/discovery/matlab-gui.html) and [MATLAB App Designer](https://www.mathworks.com/products/matlab/app-designer.html) (released in 2015) can be used to create simple GUIs to manipulate data within MATLAB.  These two options make it possible to get something simple up and running quickly, but lack the organizational structure that large, complicated projects and instruments require. Moreover, if you want to use the GUI to control instrumentation, 
+
+What is the job of a UI in MATLAB.  The majority of the time, it is to expose one or more variables that are used in a calculation. The UI makes it easy for the user to set these variables and see the result of the calculation without having to write any code. 
+
+Inputs usually come in four data types: Boolean (toggles)
+
 
 # Terminology
 

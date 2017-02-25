@@ -38,6 +38,10 @@ ui = mic.ui.device.GetSetLogical(...
     'cLabel', 'Diode' ...
 );
 
+device = mic.device.GetSetLogical();
+
+ui.setDevice(device);
+
 h = figure();
 ui.build(h, 10, 10);
 

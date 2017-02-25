@@ -55,7 +55,7 @@ classdef GetNumber < mic.interface.device.GetNumber
             
         function delete(this)
 
-            this.msg('ApivHardwareO.delete()');
+            this.msg('DevicevHardwareO.delete()');
 
             % Clean up clock tasks
             if isvalid(this.clock) && ...

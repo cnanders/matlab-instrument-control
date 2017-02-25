@@ -59,7 +59,7 @@ classdef StateScan < mic.Base
     %
     % The parent that instantiantes this StateScan instance produces and
     % consumes the recipe, including the unit definition and each state definition.
-    % provid.  recipe.unit and recipe.states[n] will be passed to each call
+    % recipe.unit and recipe.values[n] will be passed to each call
     % to setState() isAtState().
     %
     % RECIPE must only contain two properties: "unit" {struct} and "values"
@@ -79,8 +79,11 @@ classdef StateScan < mic.Base
     
     properties (SetAccess = private)
        
-       u8Index  % index of the state list that is currently executing
-       ceValues % {cell of struct} list of value structures that define each state
+        % {uint8 1x1} index of recipe.values list that is currently executing
+       u8Index  
+       % {cell of struct} list of value structures that define each state
+       ceValues 
+       
        stUnit
         
     end

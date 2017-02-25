@@ -27,12 +27,22 @@ uiDeviceY = mic.ui.device.GetSetNumber( ...
     'lShowLabels', false ...
 );
 
+uiDeviceMode = mic.ui.device.GetText( ...
+    'clock', clock, ...
+    'cName', 'mode', ...
+    'cLabel', 'mode', ...
+    'lShowLabels', false ...
+);
+
 getSetNumberX = VendorDevice2GetSetNumber(vendorDevice, 'x');
 getSetNumberY = VendorDevice2GetSetNumber(vendorDevice, 'y');
+getTextMode = VendorDevice2GetText(vendorDevice, 'mode');
 
-uiDeviceX.setApi(getSetNumberX);
-uiDeviceY.setApi(getSetNumberY);
+uiDeviceX.setDevice(getSetNumberX);
+uiDeviceY.setDevice(getSetNumberY);
+uiDeviceMode.setDevice(getTextMode);
 
 h = figure();
 uiDeviceX.build(h, 10, 10);
 uiDeviceY.build(h, 10, 80);
+uiDeviceMode.build(h, 10, 130);

@@ -1,6 +1,6 @@
 classdef GetLogical < mic.interface.device.GetLogical
 
-    % apiv
+    % deviceVirtual
 
     properties (Access = private)
         

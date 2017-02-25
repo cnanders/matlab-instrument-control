@@ -3,7 +3,7 @@ classdef GetSetLogical < mic.Base
     % mic.ui.common.Toggle lets you issue commands set(true/false)
     % there will be an indicator that shows a red/green dot baset on the
     % result of get() returning lTrue / lFalse.  The indicator will be a
-    % small axes next to the toggle.  If software is talking to device api,
+    % small axes next to the toggle.  If software is talking to device device,
     % it shows one set of images (without the gray diagonal stripes) and
     % shows another set of images when it is talking to the virtual APIs
                 
@@ -13,8 +13,8 @@ classdef GetSetLogical < mic.Base
         dHeight = 24;   % height of the UIElement
         dWidthBtn = 24;
         
-        cTooltipApiOff = 'Connect to the real API';
-        cTooltipApiOn = 'Disconnect the real API (go into virtual mode)';
+        cTooltipDeviceOff = 'Connect to the real API';
+        cTooltipDeviceOn = 'Disconnect the real API (go into virtual mode)';
         cTooltipInitButton = 'Send the initialize command to this device';
 
         
@@ -33,7 +33,16 @@ classdef GetSetLogical < mic.Base
 
     properties (Access = protected)
         
-        cLabelApi = 'Api'
+        
+        % @param {ConfigGetSetNumber 1x1} [config = new ConfigGetSetNumber()] - the config instance
+        %   !!! WARNING !!!
+        %   DO NOT USE a single Config for multiple HardwareIO instances
+        %   because deleting one HardwareIO will delete the reference to
+        %   the Config instance that the other Hardware IO is using
+        config
+        
+        
+        cLabelDevice = 'Device'
         cLabelInit = 'Init'
         cLabelName = 'Name'
         cLabelValue = 'Val'
@@ -41,7 +50,7 @@ classdef GetSetLogical < mic.Base
         
         uitxLabelName
         uitxLabelVal
-        uitxLabelApi
+        uitxLabelDevice
         uitxLabelInit
         uitxLabelCommand
         
@@ -54,7 +63,7 @@ classdef GetSetLogical < mic.Base
         lShowLabels = true
         
         % {logical 1x1} show the API toggle on the left
-        lShowApi = true
+        lShowDevice = true
         
         % {logical 1x1} show the name
         lShowName = true
@@ -81,7 +90,7 @@ classdef GetSetLogical < mic.Base
         dWidth = 290
         dWidthValue = 24
         
-        dWidthPadApi = 0;
+        dWidthPadDevice = 0;
         dWidthPadInitButton = 0;
         dWidthPadName = 5;
         dWidthPadVal = 0;
@@ -93,7 +102,7 @@ classdef GetSetLogical < mic.Base
         % {uint8 24x24} image when device.get() returns false
         u8ImgFalse = imread(fullfile(mic.Utils.pathAssets(), 'hiot-false-24.png'));
         
-        % {uint8 24x24} images for Api toggle
+        % {uint8 24x24} images for Device toggle
         u8ToggleOn = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-true.png'));
         u8ToggleOff = imread(fullfile(mic.Utils.pathAssets(), 'hiot-horiz-24-false-yellow.png'));
 
@@ -103,11 +112,11 @@ classdef GetSetLogical < mic.Base
         
         % { < mic.interface.device.GetSetLogical 1x1}  
         % Can be set after initialized or passed in
-        api             
+        device             
         
         % { < mic.interface.device.GetSetLogical 1x1}
         % Builds its own
-        apiv
+        deviceVirtual
                 
         % {cell of X 1xm} - varargin list of arguments for instantiating
         % the mic.ui.common.Toggle instance.  To pass it into the
@@ -118,10 +127,9 @@ classdef GetSetLogical < mic.Base
            
         % {mic.Clock 1x1} must be provided in constructor
         clock        
-        dPeriod = 1
         
-        
-        hPanel      % panel container for the UI element
+        % {handle 1x1} panel container for the UI element
+        hPanel     
         
         % {mic.ui.common.Toggle 1x1} issues set() commands to device
         % whenever the user clicks it
@@ -131,7 +139,7 @@ classdef GetSetLogical < mic.Base
         uitxName
         
         % {mic.ui.common.Toggle 1x1} toggle for the API
-        uitApi
+        uitDevice
            
         % {mic.ui.commin.ImageLogical 1x1} visual state
         uiilValue
@@ -154,6 +162,8 @@ classdef GetSetLogical < mic.Base
         
         function this = GetSetLogical(varargin)
     
+            this.config = mic.config.GetSetLogical();
+
             % Override properties with varargin
             
             for k = 1 : 2: length(varargin)
@@ -199,14 +209,14 @@ classdef GetSetLogical < mic.Base
             end
             
             
-            % Api toggle
-            if this.lShowApi
-                dLeft = dLeft + this.dWidthPadApi;
+            % Device toggle
+            if this.lShowDevice
+                dLeft = dLeft + this.dWidthPadDevice;
                 if this.lShowLabels
                     % FIXME
-                    this.uitxLabelApi.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
+                    this.uitxLabelDevice.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
-                this.uitApi.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeight);            
+                this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeight);            
                 dLeft = dLeft + this.dWidthBtn;
             end
             
@@ -267,10 +277,10 @@ classdef GetSetLogical < mic.Base
         
         
         %{
-        % Expose the set command of the Api
+        % Expose the set command of the Device
         % @param {logical 1x1} 
         function set(this, l)
-           this.getApi().set(l);
+           this.getDevice().set(l);
            
         end
         %}
@@ -286,15 +296,15 @@ classdef GetSetLogical < mic.Base
 
             this.lActive = true;
             
-            this.uitApi.lVal = true;
-            this.uitApi.setTooltip(this.cTooltipApiOn);
+            this.uitDevice.lVal = true;
+            this.uitDevice.setTooltip(this.cTooltipDeviceOn);
             
             
             % Kill the APIV
-            if ~isempty(this.apiv) && ...
-                isvalid(this.apiv)
-                delete(this.apiv);
-                this.apiv = []; % This is calling the setter
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
+                this.deviceVirtual = []; % This is calling the setter
             end
             
         end
@@ -308,13 +318,13 @@ classdef GetSetLogical < mic.Base
         
             % CA 2014.04.14: Make sure APIV is available
             
-            if isempty(this.apiv)
-                this.apiv = this.newApiv();
+            if isempty(this.deviceVirtual)
+                this.deviceVirtual = this.newDeviceVirtual();
             end
             
             this.lActive = false;
-            this.uitApi.lVal = false;
-            this.uitApi.setTooltip(this.cTooltipApiOff);
+            this.uitDevice.lVal = false;
+            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             
         end
         
@@ -336,8 +346,8 @@ classdef GetSetLogical < mic.Base
             % av.  Need to delete because it has a timer that needs to be
             % stopped and deleted
 
-            if ~isempty(this.apiv)
-                 delete(this.apiv);
+            if ~isempty(this.deviceVirtual)
+                 delete(this.deviceVirtual);
             end
 
             % delete(this.setup);
@@ -350,15 +360,15 @@ classdef GetSetLogical < mic.Base
         end
         
         
-        function setApi(this, api)
-            this.api = api;
+        function setDevice(this, device)
+            this.device = device;
         end
         
-        function api = getApi(this)
+        function device = getDevice(this)
             if this.lActive
-                api = this.api;
+                device = this.device;
             else
-                api = this.apiv;
+                device = this.deviceVirtual;
             end 
             
         end
@@ -367,19 +377,19 @@ classdef GetSetLogical < mic.Base
     
     methods (Access = protected)
                     
-        function api = newApiv(this)
+        function device = newDeviceVirtual(this)
             if this.lDisableSet
-                api = mic.device.GetLogical();
+                device = mic.device.GetLogical();
             else
-                api = mic.device.GetSetLogical();
+                device = mic.device.GetSetLogical();
             end
         end
         
         function dOut = getWidth(this)
             dOut = 0;
                     
-            if this.lShowApi
-               dOut = dOut + this.dWidthPadApi + this.dWidthBtn ;
+            if this.lShowDevice
+               dOut = dOut + this.dWidthPadDevice + this.dWidthBtn ;
             end
             
             if this.lShowInitButton
@@ -407,21 +417,21 @@ classdef GetSetLogical < mic.Base
             this.uitxName = mic.ui.common.Text('cVal', this.cLabel);
                         
             this.initCommandToggle();
-            this.initApiToggle();
+            this.initDeviceToggle();
             this.initInitializeToggle();
             this.initValueImageLogical();
             this.initLabels();
                                        
-            this.apiv = this.newApiv();
-            this.clock.add(@this.onClock, this.id(), this.dPeriod);
+            this.deviceVirtual = this.newDeviceVirtual();
+            this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             
         end
         
         
         function initLabels(this)
             
-            this.uitxLabelApi = mic.ui.common.Text(...
-                'cVal', this.cLabelApi, ...
+            this.uitxLabelDevice = mic.ui.common.Text(...
+                'cVal', this.cLabelDevice, ...
                 'cAlign', 'center' ...
             );    
             this.uitxLabelInit = mic.ui.common.Text(...
@@ -473,7 +483,7 @@ classdef GetSetLogical < mic.Base
         
         
         % API toggle on the left
-        function initApiToggle(this)
+        function initDeviceToggle(this)
             
             st1 = struct();
             st1.lAsk        = true;
@@ -491,14 +501,14 @@ classdef GetSetLogical < mic.Base
             st2.cAnswer2    = 'No not yet.';
             st2.cDefault    = st2.cAnswer2;
 
-            this.uitApi = mic.ui.common.Toggle( ...
+            this.uitDevice = mic.ui.common.Toggle( ...
                 'lImg', true, ...
                 'u8ImgOff', this.u8ToggleOff, ...
                 'u8ImgOn', this.u8ToggleOn, ...
                 'stF2TOptions', st1, ...
                 'stT2FOptions', st2 ...
             );
-            addlistener(this.uitApi,   'eChange', @this.onApiChange);
+            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
             
             
         end
@@ -506,7 +516,7 @@ classdef GetSetLogical < mic.Base
         function onClock(this) 
            
             try
-                this.lVal = this.getApi().get();
+                this.lVal = this.getDevice().get();
                 
                 % Force the toggle back to the current state without it
                 % notifying eChange
@@ -519,7 +529,7 @@ classdef GetSetLogical < mic.Base
                 
                 
                 % Update visual appearance of button to reflect state
-                lInitialized = this.getApi.isInitialized();
+                lInitialized = this.getDevice.isInitialized();
                 if this.lShowInitButton
                     if lInitialized
                         this.uibInit.setU8Img(this.u8InitTrue);
@@ -536,14 +546,14 @@ classdef GetSetLogical < mic.Base
         end
         
         %{
-        function set.apiv(this, value)
+        function set.deviceVirtual(this, value)
             
-            if ~isempty(this.apiv) && ...
-                isvalid(this.apiv)
-                delete(this.apiv);
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
             end
 
-            this.apiv = value;
+            this.deviceVirtual = value;
             
         end
         %}
@@ -555,11 +565,11 @@ classdef GetSetLogical < mic.Base
             % doesn't do anything smart to show the value, this is handled
             % by the indicator image with each onClock()
             
-            this.getApi().set(this.uitCommand.lVal);            
+            this.getDevice().set(this.uitCommand.lVal);            
                         
         end
         
-        function onApiChange(this, src, evt)
+        function onDeviceChange(this, src, evt)
             if src.lVal
                 this.turnOn();
             else
@@ -577,7 +587,7 @@ classdef GetSetLogical < mic.Base
         function initialize(this)
            
             this.lIsInitializing = true;
-            this.getApi().initialize();
+            this.getDevice().initialize();
             % this.disable();
             
         end

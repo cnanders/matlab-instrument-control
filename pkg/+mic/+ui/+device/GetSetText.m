@@ -1,7 +1,5 @@
 classdef GetSetText < mic.Base
     
-    % Hungarian: hiotx
-
     properties (Constant)
        
     end
@@ -39,7 +37,7 @@ classdef GetSetText < mic.Base
         dWidthStep = 50;
         
         
-        dWidthPadApi = 0;
+        dWidthPadDevice = 0;
         dWidthPadInitButton = 0;
         dWidthPadName = 5;
         dWidthPadVal = 0;
@@ -49,19 +47,19 @@ classdef GetSetText < mic.Base
         
         dWidthStatus = 5;
         
-        cLabelApi = 'Api'
+        cLabelDevice = 'Device'
         cLabelInit = 'Init'
         cLabelName = 'Name'
         cLabelValue = 'Value'
         cLabelDest = 'Goal'
         cLabelPlay = 'Go'
         cLabelStores = 'Stores';
-        cTooltipApiOff = 'Connect to the real Api / hardware';
-        cTooltipApiOn = 'Disconnect the real Api / hardware (go into virtual mode)';
+        cTooltipDeviceOff = 'Connect to the real Device / hardware';
+        cTooltipDeviceOn = 'Disconnect the real Device / hardware (go into virtual mode)';
         cTooltipInitButton = 'Send the initialize command to this device';
         
-        apiv        % virtual Api (for test and debugging).  Builds its own ApivHardwareIO
-        api         % Api to the low level controls.  Must be set after initialized.
+        deviceVirtual        % virtual Device (for test and debugging).  Builds its own DevicevHardwareIO
+        device         % Device to the low level controls.  Must be set after initialized.
         
         clock       % clock 
         cLabel = 'CHANGE ME' % name to be displayed by the UI element
@@ -71,7 +69,7 @@ classdef GetSetText < mic.Base
 
         uieDest     % textbox to input the desired position
         uitxVal     % label to display the current value
-        uitApi      % toggle for real / virtual Api
+        uitDevice      % toggle for real / virtual Device
         
         
         uibtPlay     % 2014.11.19 - Using a button instead of a toggle
@@ -108,7 +106,7 @@ classdef GetSetText < mic.Base
         lShowPlay = true
         lShowLabels = true
         lShowStores = true
-        lShowApi = true
+        lShowDevice = true
         lDisableSet = false
         lShowInitButton = true
                 
@@ -117,7 +115,7 @@ classdef GetSetText < mic.Base
         uitxLabelDest
         uitxLabelStores
         uitxLabelPlay
-        uitxLabelApi
+        uitxLabelDevice
         uitxLabelInit
 
         % {char 1xm} storage of the last display value.  Used to emit
@@ -177,7 +175,6 @@ classdef GetSetText < mic.Base
             );
             
             if this.lDisableSet == true
-                this.lShowJog = false; 
                 this.lShowStores = false; 
                 this.lShowPlay = false; 
                 this.lShowDest = false; 
@@ -227,14 +224,14 @@ classdef GetSetText < mic.Base
 
             dLeft = 0;
 
-            % Api toggle
-            if (this.lShowApi)
-                dLeft = dLeft + this.dWidthPadApi;
+            % Device toggle
+            if (this.lShowDevice)
+                dLeft = dLeft + this.dWidthPadDevice;
                 if this.lShowLabels
                     % FIXME
-                    this.uitxLabelApi.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
+                    this.uitxLabelDevice.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
-                this.uitApi.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeight);
+                this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeight);
                 dLeft = dLeft + this.dWidthBtn; 
             end
             
@@ -313,7 +310,7 @@ classdef GetSetText < mic.Base
         function moveToDest(this)
         %MOVETODEST Performs the HIO motion to the destination shown in the
         %GUI display.  It converts from the display units to raw and tells
-        %the Api 
+        %the Device 
         %   HardwareIO.moveToDest()
         %
         %   See also SETDESTCAL, SETDESTRAW, MOVE
@@ -326,7 +323,7 @@ classdef GetSetText < mic.Base
                 
             end
             
-            this.getApi().set(this.uieDest.val());
+            this.getDevice().set(this.uieDest.val());
                        
         end
         
@@ -335,24 +332,24 @@ classdef GetSetText < mic.Base
         
         
         function turnOn(this)
-        %TURNON Turns the motor on, actually using the Api to control the 
+        %TURNON Turns the motor on, actually using the Device to control the 
         %   HardwareIO.turnOn()
         %
         % See also TURNOFF
 
             this.lActive = true;
-            this.uitApi.lVal = true;
-            this.uitApi.setTooltip(this.cTooltipApiOn);
+            this.uitDevice.lVal = true;
+            this.uitDevice.setTooltip(this.cTooltipDeviceOn);
 
                         
             % Update destination values to match device values
-            this.setDest(this.getApi().get());
+            this.setDest(this.getDevice().get());
             
-            % Kill the Apiv
-            if ~isempty(this.apiv) && ...
-                isvalid(this.apiv)
-                delete(this.apiv);
-                this.setApiv([]); % This is calling the setter
+            % Kill the Devicev
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
+                this.setDeviceVirtual([]); % This is calling the setter
             end
             
         end
@@ -364,30 +361,30 @@ classdef GetSetText < mic.Base
         %
         % See also TURNON
         
-            % CA 2014.04.14: Make sure Apiv is available
+            % CA 2014.04.14: Make sure Devicev is available
             
-            if isempty(this.apiv)
-                this.setApiv(this.newApiv());
+            if isempty(this.deviceVirtual)
+                this.setDeviceVirtual(this.newDeviceVirtual());
             end
             
             this.lActive = false;
-            this.uitApi.lVal = false;
-            this.uitApi.setTooltip(this.cTooltipApiOff);
+            this.uitDevice.lVal = false;
+            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
            
         end
         
-        function setApi(this, api)
-            this.api = api;
+        function setDevice(this, device)
+            this.device = device;
         end
         
-        function setApiv(this, api)
+        function setDeviceVirtual(this, device)
             
-            if ~isempty(this.apiv) && ...
-                isvalid(this.apiv)
-                delete(this.apiv);
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
             end
 
-            this.apiv = api;
+            this.deviceVirtual = device;
             
         end
         
@@ -409,19 +406,19 @@ classdef GetSetText < mic.Base
                 this.clock.remove(this.id());
             end
             
-            % The Apiv instances have clock tasks so need to delete them
+            % The Devicev instances have clock tasks so need to delete them
             % first
             
-            delete(this.apiv);
+            delete(this.deviceVirtual);
             
-            if ~isempty(this.api) && ... % isvalid(this.api) && ...
-                isa(this.api, 'ApivGetSetText')
-                delete(this.api)
+            if ~isempty(this.device) && ... % isvalid(this.device) && ...
+                isa(this.device, 'DevicevGetSetText')
+                delete(this.device)
             end
             
             delete(this.uieDest);  
             delete(this.uitxVal);
-            delete(this.uitApi);
+            delete(this.uitDevice);
             delete(this.uibtPlay);
             delete(this.uitxName);
             delete(this.uipStores);
@@ -431,7 +428,7 @@ classdef GetSetText < mic.Base
             delete(this.uitxLabelDest);
             delete(this.uitxLabelStores);
             delete(this.uitxLabelPlay);
-            delete(this.uitxLabelApi);
+            delete(this.uitxLabelDevice);
                       
             delete(this.config)
 
@@ -443,13 +440,13 @@ classdef GetSetText < mic.Base
         %   HardwareIO.onClock()
         %   updates the position reading and the hio status (=/~moving)
         
-            cVal = this.getApi().get();
+            cVal = this.getDevice().get();
             if ~strcmp(this.cValPrev, cVal)
                 notify(this, 'eChange');
             end
             this.uitxVal.cVal = cVal;
             
-            lInitialized = this.getApi.isInitialized();
+            lInitialized = this.getDevice.isInitialized();
                 
             % Update visual appearance of button to reflect state
             if this.lShowInitButton
@@ -464,7 +461,7 @@ classdef GetSetText < mic.Base
         end 
         
         function c = val(this)
-            c = this.getApi().get();
+            c = this.getDevice().get();
         end
         
         function c = dest(this)
@@ -481,7 +478,7 @@ classdef GetSetText < mic.Base
             this.uibInit.enable();
 
             this.uitxVal.enable();
-            this.uitApi.enable();
+            this.uitDevice.enable();
             this.uibtPlay.enable();
             this.uitxName.enable();
             this.uipStores.enable();
@@ -491,7 +488,7 @@ classdef GetSetText < mic.Base
             this.uitxLabelVal.enable();
             this.uitxLabelDest.enable();
             this.uitxLabelPlay.enable();
-            this.uitxLabelApi.enable();
+            this.uitxLabelDevice.enable();
             this.uitxLabelStores.enable();
 
         end
@@ -503,7 +500,7 @@ classdef GetSetText < mic.Base
             this.uibInit.disable();
 
             this.uitxVal.disable();
-            this.uitApi.disable();
+            this.uitDevice.disable();
             this.uibtPlay.disable();
             this.uitxName.disable();
             this.uipStores.disable();
@@ -513,7 +510,7 @@ classdef GetSetText < mic.Base
             this.uitxLabelVal.disable();
             this.uitxLabelDest.disable();
             this.uitxLabelPlay.disable();
-            this.uitxLabelApi.disable();
+            this.uitxLabelDevice.disable();
             this.uitxLabelStores.disable();
         end
         
@@ -554,7 +551,7 @@ classdef GetSetText < mic.Base
             st2.cAnswer2    = 'No not yet.';
             st2.cDefault    = st2.cAnswer2;
 
-            this.uitApi = mic.ui.common.Toggle( ...
+            this.uitDevice = mic.ui.common.Toggle( ...
                 'lImg', true, ...
                 'u8ImgOn', this.u8ToggleOn, ...
                 'u8ImgOff',  this.u8ToggleOff, ...
@@ -590,7 +587,7 @@ classdef GetSetText < mic.Base
             % Name (on the left)
             this.uitxName = mic.ui.common.Text('cVal', this.cLabel);
 
-            this.setApiv(this.newApiv());
+            this.setDeviceVirtual(this.newDeviceVirtual());
             
             % if ~isempty(this.config.ceStores)
                 this.uipStores = mic.ui.common.PopupStruct(...
@@ -605,13 +602,13 @@ classdef GetSetText < mic.Base
                         
             addlistener(this.uieDest,   'eChange', @this.onDestChange);
             %AW(5/24/13) : populating the destination
-            this.uieDest.setVal(this.apiv.get());
+            this.uieDest.setVal(this.deviceVirtual.get());
             
-            addlistener(this.uitApi,   'eChange', @this.onApiChange);
+            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
             addlistener(this.uibtPlay,   'eChange', @this.onPlayChange);
 
-            this.uitxLabelApi = mic.ui.common.Text(...
-                'cVal', this.cLabelApi, ...
+            this.uitxLabelDevice = mic.ui.common.Text(...
+                'cVal', this.cLabelDevice, ...
                 'cAlign', 'center' ...
             );    
             this.uitxLabelInit = mic.ui.common.Text(...
@@ -626,7 +623,7 @@ classdef GetSetText < mic.Base
             
             this.uitxLabelStores = mic.ui.common.Text('cVal', this.cLabelStores);
             
-            this.uitApi.setTooltip(this.cTooltipApiOff);
+            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             this.uitxName.setTooltip('The name of this device');
             this.uitxVal.setTooltip('The value of this device');
             this.uieDest.setTooltip('Change the goal value');
@@ -637,7 +634,7 @@ classdef GetSetText < mic.Base
             
         end
         
-        function onApiChange(this, src, evt)
+        function onDeviceChange(this, src, evt)
             if src.lVal
                 this.turnOn();
             else
@@ -735,11 +732,11 @@ classdef GetSetText < mic.Base
         
        
         
-        function api = getApi(this)
+        function device = getDevice(this)
             if this.lActive
-                api = this.api;
+                device = this.device;
             else
-                api = this.apiv;
+                device = this.deviceVirtual;
             end 
             
         end
@@ -747,41 +744,41 @@ classdef GetSetText < mic.Base
         function dOut = getWidth(this)
             dOut = 0;
                     
-            if this.lShowApi
-               dOut = dOut + this.dWidthBtn;
-            end
-
-            % Always show name
-            if this.lShowName
-                dOut = dOut + this.dWidthName;
+            if this.lShowDevice
+               dOut = dOut + this.dWidthPadDevice + this.dWidthBtn;
             end
             
-            % Always show val
+            if this.lShowInitButton
+               dOut = dOut + this.dWidthPadInitButton + this.dWidthBtn;
+            end
+
+            if this.lShowName
+                dOut = dOut + this.dWidthPadName + this.dWidthName;
+            end
+            
             if this.lShowVal
-                dOut = dOut + this.dWidthVal + 5;
+                dOut = dOut + this.dWidthPadVal + this.dWidthVal;
             end
             
             if this.lShowDest
-                dOut = dOut + this.dWidthDest;
+                dOut = dOut + this.dWidthPadDest + this.dWidthDest;
             end
             if this.lShowPlay
-                dOut = dOut + this.dWidthBtn;
+                dOut = dOut + this.dWidthPadPlay + this.dWidthBtn;
             end
             
             if this.lShowStores && ~isempty(this.config.ceStores)
-                dOut = dOut + this.dWidthStores;
+                dOut = dOut + this.dWidthPadStores + this.dWidthStores;
             end
-            
-            dOut = dOut + 5;
-            
+                        
             
         end
         
-        function api = newApiv(this)
+        function device = newDeviceVirtual(this)
             if this.lDisableSet
-                api = mic.device.GetText();
+                device = mic.device.GetText();
             else
-                api = mic.device.GetSetText();
+                device = mic.device.GetSetText();
             end
         end
         
@@ -795,7 +792,7 @@ classdef GetSetText < mic.Base
         function initialize(this)
            
             this.lIsInitializing = true;
-            this.getApi().initialize();
+            this.getDevice().initialize();
             % this.disable();
             
         end

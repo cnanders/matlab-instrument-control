@@ -63,7 +63,7 @@ classdef GetSetNumber < mic.Base
         dWidthStep = 50;
         dWidthRange = 120;
         
-        dWidthPadApi = 0;
+        dWidthPadDevice = 0;
         dWidthPadInitButton = 0;
         dWidthPadInitState = 0;
         dWidthPadName = 5;
@@ -82,7 +82,7 @@ classdef GetSetNumber < mic.Base
         dPad2 = 0;
         dWidthStatus = 5;
         
-        cLabelApi = 'API'
+        cLabelDevice = 'API'
         cLabelInit = 'Init'
         cLabelInitState = 'Init'
         cLabelName = 'Name';
@@ -95,12 +95,12 @@ classdef GetSetNumber < mic.Base
         cLabelJogL = '';
         cLabelJog = 'Step';
         cLabelJogR = '';
-        cTooltipApiOff = 'Connect to the real Api / hardware';
-        cTooltipApiOn = 'Disconnect the real Api / hardware (go into virtual mode)';
+        cTooltipDeviceOff = 'Connect to the real Device / hardware';
+        cTooltipDeviceOn = 'Disconnect the real Device / hardware (go into virtual mode)';
         cTooltipInitButton = 'Send the initialize command to this device';
         
-        apiv        % virtual Api (for test and debugging).  Builds its own ApivHardwareIO
-        api         % Api to the low level controls.  Must be set after initialized.
+        deviceVirtual        % virtual Device (for test and debugging).  Builds its own DevicevHardwareIO
+        device         % Device to the low level controls.  Must be set after initialized.
         
         % @param {clock 1x1} clock - the clock
         clock 
@@ -113,7 +113,7 @@ classdef GetSetNumber < mic.Base
         uieDest     % textbox to input the desired position
         uieStep     % textbox to input the desired step in disp units
         uitxVal     % label to display the current value
-        uitApi      % toggle for real / virtual Api
+        uitDevice      % toggle for real / virtual Device
         
         % {mic.ui.common.Button 1x1} clicking it calls device.initialize()
         % Its logical state is updated on clock cycle by calling device.isInitialized()  
@@ -198,7 +198,13 @@ classdef GetSetNumber < mic.Base
         % search for uitxVal.cVal and add more to the switch block.
         cConversion = 'f'; 
        
-        
+        % {logical 1x1} - show the clickable toggle / status that shows if
+        % is using real Device or virtual Device
+        lShowDevice = true
+        % {logical 1x1} - show the clickable initialize toggle
+        lShowInitButton = false
+        % {logical 1x1} - show isInitialized() state
+        lShowInitState = false
         % {logical 1x1} - show the name (on left)
         lShowName = true;
         % {logical 1x1} - show the value (right of the edit)
@@ -220,13 +226,8 @@ classdef GetSetNumber < mic.Base
         % {logical 1x1} - show the list of stored positions (only if they
         % are present in config)
         lShowStores = true
-        % {logical 1x1} - show the clickable toggle / status that shows if
-        % is using real Api or virtual Api
-        lShowApi = true
-        % {logical 1x1} - show the clickable initialize toggle
-        lShowInitButton = false
-        % {logical 1x1} - show isInitialized() state
-        lShowInitState = false
+        
+        
         % {logical 1x1} - show allowed range (config.min - config.max)
         lShowRange = false
         
@@ -236,7 +237,7 @@ classdef GetSetNumber < mic.Base
         
         % {logical 1x1} - ask the user if they are sure when clicking API
         % button/toggle
-        lAskOnApiClick = true
+        lAskOnDeviceClick = true
         % {logical 1x1} - ask the user if they are sure when clicking the
         % Init button
         lAskOnInitClick = true
@@ -250,7 +251,7 @@ classdef GetSetNumber < mic.Base
         uitxLabelJogR
         uitxLabelStores
         uitxLabelPlay
-        uitxLabelApi
+        uitxLabelDevice
         uitxLabelInit
         uitxLabelInitState
         uitxLabelRange
@@ -268,7 +269,7 @@ classdef GetSetNumber < mic.Base
         % cTypeDest = 'd'
         
         % {logical 1x1} true after the initialize() command has been issued
-        % up until getApi().isInitialized() returns true
+        % up until getDevice().isInitialized() returns true
         lIsInitializing = false
     end
     
@@ -388,14 +389,14 @@ classdef GetSetNumber < mic.Base
 
             dLeft = 1;
 
-            % Api toggle
-            if (this.lShowApi)
-                dLeft = dLeft + this.dWidthPadApi;
+            % Device toggle
+            if (this.lShowDevice)
+                dLeft = dLeft + this.dWidthPadDevice;
                 if this.lShowLabels
                     % FIXME
-                    this.uitxLabelApi.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
+                    this.uitxLabelDevice.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
-                this.uitApi.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeightBtn);
+                this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeightBtn);
                 dLeft = dLeft + this.dWidthBtn; 
             end
 
@@ -676,7 +677,7 @@ classdef GetSetNumber < mic.Base
         function moveToDest(this)
         %MOVETODEST Performs the HIO motion to the destination shown in the
         %GUI display.  It converts from the display units to raw and tells
-        %the Api 
+        %the Device 
         %   HardwareIO.moveToDest()
         %
         %   See also SETDESTCAL, SETDESTRAW, MOVE
@@ -699,18 +700,18 @@ classdef GetSetNumber < mic.Base
                
             % Need to manually set this for the situation where the lReady
             % property is accessed before onClock() has a chance to
-            % update its value from the device Api.
+            % update its value from the device Device.
             
             this.lReady = false;         
             dRaw = this.cal2raw(this.uieDest.val(), this.unit().name, this.uitRel.lVal);
-            this.getApi().set(dRaw);
+            this.getDevice().set(dRaw);
                        
         end
         
         function stop(this)
         %STOPMOVE Aborts the current motion
         %   HardwareIO.stopMove()
-            this.getApi().stop();
+            this.getDevice().stop();
             
         end
 
@@ -719,32 +720,32 @@ classdef GetSetNumber < mic.Base
         %INDEX Moves the HIO to the index position
         %   HardwareIO.index()
         
-            this.getApi().index();
+            this.getDevice().index();
             
         end
         
         
         function turnOn(this)
-        %TURNON Turns the motor on, actually using the Api to control the 
+        %TURNON Turns the motor on, actually using the Device to control the 
         %   HardwareIO.turnOn()
         %
         % See also TURNOFF
 
             this.lActive = true;
             
-            this.uitApi.lVal = true;
-            this.uitApi.setTooltip(this.cTooltipApiOn);
+            this.uitDevice.lVal = true;
+            this.uitDevice.setTooltip(this.cTooltipDeviceOn);
             % set(this.hPanel, 'BackgroundColor', this.dColorOn);
             % set(this.hImage, 'Visible', 'off');
                         
             % Update destination values to match device values
             % this.setDestCalDisplay(this.valCalDisplay());
             
-            % Kill the Apiv
-            if ~isempty(this.apiv) && ...
-                isvalid(this.apiv)
-                delete(this.apiv);
-                this.setApiv([]); % This is calling the setter
+            % Kill the Devicev
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
+                this.setDeviceVirtual([]); % This is calling the setter
             end
             
             notify(this, 'eTurnOn');
@@ -758,15 +759,15 @@ classdef GetSetNumber < mic.Base
         %
         % See also TURNON
         
-            % CA 2014.04.14: Make sure Apiv is available
+            % CA 2014.04.14: Make sure Devicev is available
             
-            if isempty(this.apiv)
-                this.setApiv(this.newApiv());
+            if isempty(this.deviceVirtual)
+                this.setDeviceVirtual(this.newDeviceVirtual());
             end
             
             this.lActive = false;
-            this.uitApi.lVal = false;
-            this.uitApi.setTooltip(this.cTooltipApiOff);
+            this.uitDevice.lVal = false;
+            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             
             % this.setDestCalDisplay(this.valCalDisplay());
             % set(this.hImage, 'Visible', 'on');
@@ -775,22 +776,22 @@ classdef GetSetNumber < mic.Base
             notify(this, 'eTurnOff');
         end
         
-        function setApi(this, api)
-            this.api = api;
+        function setDevice(this, device)
+            this.device = device;
         end
                 
-        function setApiv(this, api)
+        function setDeviceVirtual(this, device)
             
-            if ~isempty(this.apiv) && ...
-                isvalid(this.apiv)
-                delete(this.apiv);
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
             end
 
-            this.apiv = api;
+            this.deviceVirtual = device;
             
             %{
             try
-                this.uieDest.setVal(this.apiv.get());
+                this.uieDest.setVal(this.deviceVirtual.get());
             catch err
                 this.uieDest.setVal(0);
             end
@@ -823,7 +824,7 @@ classdef GetSetNumber < mic.Base
             delete(this.uieDest);  
             delete(this.uieStep);
             delete(this.uitxVal);
-            delete(this.uitApi);
+            delete(this.uitDevice);
             delete(this.uibInit);
             delete(this.uiilInitState);
 
@@ -846,22 +847,22 @@ classdef GetSetNumber < mic.Base
             delete(this.uitxLabelJogR);
             delete(this.uitxLabelStores);
             delete(this.uitxLabelPlay);
-            delete(this.uitxLabelApi);
+            delete(this.uitxLabelDevice);
             delete(this.uitxLabelInit);
             delete(this.uitxLabelInitState);
             %}
             
             % delete(this.config)
             
-            % The Apiv instances have clock tasks so need to delete them
+            % The Devicev instances have clock tasks so need to delete them
             % first
             
-            % delete(this.apiv);
+            % delete(this.deviceVirtual);
             
             %{
-            if ~isempty(this.api) && ... % isvalid(this.api) && ...
-                isa(this.api, 'mic.device.GetSetNumber')
-                delete(this.api)
+            if ~isempty(this.device) && ... % isvalid(this.device) && ...
+                isa(this.device, 'mic.device.GetSetNumber')
+                delete(this.device)
             end
             %}
                         
@@ -888,7 +889,7 @@ classdef GetSetNumber < mic.Base
                 % 2016.11.02 CNA always cast as double.  Underlying unit
                 % may not be double
                 
-                this.dValRaw = this.getApi().get();  
+                this.dValRaw = this.getDevice().get();  
                 
                 
                 % 2014.05.19 
@@ -898,21 +899,21 @@ classdef GetSetNumber < mic.Base
                 % 2014.11.19: changing this so that there is a tolerance:
                 
                 
-                % 2014.11.20: Linking this check to the api call which asks
+                % 2014.11.20: Linking this check to the device call which asks
                 % stage if it's ready, which means that it's either stopped
                 % or reached its target.
                 
                 if ~this.lDisableSet
-                    this.lReady = this.getApi().isReady();
+                    this.lReady = this.getDevice().isReady();
                     this.updatePlayButton()
                 else
-                    % The Api(V) doesn't implement isReady since this is a
+                    % The Device(V) doesn't implement isReady since this is a
                     % HardwareIO
                 end
                 
                 this.updateDisplayValue();
                 
-                lInitialized = this.getApi.isInitialized();
+                lInitialized = this.getDevice.isInitialized();
                 
                 % Update visual appearance of button to reflect state
                 if this.lShowInitButton
@@ -968,7 +969,7 @@ classdef GetSetNumber < mic.Base
         %   If you want the value showed in the display (with the active
         %   display unit and abs/rel state use valCalDisplay()
                         
-            dOut = this.raw2cal(this.getApi().get(), cUnit, false);
+            dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
             
         end
         
@@ -980,14 +981,14 @@ classdef GetSetNumber < mic.Base
         %
         %   see also VALCAL 
                         
-            dOut = this.raw2cal(this.getApi().get(), this.unit().name, this.uitRel.lVal);
+            dOut = this.raw2cal(this.getDevice().get(), this.unit().name, this.uitRel.lVal);
             
         end
         
         function dOut = valRaw(this)
         %VALRAW Get the value (not the destination) in raw units. This
         %value is also accessible with the dValRaw property
-           dOut = this.getApi().get(); 
+           dOut = this.getDevice().get(); 
         end
         
         
@@ -1056,14 +1057,14 @@ classdef GetSetNumber < mic.Base
         function initialize(this)
            
             this.lIsInitializing = true;
-            this.getApi().initialize();
+            this.getDevice().initialize();
             % this.disable();
             
         end
         
         function enable(this)
             
-            this.uitApi.enable();
+            this.uitDevice.enable();
             this.uibInit.enable();
             this.uiilInitState.disable();
             this.uibtPlay.enable();
@@ -1089,7 +1090,7 @@ classdef GetSetNumber < mic.Base
             this.uitxLabelStores.enable();
             this.uitxLabelRange.enable();
             this.uitxLabelPlay.enable();
-            this.uitxLabelApi.enable();
+            this.uitxLabelDevice.enable();
             this.uitxLabelInit.enable();
             this.uitxLabelInitState.enable();
             
@@ -1099,7 +1100,7 @@ classdef GetSetNumber < mic.Base
         
         function disable(this)
             
-            this.uitApi.disable();
+            this.uitDevice.disable();
             this.uibInit.disable();
             this.uiilInitState.disable();
             this.uibtPlay.disable();
@@ -1124,7 +1125,7 @@ classdef GetSetNumber < mic.Base
             this.uitxLabelStores.disable();
             this.uitxLabelRange.disable();
             this.uitxLabelPlay.disable();
-            this.uitxLabelApi.disable();
+            this.uitxLabelDevice.disable();
             this.uitxLabelInit.disable();
             this.uitxLabelInitState.disable();
             
@@ -1132,11 +1133,11 @@ classdef GetSetNumber < mic.Base
         end
         
         
-        function api = getApi(this)
+        function device = getDevice(this)
             if this.lActive
-                api = this.api;
+                device = this.device;
             else
-                api = this.apiv;
+                device = this.deviceVirtual;
             end 
             
         end
@@ -1167,23 +1168,23 @@ classdef GetSetNumber < mic.Base
             %activity ribbon on the right
             
             st1 = struct();
-            st1.lAsk        = this.lAskOnApiClick;
+            st1.lAsk        = this.lAskOnDeviceClick;
             st1.cTitle      = 'Switch?';
-            st1.cQuestion   = 'Do you want to change from the virtual Api to the real Api?';
+            st1.cQuestion   = 'Do you want to change from the virtual Device to the real Device?';
             st1.cAnswer1    = 'Yes of course!';
             st1.cAnswer2    = 'No not yet.';
             st1.cDefault    = st1.cAnswer2;
 
 
             st2 = struct();
-            st2.lAsk        = this.lAskOnApiClick;
+            st2.lAsk        = this.lAskOnDeviceClick;
             st2.cTitle      = 'Switch?';
-            st2.cQuestion   = 'Do you want to change from the real Api to the virtual Api?';
+            st2.cQuestion   = 'Do you want to change from the real Device to the virtual Device?';
             st2.cAnswer1    = 'Yes of course!';
             st2.cAnswer2    = 'No not yet.';
             st2.cDefault    = st2.cAnswer2;
 
-            this.uitApi = mic.ui.common.Toggle( ...
+            this.uitDevice = mic.ui.common.Toggle( ...
                 'cTextOff', 'enable', ...   
                 'cTextOn', 'disable', ...  
                 'lImg', true, ...
@@ -1285,7 +1286,7 @@ classdef GetSetNumber < mic.Base
                 'cVal', this.cLabel ...
             );
 
-            this.setApiv(this.newApiv());
+            this.setDeviceVirtual(this.newDeviceVirtual());
             
             
             % if ~isempty(this.config.ceStores)
@@ -1302,7 +1303,7 @@ classdef GetSetNumber < mic.Base
             % end
                         
             %AW(5/24/13) : populating the destination
-            this.uieDest.setVal(this.apiv.get());
+            this.uieDest.setVal(this.deviceVirtual.get());
 
             
 
@@ -1312,7 +1313,7 @@ classdef GetSetNumber < mic.Base
             % addlistener(this.uitPlay,   'eChange', @this.handleUI);
             
             addlistener(this.uieDest, 'eEnter', @this.onDestEnter);
-            addlistener(this.uitApi,   'eChange', @this.onApiChange);
+            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
             addlistener(this.uibtPlay,   'eChange', @this.onPlayChange);
             addlistener(this.uitRel,   'eChange', @this.onRelChange);
             addlistener(this.uipUnit,   'eChange', @this.onUnitChange);
@@ -1341,8 +1342,8 @@ classdef GetSetNumber < mic.Base
             this.uitxLabelPlay = mic.ui.common.Text( ...
                 'cVal', this.cLabelPlay ...
             );
-            this.uitxLabelApi = mic.ui.common.Text(...
-                'cVal', this.cLabelApi, ...
+            this.uitxLabelDevice = mic.ui.common.Text(...
+                'cVal', this.cLabelDevice, ...
                 'cAlign', 'center'...
             );
             this.uitxLabelInit = mic.ui.common.Text(...
@@ -1372,7 +1373,7 @@ classdef GetSetNumber < mic.Base
                 'cVal', this.cLabelRange ...
             );
             
-            this.uitApi.setTooltip(this.cTooltipApiOff);
+            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             this.uitxName.setTooltip('The name of this device');
             this.uitxVal.setTooltip('The value of this device');
             this.uieStep.setTooltip('Change the goal increment value.  Use < > to step goal.');
@@ -1392,7 +1393,7 @@ classdef GetSetNumber < mic.Base
             
         end
         
-        function onApiChange(this, src, evt)
+        function onDeviceChange(this, src, evt)
             if src.lVal
                 this.turnOn();
             else
@@ -1799,8 +1800,8 @@ classdef GetSetNumber < mic.Base
         function dOut = getWidth(this)
             dOut = 0;
                     
-            if this.lShowApi
-               dOut = dOut + this.dWidthPadApi + this.dWidthBtn;
+            if this.lShowDevice
+               dOut = dOut + this.dWidthPadDevice + this.dWidthBtn;
             end
             
             if this.lShowInitButton
@@ -1851,9 +1852,9 @@ classdef GetSetNumber < mic.Base
             
         end
         
-        function api = newApiv(this)
-        %@return {ApivHardwareIO}
-            api = mic.device.GetSetNumber(...
+        function device = newDeviceVirtual(this)
+        %@return {DevicevHardwareIO}
+            device = mic.device.GetSetNumber(...
                 'cName', this.cName, ...
                 'clock', this.clock ...
             );

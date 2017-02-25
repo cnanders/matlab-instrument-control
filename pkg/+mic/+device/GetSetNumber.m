@@ -1,6 +1,6 @@
 classdef GetSetNumber < mic.interface.device.GetSetNumber
 
-    % apiv
+    % deviceVirtual
 
     properties (Access = private)
         clock                      % Clock
