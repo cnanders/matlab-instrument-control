@@ -1,0 +1,78 @@
+classdef GetNumber < mic.interface.device.GetNumber
+
+
+    properties (Access = protected)
+        
+        
+        % {mic.Clock 1x1}
+        clock
+        
+        % {double 1x1} clock period (s)
+        dPeriod = 0.1 
+        
+        % {double 1x1} mean value
+        dMean = 0 
+        
+        % {double 1x1} standard deviation of value
+        dSig = 0.1
+        
+        % {double 1x1} the value (updated onClock)
+        dVal = 0 
+    end
+
+
+    properties
+
+        cName
+        
+
+    end
+
+            
+    methods
+        
+        function this = GetNumber(varargin)
+        
+            for k = 1 : 2: length(varargin)
+                % this.msg(sprintf('passed in %s', varargin{k}));
+                if this.hasProp( varargin{k})
+                    this.msg(sprintf(' settting %s', varargin{k}), 3);
+                    this.(varargin{k}) = varargin{k + 1};
+                end
+            end
+            this.clock.add(@this.onClock, this.id(), this.dPeriod);
+
+        end
+
+        function dReturn = get(this)
+            dReturn = this.dVal;
+        end
+
+        function onClock(this)
+            this.dVal = this.dMean + this.dSig * randn(1);
+        end
+            
+        function delete(this)
+
+            this.msg('ApivHardwareO.delete()');
+
+            % Clean up clock tasks
+            if isvalid(this.clock) && ...
+               this.clock.has(this.id())
+                this.clock.remove(this.id());
+            end
+
+        end
+        
+        function l = isInitialized(true)
+            l = false;
+        end
+
+    end %methods
+end %class
+    
+
+            
+            
+            
+        
