@@ -158,9 +158,9 @@ classdef GetSetNumber < mic.ui.device.Base
         u8Plus = imread(fullfile(mic.Utils.pathImg(), 'jog', 'axis-step-forward-24-7.png'));
         u8Minus = imread(fullfile(mic.Utils.pathImg(), 'jog', 'axis-step-back-24-7.png'));
         
-        u8Rel = imread(fullfile(mic.Utils.pathImg(), 'axis-rel-24-3.png'));
-        u8Abs = imread(fullfile(mic.Utils.pathImg(), 'axis-abs-24-3.png'));
-        u8Zero = imread(fullfile(mic.Utils.pathImg(), 'axis-zero-24-2.png'));
+        u8Rel = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '1', 'rel-24.png'));
+        u8Abs = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '1', 'abs-24.png'));
+        u8Zero = imread(fullfile(mic.Utils.pathImg(), 'zero', 'axis-zero-24-2.png'));
         
         
         % @param {ConfigGetSetNumber 1x1} [config = new ConfigGetSetNumber()] - the config instance
