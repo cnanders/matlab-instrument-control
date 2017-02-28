@@ -1,7 +1,15 @@
 classdef VendorDevice2GetSetNumber < mic.interface.device.GetSetNumber
 
+    % This class implements mic.interface.device.GetSetNumber, which is the
+    % interface that mic.ui.device.GetSetNumber expects its provided
+    % "device" to implement.  It
+    
     properties (Access = private)
+        
+        % {VendorDevice 1x1}
         device
+        
+        % {char 1xm} property of VendorDevice being exposed
         cProp
     end
     
@@ -48,9 +56,7 @@ classdef VendorDevice2GetSetNumber < mic.interface.device.GetSetNumber
             l = true;
         end
         
-        function index(this)
-            
-        end
+        
 
         
     end

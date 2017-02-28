@@ -1,5 +1,6 @@
 classdef VendorDevice < handle
     
+    % Assume this is a black-box 
     
     properties
     end
