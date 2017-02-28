@@ -1,8 +1,8 @@
-# About
+### MATLAB library for programmatically creating GUIs that control scientific instrumentation.  
 
-MATLAB library for programmatically creating GUIs that control scientific instrumentation.  
+# Documentation
 
-# mic.ui.common.*
+## mic.ui.common.*
 
 The core of the MIC library contains namespaced, object-oriented wrappers around all of MATLAB’s `uicontrol` elements: `edit`, `listbox`, `pushbutton`, etc.  These classes are located at `mic.ui.common.*`. 
 
@@ -25,7 +25,7 @@ Some `mic.ui.common.*` expose a value with a type determined by the UI element. 
 
 Most `mic.ui.common.*` classes expose events the consumer can listen for.  This lets the consumer respond to the user interacting with the GUI, e.g., clicking a `mic.ui.common.Button` or editing the value of a `mic.ui.common.Edit`.  
 
-# mic.ui.device.*
+## mic.ui.device.*
 
 The next layer of the UI controls are `device` controls.  These are UIs designed to control hardware. 99% of the time we communicate with hardware we: 
 
@@ -44,7 +44,7 @@ The next layer of the UI controls are `device` controls.  These are UIs designed
 
 `mic.ui.device.*` contains a UI control for each data type; the data type dictates the features of the UI. 
 
-## How mic.ui.device.* UI Controls Work
+### How `mic.ui.device.*` UI Controls Work
 
 - Each `mic.ui.device.*` must be passed a `device`.  A `device` is something that implements the `mic.interface.device.*` interface. 
 - The `mic.ui.device.*` provides a UI for invoking all available methods of the `device` (the methods defined in `mic.interface.device.*`).  
