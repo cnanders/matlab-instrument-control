@@ -123,7 +123,7 @@ Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.comm
 
 <a name="device-overview"></a>
 ## Overview
-MIC also provdes UI components that control devices (hardware). The `mic.ui.device.*` UI components come in three varieties, based on common user-facing data types
+MIC provdes UI components that control devices (hardware). They are located at `mic.ui.device.*`. Device UI controls come in three varieties, based on common user-facing data types:
 
 ### `mic.ui.device.GetSetNumber`
 ![mic.ui.device.GetSetNumber GIF](img/mic.ui.device.GetSetNumber.gif?raw=true)
@@ -141,14 +141,14 @@ MIC also provdes UI components that control devices (hardware). The `mic.ui.devi
 
 `mic.ui.device.GetSetText` is a UI control designed to control a `char` property of a device.  The standard use case is controlling instrument configuration values.
 
-There are also a “get only” versions of each device UI control that omit set functionality.  
+There are also “get only” versions of each device UI control that omit set functionality.  
 - `mic.ui.device.GetNumber`
 - `mic.ui.device.GetLogical`
 - `mic.ui.device.GetText`
 
 
 <a name="device-connect"></a>
-## How Device UI Controls Connect To Devices (Hardware)
+## How Device UI Controls Connect To Hardware
 
 <a name="device-definition"></a>
 ### Definition of `device`
@@ -161,8 +161,8 @@ In MIC, a `device` is defined as anything that implements a device interface (`m
 d = get(this)
 
 % Set a new value and go to it
-% @param {double 1x1} dDest - new destination
-set(this, dDest) % 
+% @param {double 1x1} dVal - new value
+set(this, dVal) 
 
 % @return {logical 1x1} - true when stopped or at its target
 l = isReady(this) 
