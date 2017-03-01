@@ -2,15 +2,27 @@ MATLAB library for programmatically creating GUIs that control scientific instru
 
 # Documentation
 
+- [mic.ui.common.*](#mic.ui.common)
+- [mic.ui.device.*](#mic.ui.device)
+	- [How `mic.ui.device.*` UI Controls Work](#how-devices-work)
+	- [mic.ui.device.GetSetNumber](#mic.ui.device.GetSetNumber)
+	- [mic.ui.device.GetSetLogical](#mic.ui.device.GetSetLogical)
+ 	- [mic.ui.device.GetSetText](#mic.ui.device.GetSetText)
+	- [mic.ui.device.GetNumber](#mic.ui.device.GetNumber)
+	- [mic.ui.device.GetLogical](#mic.ui.device.GetLogical)
+	- [mic.ui.device.GetText](#mic.ui.device.GetText)
+
+
 Docs are a work in progress.
 
-## mic.ui.common.*
+<a name="mic.ui.common"></a>
+# `mic.ui.common.*`
 
-The core of the MIC library contains namespaced, object-oriented wrappers around all of MATLAB’s `uicontrol` elements, e.g., `edit`, `toggle`, and `popup`.  These classes are located at `mic.ui.common.*`. 
+The MIC library is based on namespaced, object-oriented wrappers around MATLAB’s `uicontrol` elements, e.g., `edit`, `toggle`, and `popup`.  They are located at `mic.ui.common.*`. 
 
 ### Example
 
-The following code can be used to create “MIC” versions of `edit` and `toggle`, uicontrols. 
+The following code can be used to create “MIC” versions of `edit` and `toggle` uicontrols. 
 
 ```
 uiEdit = mic.ui.common.Edit();
@@ -43,7 +55,7 @@ uiEdit.set('Test');
 uiToggle.set(true);
 ```
 
-Every property (private, protected, or public) of every class in `mic.ui.*` can be set on instantiation with the MATLAB [varargin](https://www.mathworks.com/help/matlab/ref/varargin.html) syntax, enabling full customization. 
+Every property of every class in `mic.ui.*` can be set on instantiation with the MATLAB [varargin](https://www.mathworks.com/help/matlab/ref/varargin.html) syntax, enabling full customization. 
 
 All `mic.ui.common.*` UI controls implement the `mic.interface.ui.common.Base` interface (at minimum), which requires the following methods:
 
@@ -69,7 +81,7 @@ enable(this)
 disable(this)
 ```
 
-Several UI controls expose `set()` and `get()` methods.  The following table summarizes them along with the data type:
+Several `mic.ui.common.*` UI controls expose `set()` and `get()` methods.  The following table summarizes them along with their type:
 
 <table>
 	<tr>
@@ -102,7 +114,8 @@ The interfaces of all UI controls are located at `mic.interface.ui.*`
 
 Most `mic.ui.common.*` classes expose events the consumer can listen for.  This lets the consumer respond to the user interacting with the GUI, e.g., clicking a `mic.ui.common.Button` or editing the value of a `mic.ui.common.Edit`.  
 
-## mic.ui.device.*
+<a name="mic.ui.device"></a>
+# `mic.ui.device.*`
 
 The next layer of the UI controls are `device` controls.  These are UIs designed to control hardware. 99% of the time we communicate with hardware we: 
 
@@ -121,12 +134,14 @@ The next layer of the UI controls are `device` controls.  These are UIs designed
 
 `mic.ui.device.*` contains a UI control for each data type; the data type dictates the features of the UI. 
 
-### How `mic.ui.device.*` UI Controls Work
+<a name="how-devices-work"></a>
+## How `mic.ui.device.*` UI Controls Work
 
 - Each `mic.ui.device.*` must be passed a `device`.  A `device` is something that implements the `mic.interface.device.*` interface. 
 - The `mic.ui.device.*` provides a UI for invoking all available methods of the `device` (the methods defined in `mic.interface.device.*`).  
 - The `device` is responsible for appropriately communicating with hardware when its methods are evoked by `mic.ui.device.*`
 
+<a name="mic.ui.device.GetSetNumber"></a>
 ### `mic.ui.device.GetSetNumber`
 - A UI for invoking all methods of the provided `device`
 - `device` implements `mic.interface.device.GetSetNumber`.
@@ -159,27 +174,31 @@ The next layer of the UI controls are `device` controls.  These are UIs designed
 	- “Device” toggle that allows channeling all device calls through a “virtual” `device`.  This is useful during the development phase before harware is available. 
 		- The “virtual” `device`, which `mic.ui.device.GetSetNumber` creates automatically, is an instance of `mic.device.GetSetNumber`.  It implements `mic.interface.device.GetSetNumber` and behaves like real hardware; e.g., it takes time to get to a target value.
 
-
+<a name="mic.ui.device.GetSetLogical"></a>
 ### `mic.ui.device.GetSetLogical`
 - A UI for invoking all methods of the provided `device`.
 - `device` implements `mic.interface.device.GetSetLogical`.
 - Use this for getting / setting boolean properties of hardware.
 
+<a name="mic.ui.device.GetSetText"></a>
 ### `mic.ui.device.GetSetText`
 - A UI for invoking all methods of the provided `device`.
 - `device` implements `mic.interface.device.GetSetText`.
 - Use this for getting / setting String properties of hardware.
 
+<a name="mic.ui.device.GetNumber"></a>
 ### `mic.ui.device.GetNumber`
 - A UI for invoking all methods of the provided `device`.  
 - `device` implements `mic.interface.device.GetNumber`.  
 - Use this for (only) getting numeric properties of hardware.
 
+<a name="mic.ui.device.GetLogical"></a>
 ### `mic.ui.device.GetLogical`
 - A UI for invoking all methods of the provided `device`.
 - `device` implements `mic.interface.device.GetLogical`.  
 - Use this for (only) getting boolean properties of hardware.
 
+<a name="mic.ui.device.GetText"></a>
 ### `mic.ui.device.GetText`
 - A UI for invoking all methods of the provided `device`.  
 - `device` implements `mic.interface.device.GetText`.  
@@ -196,11 +215,7 @@ What is the job of a UI in MATLAB.  The majority of the time, it is to expose on
 Inputs usually come in four data types: Boolean (toggles)
 
 
-# Terminology
-
-* “Boolean Device” - device that accepts and returns booleans
-* “Text Device” - device that accepts and returns strings
-* “Number Device” - device that accepts and returns numbers
+# Notes
 
 Think of “device” as a property of an instruemnt that you can get or set; do not think of a device as an entire instrument.  For example, if you need to make a UI to control a Keithley Picoammeter, you would create a separate device for each property you want to set or get.  E.g., 
 

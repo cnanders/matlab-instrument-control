@@ -15,10 +15,14 @@ classdef Base < mic.Base
         % Show a hidden UI
         show(this)
         
+        % Set the tooltip for mouse hover
         % @param {char 1xm}
         setTooltip(this, cTooltip)
         
+        % Disable user interaction
         enable(this)
+        
+        % Enable user interaction
         disable(this)
         
     end
