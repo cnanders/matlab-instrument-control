@@ -20,3 +20,17 @@ h = figure();
 uiEdit.build(h, 10, 10, 100, 30);
 uiToggle.build(h, 10, 50, 100, 30);
 
+% Get {char} value of uiEdit
+uiEdit.get()
+
+% Set {logical} value of uiToggle
+uiToggle.get()
+
+
+% Set {char} value of uiEdit
+uiEdit.set('Hello');
+
+% Set {logical} value of uiToggle
+uiToggle.set(true);
+
+

@@ -6,23 +6,20 @@ Docs are a work in progress.
 
 ## mic.ui.common.*
 
-The core of the MIC library contains namespaced, object-oriented wrappers around all of MATLAB’s `uicontrol` elements, e.g., `edit`, `listbox`, and `pushbutton`.  These classes are located at `mic.ui.common.*`. 
+The core of the MIC library contains namespaced, object-oriented wrappers around all of MATLAB’s `uicontrol` elements, e.g., `edit`, `toggle`, and `popup`.  These classes are located at `mic.ui.common.*`. 
 
 ### Example
 
-The following code can be used to create `edit` and `toggle`, uicontrols using MIC. 
-```
+The following code can be used to create “MIC” versions of `edit` and `toggle`, uicontrols. 
 
-uiEdit = mic.ui.common.Edit(...
-    'cLabel', 'Hello World' ...
-);
+```
+uiEdit = mic.ui.common.Edit();
 uiToggle = mic.ui.common.Toggle();
 
- 
+% Add them to a figure
+h = figure();
 dUiWidth = 100;
 dUiHeight = 30;
-
-h = figure();
 uiEdit.build(h, 10, 10, dUiWidth, dUiHeight);
 uiToggle.build(h, 10, 50, dUiWidth, dUiHeight);
 ```
@@ -31,36 +28,77 @@ Their values can be retreived with
 
 ```
 % Get {char} value of uiEdit
-uiEdit.val()
+uiEdit.get()
 
 % Get {logical} value of uiToggle
-uiToggle.lVal
+uiToggle.get()
 ``` 
 Their values can be set with 
 
 ```
 % Set {char} value of uiEdit (updates the display)
-uiEdit.setVal('Test');
+uiEdit.set('Test');
 
 % Set {logical} value of uiToggle (updates the display)
-uiToggle.lVal = true;
+uiToggle.set(true);
 ```
-Some `mic.ui.common.*` expose a value with a type determined by the UI element.  Examples:
+
+Every property (private, protected, or public) of every class in `mic.ui.*` can be set on instantiation with the MATLAB [varargin](https://www.mathworks.com/help/matlab/ref/varargin.html) syntax, enabling full customization. 
+
+All `mic.ui.common.*` UI controls implement the `mic.interface.ui.common.Base` interface (at minimum), which requires the following methods:
+
+```
+% Build the UI on a figure or uipanel. 
+% mic.ui.common.* elements can be built in multiple places
+build(this, hParent, dLeft, dTop, dWidth, dHeight)
+
+% Remove a visible UI
+hide(this)
+
+% Show a hidden UI
+show(this)
+
+% Set the tooltip for mouse hover
+% @param {char 1xm}
+setTooltip(this, cTooltip)
+
+% Disable user interaction
+enable(this)
+
+% Enable user interaction
+disable(this)
+```
+
+Several UI controls expose `set()` and `get()` methods.  The following table summarizes them along with the data type:
 
 <table>
 	<tr>
 		<th>Class</th>
-		<th>Type of exposed value</th>
+		<th>Type used by set() and get()</th>
 	</tr>
 	<tr>
 		<td>mic.ui.common.Toggle</td>
 		<td>logical</td>
 	</tr>
 	<tr>
+		<td>mic.ui.common.ButtonToggle</td>
+		<td>logical</td>
+	</tr>
+	<tr>
+		<td>mic.ui.common.Checkbox</td>
+		<td>logical</td>
+	</tr>
+	<tr>
 		<td>mic.ui.common.Edit</td>
 		<td>char, single, double, int*, or uint* (configurable)</td>
 	</tr>
+	<tr>
+		<td>mic.ui.common.Text</td>
+		<td>char</td>
+	</tr>
 </table>
+
+The interfaces of all UI controls are located at `mic.interface.ui.*` 
 
 Most `mic.ui.common.*` classes expose events the consumer can listen for.  This lets the consumer respond to the user interacting with the GUI, e.g., clicking a `mic.ui.common.Button` or editing the value of a `mic.ui.common.Edit`.  
 
