@@ -1,4 +1,4 @@
-classdef Button < mic.Base
+classdef Button < mic.interface.ui.common.Button
     % uib
     % Button(cText, lImg, u8Img, lAsk, cMsg)
 

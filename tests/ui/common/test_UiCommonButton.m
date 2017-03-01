@@ -7,13 +7,13 @@ addpath(genpath(cDirMic));
 
 purge
 
-cPathImg = fullfile(mic.Utils.pathAssets(), 'axis-zero-24-2.png');
+cPathImg = fullfile(mic.Utils.pathImg(), 'zero', 'axis-zero-24-2.png');
 
 u8Zero = imread(cPathImg);
 % u8Zero = imread(cPathImg);
 
 %{
-cPathImg = fullfile(mic.Utils.pathAssets(), 'loading-24px.gif');
+cPathImg = fullfile(mic.Utils.pathImg(), 'loading-24px.gif');
 [X,map] = imread(cPathImg, 'GIF');
 imshow(X,map)
 %}

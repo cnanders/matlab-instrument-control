@@ -1,11 +1,50 @@
-### MATLAB library for programmatically creating GUIs that control scientific instrumentation.  
+MATLAB library for programmatically creating GUIs that control scientific instrumentation.  
 
 # Documentation
 
+Docs are a work in progress.
+
 ## mic.ui.common.*
 
-The core of the MIC library contains namespaced, object-oriented wrappers around all of MATLAB’s `uicontrol` elements: `edit`, `listbox`, `pushbutton`, etc.  These classes are located at `mic.ui.common.*`. 
+The core of the MIC library contains namespaced, object-oriented wrappers around all of MATLAB’s `uicontrol` elements, e.g., `edit`, `listbox`, and `pushbutton`.  These classes are located at `mic.ui.common.*`. 
 
+### Example
+
+The following code can be used to create `edit` and `toggle`, uicontrols using MIC. 
+```
+
+uiEdit = mic.ui.common.Edit(...
+    'cLabel', 'Hello World' ...
+);
+uiToggle = mic.ui.common.Toggle();
+
+ 
+dUiWidth = 100;
+dUiHeight = 30;
+
+h = figure();
+uiEdit.build(h, 10, 10, dUiWidth, dUiHeight);
+uiToggle.build(h, 10, 50, dUiWidth, dUiHeight);
+```
+
+Their values can be retreived with
+
+```
+% Get {char} value of uiEdit
+uiEdit.val()
+
+% Get {logical} value of uiToggle
+uiToggle.lVal
+``` 
+Their values can be set with 
+
+```
+% Set {char} value of uiEdit (updates the display)
+uiEdit.setVal('Test');
+
+% Set {logical} value of uiToggle (updates the display)
+uiToggle.lVal = true;
+```
 Some `mic.ui.common.*` expose a value with a type determined by the UI element.  Examples:
 
 <table>
@@ -14,12 +53,12 @@ Some `mic.ui.common.*` expose a value with a type determined by the UI element. 
 		<th>Type of exposed value</th>
 	</tr>
 	<tr>
-		<td>`mic.ui.common.Toggle`</td>
-		<td>`logical`</td>
+		<td>mic.ui.common.Toggle</td>
+		<td>logical</td>
 	</tr>
 	<tr>
-		<td>`mic.ui.common.Edit`</td>
-		<td>`char`, `single`, `double`, `int*`, or `uint*` (configurable)</td>
+		<td>mic.ui.common.Edit</td>
+		<td>char, single, double, int*, or uint* (configurable)</td>
 	</tr>
 </table>
 
@@ -79,6 +118,8 @@ The next layer of the UI controls are `device` controls.  These are UIs designed
 	- “Abs/Raw” Toggle toggles the display values between using and not using the offset stored during the last “Set Val” (see previous item)
 	- Range display shows the allowed range of the `device`.  Updates when units change
 		- Configurable with `mic.config.GetSetNumber`
+	- “Device” toggle that allows channeling all device calls through a “virtual” `device`.  This is useful during the development phase before harware is available. 
+		- The “virtual” `device`, which `mic.ui.device.GetSetNumber` creates automatically, is an instance of `mic.device.GetSetNumber`.  It implements `mic.interface.device.GetSetNumber` and behaves like real hardware; e.g., it takes time to get to a target value.
 
 
 ### `mic.ui.device.GetSetLogical`

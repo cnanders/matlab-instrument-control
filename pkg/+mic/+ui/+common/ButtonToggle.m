@@ -123,7 +123,11 @@ classdef ButtonToggle < mic.Base
             
         end
             
-        function set.lVal(this, l)
+        function l = get(this)
+            l = this.lVal;
+        end
+        
+        function set(this, l)
             
             % this.msg('set.lVal');
             
