@@ -117,7 +117,7 @@ classdef GetSetLogical < mic.ui.device.Base
         % the mic.ui.common.Toggle instance.  To pass it into the
         % mic.ui.common.Toggle, need to use the {:} syntax
         % http://stackoverflow.com/questions/12558819/matlab-pass-varargin-to-a-function-accepting-variable-number-of-arguments
-        ceVararginToggle = {}
+        ceVararginCommandToggle = {}
         
            
         % {mic.Clock 1x1} must be provided in constructor
@@ -468,10 +468,10 @@ classdef GetSetLogical < mic.ui.device.Base
         
         function initCommandToggle(this)
             
-            % Need to expand cell array ceVararginToggle into comma-separated
+            % Need to expand cell array ceVararginCommandToggle into comma-separated
             % list using the {:} syntax
             
-            this.uitCommand = mic.ui.common.Toggle(this.ceVararginToggle{:});
+            this.uitCommand = mic.ui.common.Toggle(this.ceVararginCommandToggle{:});
             addlistener(this.uitCommand, 'eChange', @this.onCommandChange);
             
         end
