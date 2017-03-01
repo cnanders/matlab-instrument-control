@@ -36,6 +36,8 @@ uiEdit.build(h, 10, 10, dUiWidth, dUiHeight);
 uiToggle.build(h, 10, 50, dUiWidth, dUiHeight);
 ```
 
+![mic.ui.device.GetSetNumber GIF](img-docs/simple-example-a.jpg?raw=true)
+
 Their values can be retreived with
 
 ```
@@ -45,6 +47,9 @@ uiEdit.get()
 % Get {logical} value of uiToggle
 uiToggle.get()
 ``` 
+
+![mic.ui.device.GetSetNumber GIF](img-docs/simple-example-b.jpg?raw=true)
+
 Their values can be set with 
 
 ```
@@ -54,6 +59,9 @@ uiEdit.set('Test');
 % Set {logical} value of uiToggle (updates the display)
 uiToggle.set(true);
 ```
+
+![mic.ui.device.GetSetNumber GIF](img-docs/simple-example-c.jpg?raw=true)
+
 
 Every property of every class in `mic.ui.*` can be set on instantiation with the MATLAB [varargin](https://www.mathworks.com/help/matlab/ref/varargin.html) syntax, enabling full customization. 
 
@@ -158,9 +166,12 @@ When we exchange data with hardware, the data always has a type.  Common user-fa
 
 <a name="mic.ui.device.GetSetNumber"></a>
 
-![mic.ui.device.GetSetNumber GIF](img-docs/mic.ui.device.GetSetNumber.gif?raw=true)
+
 
 ### `mic.ui.device.GetSetNumber`
+
+![mic.ui.device.GetSetNumber GIF](img-docs/mic.ui.device.GetSetNumber.gif?raw=true)
+
 - A UI for invoking all methods of the provided `device`
 - `device` implements `mic.interface.device.GetSetNumber`.
 - Use this for getting / setting numeric properties of hardware. 

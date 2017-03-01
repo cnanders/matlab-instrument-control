@@ -33,4 +33,3 @@ uiEdit.set('Hello');
 % Set {logical} value of uiToggle
 uiToggle.set(true);
 
-
