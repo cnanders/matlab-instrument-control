@@ -158,7 +158,7 @@ When we exchange data with hardware, the data always has a type.  Common user-fa
 
 <a name="mic.ui.device.GetSetNumber"></a>
 
-![mic.ui.device.GetSetNumber GIF](http://githug.com/cnanders/matlab-instrument-control/img-docs/mic.ui.device.GetSetNumber)
+![mic.ui.device.GetSetNumber GIF](http://githug.com/cnanders/matlab-instrument-control/img-docs/mic.ui.device.GetSetNumber.gif)
 
 ### `mic.ui.device.GetSetNumber`
 - A UI for invoking all methods of the provided `device`
