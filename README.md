@@ -122,26 +122,44 @@ The next layer of the UI controls are `device` controls.  These are UIs designed
 - Ask for a value
 - Tell it to go to a new value
 
- When we exchange data with hardware, the data always has a type.  Common user-facing data types are: 
+When we exchange data with hardware, the data always has a type.  Common user-facing data types are: 
 
-- Numeric (`single`, `double`, `int*`, `uint*`)
-	- Get the position of a stage
-	- Set the position of a stage
-- Boolean (`logical`)
-	- Get or set the value of any binary switch
-- String (`char`)
-	- More rare, but it does come up
+<table>
+	<tr>
+		<th>Type</th>
+		<th>MATLAB Class</th>
+		<th>Example Use Case</th>
+	</tr>
+	<tr>
+		<td>Numeric</td>
+		<td>single, double, int*, uint*</td>
+		<td>Get or set the position of a stage</td>
+	</tr>
+	<tr>
+		<td>Boolean</td>
+		<td>logical</td>
+		<td>Get or set a binary switch</td>
+	</tr>
+	<tr>
+		<td>String</td>
+		<td>char</td>
+		<td>More rare, but it does come up</td>
+	</tr>
+</table>
 
-`mic.ui.device.*` contains a UI control for each data type; the data type dictates the features of the UI. 
+`mic.ui.device.*` contains a UI control for each common user-facing data type. 
 
 <a name="how-devices-work"></a>
-## How `mic.ui.device.*` UI Controls Work
+## How `mic.ui.device.*` UI Controls Connect To Hardware
 
 - Each `mic.ui.device.*` must be passed a `device`.  A `device` is something that implements the `mic.interface.device.*` interface. 
-- The `mic.ui.device.*` provides a UI for invoking all available methods of the `device` (the methods defined in `mic.interface.device.*`).  
+- The `mic.ui.device.*` provides a UI for invoking all available methods of the `device` (the methods required by the `mic.interface.device.*` interface).  
 - The `device` is responsible for appropriately communicating with hardware when its methods are evoked by `mic.ui.device.*`
 
 <a name="mic.ui.device.GetSetNumber"></a>
+
+![mic.ui.device.GetSetNumber GIF](http://githug.com/cnanders/matlab-instrument-control/img-docs/mic.ui.device.GetSetNumber)
+
 ### `mic.ui.device.GetSetNumber`
 - A UI for invoking all methods of the provided `device`
 - `device` implements `mic.interface.device.GetSetNumber`.
