@@ -25,7 +25,7 @@ The MIC library is based on namespaced, object-oriented wrappers around MATLAB�
 The following code can be used to create “MIC” versions of `edit` and `toggle` uicontrols. 
 
 ```
-uiEdit = mic.ui.common.Edit();
+uiEdit = mic.ui.common.Edit('cLabel', 'Hello World');
 uiToggle = mic.ui.common.Toggle();
 
 % Add them to a figure
@@ -38,7 +38,7 @@ uiToggle.build(h, 10, 50, dUiWidth, dUiHeight);
 
 ![mic.ui.device.GetSetNumber GIF](img-docs/simple-example-a.jpg?raw=true)
 
-Their values can be retreived with
+Their values can be retreived with the `get()` method.
 
 ```
 % Get {char} value of uiEdit
@@ -50,11 +50,11 @@ uiToggle.get()
 
 ![mic.ui.device.GetSetNumber GIF](img-docs/simple-example-b.jpg?raw=true)
 
-Their values can be set with 
+Their values can be set with the `set()` method
 
 ```
 % Set {char} value of uiEdit (updates the display)
-uiEdit.set('Test');
+uiEdit.set('Hello');
 
 % Set {logical} value of uiToggle (updates the display)
 uiToggle.set(true);
@@ -62,34 +62,7 @@ uiToggle.set(true);
 
 ![mic.ui.device.GetSetNumber GIF](img-docs/simple-example-c.jpg?raw=true)
 
-
-Every property of every class in `mic.ui.*` can be set on instantiation with the MATLAB [varargin](https://www.mathworks.com/help/matlab/ref/varargin.html) syntax, enabling full customization. 
-
-All `mic.ui.common.*` UI controls implement the `mic.interface.ui.common.Base` interface (at minimum), which requires the following methods:
-
-```
-% Build the UI on a figure or uipanel. 
-% mic.ui.common.* elements can be built in multiple places
-build(this, hParent, dLeft, dTop, dWidth, dHeight)
-
-% Remove a visible UI
-hide(this)
-
-% Show a hidden UI
-show(this)
-
-% Set the tooltip for mouse hover
-% @param {char 1xm}
-setTooltip(this, cTooltip)
-
-% Disable user interaction
-enable(this)
-
-% Enable user interaction
-disable(this)
-```
-
-Several `mic.ui.common.*` UI controls expose `set()` and `get()` methods.  The following table summarizes them along with their type:
+Several other `mic.ui.common.*` UI controls expose `set()` and `get()` methods.  The following table summarizes them along with their type:
 
 <table>
 	<tr>
@@ -118,9 +91,22 @@ Several `mic.ui.common.*` UI controls expose `set()` and `get()` methods.  The f
 	</tr>
 </table>
 
-The interfaces of all UI controls are located at `mic.interface.ui.*` 
+### Events
 
-Most `mic.ui.common.*` classes expose events the consumer can listen for.  This lets the consumer respond to the user interacting with the GUI, e.g., clicking a `mic.ui.common.Button` or editing the value of a `mic.ui.common.Edit`.  
+All `mic.ui.common.*` classes notify events during user interaction.  The consumer can listen for them and take appropriate action.  
+
+### Customization
+
+Every property of every UI control in `mic.ui.*` can be set on instantiation with the MATLAB [varargin](https://www.mathworks.com/help/matlab/ref/varargin.html) syntax, enabling full customization. 
+
+### Additional API
+
+Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.common.Base` interface, which provides `hide()`, `show()`, `enable()`, and `disable()` methods.  See `mic.interface.ui.*` for more information.
+
+### Code Examples and Tests
+
+`tests/ui/common/*` contains working code examples for building each `mic.ui.common.*` class and responding to the events that they emit. 
+
 
 <a name="mic.ui.device"></a>
 # `mic.ui.device.*`
@@ -233,16 +219,15 @@ When we exchange data with hardware, the data always has a type.  Common user-fa
 - `device` implements `mic.interface.device.GetText`.  
 - Use this for (only) getting String properties of hardware.
 
+### Code Examples and Tests
+
+- `tests/ui/device/*` contains working code examples for building each `mic.ui.device.*` class.  
+- `examples/devices/*` shows you how to hook up an arbitrary vendor-provided device API to a `mic.ui.device.*` so you can control the device with a UI.  This process involves building a “translator“ that translates the vendor-provided API into the `mic.interface.device.GetSetNumber` interface, for example). Translator classes are named things like: `VendorDevice2GetSetNumber`.
 
 
-# Motivation
+# Guide and MATLAB App Designer
 
-[Guide](https://www.mathworks.com/discovery/matlab-gui.html) and [MATLAB App Designer](https://www.mathworks.com/products/matlab/app-designer.html) (released in 2015) can be used to create simple GUIs to manipulate data within MATLAB.  These two options make it possible to get something simple up and running quickly, but lack the organizational structure that large, complicated projects and instruments require. Moreover, if you want to use the GUI to control instrumentation, 
-
-What is the job of a UI in MATLAB.  The majority of the time, it is to expose one or more variables that are used in a calculation. The UI makes it easy for the user to set these variables and see the result of the calculation without having to write any code. 
-
-Inputs usually come in four data types: Boolean (toggles)
-
+[Guide](https://www.mathworks.com/discovery/matlab-gui.html) and [MATLAB App Designer](https://www.mathworks.com/products/matlab/app-designer.html) can be used to create simple GUIs that manipulate data within MATLAB.  These two options make it possible to get something simple up and running quickly, but lack the organizational structure that large, complicated projects and instruments require. Moreover, they lack a well-defined interface for hooking into hardware. 
 
 # Notes
 
@@ -251,25 +236,30 @@ Think of “device” as a property of an instruemnt that you can get or set; do
 <table>
 	<tr>
 		<th>Property</th>
-		<th>Device Type</th>
+		<th>Device Interface</th>
+		<th>UI</th>
 	</tr>
 	<tr>
 		<td>Current</td>
-		<td>Number Device</td>
+		<td>mic.device.GetSetNumber</td>
+		<td>mic.ui.device.GetSetNumber</td>
 	</tr>
 	<tr>
 		<td>Integration Period</td>
-		<td>Number Device</td>
+		<td>mic.device.GetSetNumber</td>
+		<td>mic.ui.device.GetSetNumber</td>
 	</tr>
 	<tr>
 		<td>Auto Range On/Off</td>
-		<td>Boolean Device</td>
+		<td>mic.device.GetSetLogical</td>
+		<td>mic.ui.device.GetSetLogical</td>
 	</tr>
 </table>
 
+In this particualr example, you would most likely want to disable many of the optional features of `mic.ui.device.GetSetNumber`.  
 
+# Using MIC to Control MATLAB Variables Instead of Hardware
 
-
- the We build `mic.translator.*` classes to expose the interface the UI requires (`mic.interface.device.*`) from the  API of the instrument (which is typically provided by the vendor).  
+Nothing says that you can’t use a `device` to set and get variables used in a MATLAB application and entirely forgo the notion of controlling hardware.  Remember: the only requirement of the `device` we pass into `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  In fact, this is exactly what happens when all of the `mic.ui.device.*` UI controls are in virtual mode!
 
 
