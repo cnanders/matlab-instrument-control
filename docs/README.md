@@ -13,6 +13,7 @@
 		- [Providing a `device` to a Device UI Control](#device-require)
 		- [Device UI Controls Evoke Methods of Their `device`](#device-wiring-up)
 		- [`device` Implementation Handles Hardware Communication](#device-implementation)
+	- [“Virtual” `device`](#device-virtual)
 	- [Code Examples](#device-code)
 	- [mic.ui.device.*](#mic.ui.device.*)
 
@@ -203,6 +204,7 @@ The UI control also passively calls methods of the passed `device`.  Examples:
 
 The `device` implementation is responsible for communicating with hardware when its methods are evoked by `mic.ui.device.*`.  
 
+<a name="device-virtual"></a>
 ## “Virtual” `devices`
 
 All device UI controls have a “Device” toggle.  When the “Device” toggle is set to `false` (the default), `device` calls, e.g., `device.get()`,  are routed to a “virtual” `device`.  This is useful during the development phase before harware is available. 
