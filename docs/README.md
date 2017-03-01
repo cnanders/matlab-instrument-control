@@ -110,7 +110,7 @@ Every property of every UI control in `mic.ui.*` can be set on instantiation wit
 <a name="common-api"></a>
 ## API
 
-Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.common.Base` interface, which provides `hide()`, `show()`, `enable()`, and `disable()` methods.  See `mic.interface.ui.*` for more information.
+Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.common.Base` interface, which provides `hide()`, `show()`, `enable()`, and `disable()` methods.  See `mic.interface.ui.common.*` for more information.
 
 <a name="common-code"></a>
 ## Code Examples
@@ -123,7 +123,7 @@ Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.comm
 
 <a name="device-overview"></a>
 ## Overview
-MIC provdes UI components that control devices (hardware). They are located at `mic.ui.device.*`. Device UI controls come in three varieties, based on common user-facing data types:
+THe MIC library provdes namespaced, object-oriented UI components that control devices (hardware). They are located at `mic.ui.device.*`. Device UI controls come in three varieties, based on common user-facing data types:
 
 ### `mic.ui.device.GetSetNumber`
 ![mic.ui.device.GetSetNumber GIF](img/mic.ui.device.GetSetNumber.gif?raw=true)
@@ -181,7 +181,7 @@ l = isInitialized(this)
 <a name="device-required"></a>
 ### Providing a `device` to a Device UI Control
 
-Each `mic.ui.device.*` must be provided with a `device`.  The `device` can be passed during instantiation of the UI control or set with the `setDevice()` method later on.  The provided `device` must implement the interface that corresponds to the UI control. Examples:
+Each `mic.ui.device.*` must be provided with a `device`.  The `device` can be passed during instantiation of the UI control or set with the `setDevice()` method later on.  The provided `device` must implement the device interface that matches the UI control. Examples:
 - `mic.ui.device.GetSetNumber` UI controls require a `device` that implements `mic.interface.device.GetSetNumber`
 - `mic.ui.device.GetSetLogical` UI controls require a `device` that implements `mic.interface.device.GetSetLogical` 
 
@@ -203,6 +203,16 @@ The UI control also passively calls methods of the passed `device`.  Examples:
 
 The `device` implementation is responsible for communicating with hardware when its methods are evoked by `mic.ui.device.*`.  
 
+## “Virtual” `devices`
+
+All device UI controls have a “Device” toggle.  When the “Device” toggle is set to `false` (the default), `device` calls, e.g., `device.get()`,  are routed to a “virtual” `device`.  This is useful during the development phase before harware is available. 
+
+All `mic.ui.device.*` UI controls automatically create their own “virtual” `device` on instantiation.  Examples:
+
+- `mic.ui.device.GetSetNumber` UI controls instantiate a `mic.device.GetSetNumber`, a `device` that implements `mic.interface.device.GetSetNumber`
+- `mic.ui.device.GetSetLogical` UI controls instantiate a `mic.device.GetSetLogical`, a `device` that implements `mic.interface.device.GetSetLogical`
+
+All `mic.device.*` “virtual” `devices` mock real hardware; e.g., they take time to get to a target value.
 
 ## Code Examples
 
