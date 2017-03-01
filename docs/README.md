@@ -209,7 +209,7 @@ The `device` implementation is responsible for communicating with hardware when 
 
 All device UI controls have a “Device” toggle.  When the “Device” toggle is set to `false` (the default), `device` calls, e.g., `device.get()`,  are routed to a “virtual” `device`.  This is useful during the development phase before harware is available. 
 
-All `mic.ui.device.*` UI controls automatically create their own “virtual” `device` on instantiation.  Examples:
+All `mic.ui.device.*` UI controls automatically create their own “virtual” `device` on instantiation; virtualization of hardware is supported by default without any configuration. Examples:
 
 - `mic.ui.device.GetSetNumber` UI controls instantiate a `mic.device.GetSetNumber`, a `device` that implements `mic.interface.device.GetSetNumber`
 - `mic.ui.device.GetSetLogical` UI controls instantiate a `mic.device.GetSetLogical`, a `device` that implements `mic.interface.device.GetSetLogical`
