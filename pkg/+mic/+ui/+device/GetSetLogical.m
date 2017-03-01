@@ -291,7 +291,7 @@ classdef GetSetLogical < mic.ui.device.Base
 
             this.lActive = true;
             
-            this.uitDevice.lVal = true;
+            this.uitDevice.set(true);
             this.uitDevice.setTooltip(this.cTooltipDeviceOn);
             
             
@@ -318,7 +318,7 @@ classdef GetSetLogical < mic.ui.device.Base
             end
             
             this.lActive = false;
-            this.uitDevice.lVal = false;
+            this.uitDevice.set(false);
             this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             
         end
@@ -517,10 +517,10 @@ classdef GetSetLogical < mic.ui.device.Base
                 % notifying eChange
                 
                 if ~this.lDisableSet
-                    this.uitCommand.setValWithoutNotification(this.lVal);
+                    this.uitCommand.setWithoutNotification(this.lVal);
                 end
                 
-                this.uiilValue.setVal(this.lVal);
+                this.uiilValue.set(this.lVal);
                 
                 
                 % Update visual appearance of button to reflect state
@@ -560,7 +560,7 @@ classdef GetSetLogical < mic.ui.device.Base
             % doesn't do anything smart to show the value, this is handled
             % by the indicator image with each onClock()
             
-            this.getDevice().set(this.uitCommand.lVal);            
+            this.getDevice().set(this.uitCommand.get());            
                         
         end
         

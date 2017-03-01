@@ -558,15 +558,15 @@ classdef GetSetNumber < mic.ui.device.Base
                 this.valCalDisplay(), ...
                 this.unit().name, ...
                 this.unit().precision, ...
-                this.uieStep.val(), ...
+                this.uieStep.get(), ...
                 this.unit().name ...
             );
             this.msg(msg, 3);
             
-            % dDest = this.valCalDisplay() + this.uieStep.val()
-            dDestCal = this.uieDest.val() + this.uieStep.val();
+            % dDest = this.valCalDisplay() + this.uieStep.get()
+            dDestCal = this.uieDest.get() + this.uieStep.get();
            
-            this.uieDest.setVal(dDestCal);
+            this.uieDest.set(dDestCal);
             this.moveToDest();
         end
         
@@ -581,15 +581,15 @@ classdef GetSetNumber < mic.ui.device.Base
                 this.valCalDisplay(), ...
                 this.unit().name, ...
                 this.unit().precision, ...
-                this.uieStep.val(), ...
+                this.uieStep.get(), ...
                 this.unit().name ...
             );
             this.msg(msg, 3);
         
-            % dDest = this.valCalDisplay() + this.uieStep.val()
-            dDestCal = this.uieDest.val() - this.uieStep.val();
+            % dDest = this.valCalDisplay() + this.uieStep.get()
+            dDestCal = this.uieDest.get() - this.uieStep.get();
            
-            this.uieDest.setVal(dDestCal);
+            this.uieDest.set(dDestCal);
             this.moveToDest();           
         end
        
@@ -615,7 +615,7 @@ classdef GetSetNumber < mic.ui.device.Base
             dRaw = this.cal2raw(dCalAbs, cUnit, false);
             
             % Set dest
-            this.uieDest.setVal(this.raw2cal(dRaw, this.unit().name, this.uitRel.lVal));
+            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
         
             
         end
@@ -647,8 +647,8 @@ classdef GetSetNumber < mic.ui.device.Base
             % Convert from the passed unit to raw, then convert from raw to
             % the display unit
             
-            dRaw = this.cal2raw(dCal, cUnit, this.uitRel.lVal);
-            this.uieDest.setVal(this.raw2cal(dRaw, this.unit().name, this.uitRel.lVal));
+            dRaw = this.cal2raw(dCal, cUnit, this.uitRel.get());
+            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
             
            
         end
@@ -661,7 +661,7 @@ classdef GetSetNumber < mic.ui.device.Base
         %raw value.  The raw value is converted to the unit and abs/rel
         %settings of the UI
         
-            this.uieDest.setVal(this.raw2cal(dRaw, this.unit().name, this.uitRel.lVal));
+            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
         end
                 
         
@@ -683,7 +683,7 @@ classdef GetSetNumber < mic.ui.device.Base
                 this.valCalDisplay(), ...
                 this.unit().name, ...
                 this.unit().precision, ...
-                this.uieDest.val(), ...
+                this.uieDest.get(), ...
                 this.unit().name ...
             );
         
@@ -694,7 +694,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % update its value from the device Device.
             
             this.lReady = false;         
-            dRaw = this.cal2raw(this.uieDest.val(), this.unit().name, this.uitRel.lVal);
+            dRaw = this.cal2raw(this.uieDest.get(), this.unit().name, this.uitRel.get());
             this.getDevice().set(dRaw);
                        
         end
@@ -724,7 +724,7 @@ classdef GetSetNumber < mic.ui.device.Base
 
             this.lActive = true;
             
-            this.uitDevice.lVal = true;
+            this.uitDevice.set(true);
             this.uitDevice.setTooltip(this.cTooltipDeviceOn);
             % set(this.hPanel, 'BackgroundColor', this.dColorOn);
             % set(this.hImage, 'Visible', 'off');
@@ -757,7 +757,7 @@ classdef GetSetNumber < mic.ui.device.Base
             end
             
             this.lActive = false;
-            this.uitDevice.lVal = false;
+            this.uitDevice.set(false);
             this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             
             % this.setDestCalDisplay(this.valCalDisplay());
@@ -782,9 +782,9 @@ classdef GetSetNumber < mic.ui.device.Base
             
             %{
             try
-                this.uieDest.setVal(this.deviceVirtual.get());
+                this.uieDest.set(this.deviceVirtual.get());
             catch err
-                this.uieDest.setVal(0);
+                this.uieDest.set(0);
             end
             %}
         end
@@ -916,7 +916,7 @@ classdef GetSetNumber < mic.ui.device.Base
                 end
                 
                 if this.lShowInitState
-                    this.uiilInitState.setVal(lInitialized);
+                    this.uiilInitState.set(lInitialized);
                 end
                 
                 
@@ -972,7 +972,7 @@ classdef GetSetNumber < mic.ui.device.Base
         %
         %   see also VALCAL 
                         
-            dOut = this.raw2cal(this.getDevice().get(), this.unit().name, this.uitRel.lVal);
+            dOut = this.raw2cal(this.getDevice().get(), this.unit().name, this.uitRel.get());
             
         end
         
@@ -996,7 +996,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % Convert from the UI (unit, rel/abs) into raw, then convert from raw
             % into the specified absolute unit
             
-            dRaw = this.cal2raw(this.uieDest.val(), this.unit().name, this.uitRel.lVal);
+            dRaw = this.cal2raw(this.uieDest.get(), this.unit().name, this.uitRel.get());
             dOut = this.raw2cal(dRaw, cUnit, false);
             
         end
@@ -1007,7 +1007,7 @@ classdef GetSetNumber < mic.ui.device.Base
         %display unit and abs/rel state 
         %   @return {double} - the calibrated value
         
-            dOut = this.uieDest.val();
+            dOut = this.uieDest.get();
             
         end
         
@@ -1021,7 +1021,7 @@ classdef GetSetNumber < mic.ui.device.Base
         
             % CAL =  slope * (RAW - offset)
             % (CAL / slope) + offset = RAW
-            dOut = this.cal2raw(this.uieDest.val(), this.unit().name, this.uitRel.lVal);
+            dOut = this.cal2raw(this.uieDest.get(), this.unit().name, this.uitRel.get());
         
         end
         
@@ -1252,7 +1252,7 @@ classdef GetSetNumber < mic.ui.device.Base
                 'lShowLabel', false, ...
                 'cHorizontalAlignment', 'center' ...
             );
-            this.uieStep.setVal(this.config.dStep);
+            this.uieStep.set(this.config.dStep);
             
             % Build cell of unit names
             units = {};
@@ -1294,7 +1294,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % end
                         
             %AW(5/24/13) : populating the destination
-            this.uieDest.setVal(this.deviceVirtual.get());
+            this.uieDest.set(this.deviceVirtual.get());
 
             
 
@@ -1473,9 +1473,9 @@ classdef GetSetNumber < mic.ui.device.Base
             this.msg(msg, 3);
             
            cUnitPrev = this.config.ceUnits{this.u8UnitIndex}.name;
-           dRaw = this.cal2raw(this.uieDest.val(), cUnitPrev, this.uitRel.lVal);
+           dRaw = this.cal2raw(this.uieDest.get(), cUnitPrev, this.uitRel.get());
             
-            this.uieDest.setVal(this.raw2cal(dRaw, this.unit().name, this.uitRel.lVal));
+            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
             
             % Update u8UnitIndex
             this.u8UnitIndex = this.uipUnit.u8Selected;
@@ -1495,8 +1495,8 @@ classdef GetSetNumber < mic.ui.device.Base
                 return
             end
             
-            dMin = this.raw2cal(this.config.dMin, this.unit().name, this.uitRel.lVal);
-            dMax = this.raw2cal(this.config.dMax, this.unit().name, this.uitRel.lVal);
+            dMin = this.raw2cal(this.config.dMin, this.unit().name, this.uitRel.get());
+            dMax = this.raw2cal(this.config.dMax, this.unit().name, this.uitRel.get());
             
             cVal = sprintf(...
                 '[%.*f, %.*f]', ...
@@ -1505,7 +1505,7 @@ classdef GetSetNumber < mic.ui.device.Base
                 this.unit().precision, ...
                 dMax ...
             );
-            this.uitxRange.cVal = cVal;            
+            this.uitxRange.set(cVal);            
         end
         function updateDisplayValue(this)
             
@@ -1534,7 +1534,7 @@ classdef GetSetNumber < mic.ui.device.Base
                notify(this, 'eChange');
            end
            
-           this.uitxVal.cVal = cVal;
+           this.uitxVal.set(cVal);
            
            % Update text color for IO (not O) when value is changing
            if ~this.lDisableSet
@@ -1552,12 +1552,12 @@ classdef GetSetNumber < mic.ui.device.Base
         function updatePlayButton(this)
             
             % UIButtonTobble
-            if this.lReady && ~this.uibtPlay.lVal
-                this.uibtPlay.lVal = true;
+            if this.lReady && ~this.uibtPlay.get()
+                this.uibtPlay.set(true);
             end
 
-            if ~this.lReady && this.uibtPlay.lVal
-                this.uibtPlay.lVal = false;
+            if ~this.lReady && this.uibtPlay.get()
+                this.uibtPlay.set(false);
             end
             
 
@@ -1636,7 +1636,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % The first set does not trigger a nofity (should probably
             % address this at some point) so manually call the handler.
 
-            this.uitRel.lVal = this.lRelVal;
+            this.uitRel.set(this.lRelVal);
             this.onRelChange([],[]);
             
         end
@@ -1711,7 +1711,7 @@ classdef GetSetNumber < mic.ui.device.Base
             
             this.updateZeroTooltip();
             % Force to "Rel" mode
-            this.uitRel.lVal = true;
+            this.uitRel.set(true);
             
         end
         
@@ -1724,7 +1724,7 @@ classdef GetSetNumber < mic.ui.device.Base
             this.updateZeroTooltip();
             
             % Force to "Rel" mode
-            this.uitRel.lVal = true;
+            this.uitRel.set(true);
             
         end
         
@@ -1734,8 +1734,8 @@ classdef GetSetNumber < mic.ui.device.Base
             % Set the destination to the hardware value in the new
             % calibrated unit
             
-            this.lRelVal = this.uitRel.lVal;
-            this.uieDest.setVal(this.valCalDisplay());
+            this.lRelVal = this.uitRel.get();
+            this.uieDest.set(this.valCalDisplay());
             this.updateRelTooltip();
             this.updateRange();
             
@@ -1760,14 +1760,14 @@ classdef GetSetNumber < mic.ui.device.Base
             cMsgNeg = sprintf(...
                 'Decrease goal by %1.*f %s.', ...
                 this.unit().precision, ...
-                this.uieStep.val(), ...
+                this.uieStep.get(), ...
                 this.unit().name ...
             ); 
         
             cMsgPos = sprintf(...
                 'Increase goal by %1.*f %s.', ...
                 this.unit().precision, ...
-                this.uieStep.val(), ...
+                this.uieStep.get(), ...
                 this.unit().name ...
             ); 
             this.uibStepPos.setTooltip(cMsgPos);
@@ -1776,7 +1776,7 @@ classdef GetSetNumber < mic.ui.device.Base
         
         function updateRelTooltip(this)
             
-            switch this.uitRel.lVal
+            switch this.uitRel.get()
                 case false
                     cMsg = 'Make value relative to the stored zero. Value is currently absolute.';
                 case true

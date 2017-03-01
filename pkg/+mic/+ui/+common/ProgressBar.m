@@ -1,4 +1,4 @@
-classdef ProgressBar < mic.Base
+classdef ProgressBar < mic.interface.ui.common.ProgressBar & mic.ui.common.Base
     
     properties (Constant)
        
@@ -12,7 +12,7 @@ classdef ProgressBar < mic.Base
     properties (SetAccess = private)
         
         % {double 1x1} value in [0: 1]
-        dProgress = 0.3      
+        dVal = 0.3      
         dHeight = 10
         dWidth = 300
     end
@@ -30,6 +30,7 @@ classdef ProgressBar < mic.Base
         hText
         hPanelBg
         hPanelFill
+        
     end
     
     
@@ -52,7 +53,7 @@ classdef ProgressBar < mic.Base
                 end
             end
             
-            this.setProgress(this.dProgress)
+            this.set(this.dVal)
             
        end
        
@@ -90,18 +91,22 @@ classdef ProgressBar < mic.Base
                 );
             
         
-            this.setProgress(0);
+            this.set(0);
            
        end
        
-       function setProgress(this, dVal)
+       function d = get(this)
+           d = this.dVal;
+       end
+       
+       function set(this, dVal)
            
-           this.dProgress = dVal;
+           this.dVal = dVal;
            
            if ishandle(this.hPanelFill)
            
                dPosition = get(this.hPanelFill, 'Position');
-               dWidth = this.dWidth * this.dProgress;
+               dWidth = this.dWidth * this.dVal;
                if dWidth < 1
                    dWidth = 1;
                end
@@ -119,7 +124,7 @@ classdef ProgressBar < mic.Base
            
            
            if ishandle(this.hText)
-                set(this.hText, 'String', sprintf('%1.1f%%', this.dProgress * 100));
+                set(this.hText, 'String', sprintf('%1.1f%%', this.dVal * 100));
            end
            
        end

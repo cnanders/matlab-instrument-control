@@ -1,20 +1,6 @@
-classdef Edit < mic.Base
-%% Edit Class for MET5 Software
-% This class is meant to supersede uicontrol 'text' style
-% It can only handle one kind of data type (defined when instantiated)
-% and performs various checks wheteher the entered value is compatible with
-% this data type.
-% It allows the definition of min/max boundaries and, when the type is
-% numeric, to perform some calculation ('1+2','2*3','2^5-1 and '3e5' are valid expression)
-% More complex procedures or arrrays are currently prohibited, but they can be
-% implemented
-% An export method 'exportValue' is defined so that a numerical value can
-% be retrieved instead of a string (the type is the same as textbox allowed type)
-%
+classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
 
-% Antoine Wojdyla, April 3rd, 2013    
    
-        %% properties
     properties (Constant, Access = private)
         dHeight = 18;
     end
@@ -26,7 +12,7 @@ classdef Edit < mic.Base
         
 
         % val is not a property because it can be several different types.
-        % We use val() and setVal() methods that force the correct type
+        % We use get() and set() methods that force the correct type
     end
 
 
@@ -35,8 +21,6 @@ classdef Edit < mic.Base
         cHorizontalAlignment = 'left'
         lShowLabel = true;
         hLabel
-        hUI % made private 2013.06.11 % made setAccess private 3013/06/20
-        cTooltip = 'Tooltip: set me!';
         cKeyPressLast = '';
         % {logical 1x1} - used to wrap all calls to notify to allow
         % temporary disabling of notify
@@ -244,7 +228,7 @@ classdef Edit < mic.Base
                     if (~isempty(this.cData))
                         % the entered value have been checked once before, so
                         % that val should return a valid number
-                        if (this.val() >= xMin)
+                        if (this.get() >= xMin)
                             this.xMin = xMin;
                             %force to type bounds
 
@@ -255,7 +239,7 @@ classdef Edit < mic.Base
                             cMsg = sprintf('Edit.set.xMin() in <%s> informs you that\nthe min value you are trying to set : %1.2f\nis bigger than the current value of the edit box :%1.2f.\nAutomatically setting xMin to the lower bound supported by the type : %1.2e', ...
                                 this.cLabel, ...
                                 xMin, ...
-                                this.val(), ...
+                                this.get(), ...
                                 xMinType ...
                                 );
                             cTitle = 'Edit.set.xMin() error';
@@ -295,7 +279,7 @@ classdef Edit < mic.Base
                %make sure that the current editbox value is not
                %smaller than the new minimum
                if (~isempty(this.cData))
-                    if (this.val() <= xMax)
+                    if (this.get() <= xMax)
                         this.xMax = xMax;
                         if xMax >xMaxType;
                             this.xMax = xMaxType;
@@ -306,7 +290,7 @@ classdef Edit < mic.Base
                         cMsg = sprintf('Edit.set.xMax() in <%s> informs you that\nthe max value you are trying to set : %1.2f\nis smaller than the current value of the edit box :%1.2f.\nAutomatically setting xMax to the upper bound supported by the type : %1.2e', ...
                             this.cLabel, ...
                             xMax, ...
-                            this.val(), ...
+                            this.get(), ...
                             xMaxType ...
                             );
                         cTitle = 'Edit.set.xMax() error';
@@ -396,8 +380,8 @@ classdef Edit < mic.Base
 
             %{
             2013.08.07 CNA 
-            Store a typecast version of cData so the val() function can quickly
-            retrieve it.  Why? val() is called in all of the timercb functions and
+            Store a typecast version of cData so the get() function can quickly
+            retrieve it.  Why? get() is called in all of the timercb functions and
             is called more than any other function so we need it to be blazing
             fast.
             %}
@@ -433,7 +417,7 @@ classdef Edit < mic.Base
 
         end
 
-        function xValue = val(this)
+        function xValue = get(this)
             xValue = this.xVal;
         end
 
@@ -456,38 +440,12 @@ classdef Edit < mic.Base
            this.xMin = xMinType;
            this.xMax = xMaxType;
 
-           this.setVal(xVal);
+           this.set(xVal);
            this.xMin = xMin;
            this.xMax = xMax;           
 
         end
 
-
-        function show(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'on');
-            end
-
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'off');
-            end
-
-
-        end
         
         function styleDefault(this)
             
@@ -518,12 +476,12 @@ classdef Edit < mic.Base
             
         end
 
-        function setValWithoutNotify(this, xVal)
+        function setWithoutNotify(this, xVal)
             this.lNotify = false;
-            this.setVal(xVal);
+            this.set(xVal);
             this.lNotify = true;
         end
-        function setVal(this, xVal)
+        function set(this, xVal)
            % @parameter {mixed 1x1} xVal: can be any type the Edit supports
 
            % This method validates that xVal is of the type that this
@@ -554,7 +512,7 @@ classdef Edit < mic.Base
                    class(xVal)...
                );
                this.msg(cMsg);
-               msgbox(cMsg, 'Edit.setVal() invalid type', 'error');
+               msgbox(cMsg, 'Edit.set() invalid type', 'error');
            end
 
         end
@@ -674,29 +632,7 @@ classdef Edit < mic.Base
         end
         
         
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
         
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
-        
-        function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
-        
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-            
-        end
 
     end
 end

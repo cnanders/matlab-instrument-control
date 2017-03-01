@@ -70,7 +70,7 @@ API button is clicked.
 - Now supports optional 'min' and 'max' values (raw unit).  When not provided, defaults to +/-maxreal()
 
 ### HardwareIOPlus
-- Now sets uieStep.val() to config.step on load
+- Now sets uieStep.get() to config.step on load
 - Now has option lShowRange.  When true, displays the range [config.min, config.max]
 - Now changes value color during moves
 

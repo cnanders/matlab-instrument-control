@@ -1,4 +1,4 @@
-classdef Text < mic.Base
+classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
     
     % uitx
     
@@ -11,16 +11,15 @@ classdef Text < mic.Base
     
       
     properties
-        cVal = 'Fix me'
+        
     end
     
     
     properties (Access = private)
-        hUI
+        cVal = 'Fix me'
         cAlign = 'left'
         cFontWeight = 'normal'
         dFontSize = 10
-        cTooltip = 'Tooltip: set me!';
         dColorBg = [.94 .94 .94]; % MATLAB default
     end
     
@@ -61,8 +60,11 @@ classdef Text < mic.Base
 
        end
        
+       function c = get(this)
+           c = this.cVal;
+       end
        
-       function set.cVal(this, cVal)
+       function set(this, cVal)
            
            % prop
            if ischar(cVal)
@@ -87,21 +89,7 @@ classdef Text < mic.Base
        end
        
        
-       function show(this)
-    
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-            end
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-        end
+       
         
         % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
         % 0]
@@ -126,28 +114,7 @@ classdef Text < mic.Base
             
         end
         
-        function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
         
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-        end
-        
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
         
         function delete(this)
             cMsg = sprintf('delete() %s', this.cVal);

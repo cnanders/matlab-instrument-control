@@ -16,7 +16,7 @@ uiEdit = mic.ui.common.Edit( ...
 
 uiEdit.build(h, 10, 10, 100, 30);
 
-cb = @(src, evt) (fprintf('pressed enter %1.2f\n', uiEdit.val()));
+cb = @(src, evt) (fprintf('pressed enter %1.2f\n', uiEdit.get()));
 addlistener(uiEdit, 'eEnter', cb);
 
 

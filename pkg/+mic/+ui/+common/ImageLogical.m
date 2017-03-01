@@ -1,4 +1,4 @@
-classdef ImageLogical < mic.Base
+classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Base
 
 
     properties
@@ -12,7 +12,6 @@ classdef ImageLogical < mic.Base
         hAxes
         hImage
         
-        cTooltip = 'Tooltip: set me!';
         dWidth = 24
         dHeight = 24
         u8ImgTrue
@@ -72,7 +71,7 @@ classdef ImageLogical < mic.Base
         end
         
         % @param {logical 1x1} the state
-        function setVal(this, l)
+        function set(this, l)
             
             if ~ishandle(this.hImage)
                 return
@@ -85,14 +84,7 @@ classdef ImageLogical < mic.Base
             end
         end
         
-        function enable(this)
-            
-        end
         
-        function disable(this)
-           
-            
-        end
 
 
     end

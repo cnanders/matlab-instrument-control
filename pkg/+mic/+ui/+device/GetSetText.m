@@ -306,7 +306,7 @@ classdef GetSetText < mic.ui.device.Base
         %
         %   See also SETDESTCAL, SETDESTRAW, MOVE
         
-            this.msg(sprintf('moveToDest %s', this.uieDest.val()));
+            this.msg(sprintf('moveToDest %s', this.uieDest.get()));
             
             if this.fhValidateDest() ~= true                
                 this.msg('moveToDest returning');
@@ -314,7 +314,7 @@ classdef GetSetText < mic.ui.device.Base
                 
             end
             
-            this.getDevice().set(this.uieDest.val());
+            this.getDevice().set(this.uieDest.get());
                        
         end
         
@@ -329,7 +329,7 @@ classdef GetSetText < mic.ui.device.Base
         % See also TURNOFF
 
             this.lActive = true;
-            this.uitDevice.lVal = true;
+            this.uitDevice.set(true);
             this.uitDevice.setTooltip(this.cTooltipDeviceOn);
 
                         
@@ -359,7 +359,7 @@ classdef GetSetText < mic.ui.device.Base
             end
             
             this.lActive = false;
-            this.uitDevice.lVal = false;
+            this.uitDevice.set(false);
             this.uitDevice.setTooltip(this.cTooltipDeviceOff);
            
         end
@@ -435,7 +435,7 @@ classdef GetSetText < mic.ui.device.Base
             if ~strcmp(this.cValPrev, cVal)
                 notify(this, 'eChange');
             end
-            this.uitxVal.cVal = cVal;
+            this.uitxVal.set(cVal);
             
             lInitialized = this.getDevice.isInitialized();
                 
@@ -456,11 +456,11 @@ classdef GetSetText < mic.ui.device.Base
         end
         
         function c = dest(this)
-            c = this.uieDest.val();
+            c = this.uieDest.get();
         end
         
         function setDest(this, cVal)
-            this.uieDest.setVal(cVal);
+            this.uieDest.set(cVal);
         end
         
         
@@ -593,7 +593,7 @@ classdef GetSetText < mic.ui.device.Base
                         
             addlistener(this.uieDest,   'eChange', @this.onDestChange);
             %AW(5/24/13) : populating the destination
-            this.uieDest.setVal(this.deviceVirtual.get());
+            this.uieDest.set(this.deviceVirtual.get());
             
             addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
             addlistener(this.uibtPlay,   'eChange', @this.onPlayChange);
@@ -663,12 +663,12 @@ classdef GetSetText < mic.ui.device.Base
         function updatePlayButton(this)
             
             % UIButtonTobble
-            if this.lReady && ~this.uibtPlay.lVal
-                this.uibtPlay.lVal = true;
+            if this.lReady && ~this.uibtPlay.get()
+                this.uibtPlay.set(true);
             end
 
-            if ~this.lReady && this.uibtPlay.lVal
-                this.uibtPlay.lVal = false;
+            if ~this.lReady && this.uibtPlay.get()
+                this.uibtPlay.set(false);
             end
             
 

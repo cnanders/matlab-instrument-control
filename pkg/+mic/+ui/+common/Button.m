@@ -1,4 +1,4 @@
-classdef Button < mic.interface.ui.common.Button
+classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
     % uib
     % Button(cText, lImg, u8Img, lAsk, cMsg)
 
@@ -12,13 +12,11 @@ classdef Button < mic.interface.ui.common.Button
 
 
     properties (Access = private)
-        hUI
         cText = 'Fix Me'
         u8Img = []          % image cdata
         lImg = false            % use image?
         lAsk = false
         cMsg = 'Are you sure you want to do that?'
-        cTooltip = 'Tooltip: set me!';
     end
 
 
@@ -90,21 +88,7 @@ classdef Button < mic.interface.ui.common.Button
            end
         end
         
-        function show(this)
-    
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-            end
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-        end
+       
         
         function lReturn = isVisible(this)
             
@@ -131,28 +115,7 @@ classdef Button < mic.interface.ui.common.Button
             end
         end
         
-        function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
         
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-        end
-        
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
 
     end
 

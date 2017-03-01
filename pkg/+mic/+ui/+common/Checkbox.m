@@ -1,19 +1,20 @@
-classdef Checkbox < mic.Base
+classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
     
 %     properties (Constant)
 %         dHeight = 15;
 %     end
     
     properties
-        lChecked = false
-        cLabel = 'Fix Me'
-        lShowLabel = true
+        
+        
     end
     
     
     properties (Access = private)
         hLabel
-        hUI
+        lChecked = false
+        cLabel = 'Fix Me'
+        lShowLabel = true
     end
     
     
@@ -54,14 +55,15 @@ classdef Checkbox < mic.Base
 
        % Callback
        function cb(this, src, evt)
-           
            this.lChecked = logical(get(src, 'Value'));
-           
        end
        
+       function l = get(this)
+           l = this.lChecked;
+       end
        
        % Modifiers
-       function set.lChecked(this, lChecked)
+       function set(this, lChecked)
            
            % Rules
            if islogical(lChecked)
@@ -79,14 +81,8 @@ classdef Checkbox < mic.Base
                
        end
        
-       % Save/Load
-       function saveInstance(this)
-           
-       end
        
-       function loadInstance(this)
-           
-       end
+       
                
     end
 end

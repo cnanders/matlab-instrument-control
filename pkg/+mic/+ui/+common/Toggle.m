@@ -1,8 +1,7 @@
-classdef Toggle < mic.Base        
+classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base       
       
     properties
         
-        lVal = false                    % state (on/off)
         lInit = false
     
     end
@@ -13,14 +12,16 @@ classdef Toggle < mic.Base
        
     properties (Access = private)
         
-        hUI
-       
+        
+        lVal = false                    % state (on/off)
             
         % @param {u8 m x n} u8ImgOn - the image to show when toggle is on
-        u8ImgOn = imread(fullfile(mic.Utils.pathImg(), 'hiot-horiz-24-true.png'))
         
         % @param {u8 m x n} u8ImgOff - the image to show when toggle is off
-        u8ImgOff = imread(fullfile(mic.Utils.pathImg(), 'hiot-horiz-24-false-yellow.png'))
+        
+        u8ImgOn = imread(fullfile(mic.Utils.pathImg(), 'toggle', 'horiz-1', 'toggle-horiz-24-true.png'));     
+        u8ImgOff = imread(fullfile(mic.Utils.pathImg(), 'toggle', 'horiz-1', 'toggle-horiz-24-false-yellow.png'));           
+        
         
         % @param {char} cTextOn - the text to show when the toggle is on
         cTextOn = 'On'
@@ -56,7 +57,6 @@ classdef Toggle < mic.Base
         );               
                                     
 
-        cTooltip = 'Tooltip: set me!';
     end
     
     events
@@ -87,6 +87,8 @@ classdef Toggle < mic.Base
                 end
             end
             
+            
+            
        end
        
        function build(this, hParent, dLeft, dTop, dWidth, dHeight) 
@@ -99,8 +101,8 @@ classdef Toggle < mic.Base
                 'Callback', @this.cb ...
                 );
             
-            % update toggle string/cdata
-            this.lVal = this.lVal;
+            % update toggle string/cdata            
+            this.set(this.lVal);
 
        end
        
@@ -121,7 +123,7 @@ classdef Toggle < mic.Base
                    % before click (using the setter to update the
                    % uicontrol)
                    
-                   this.lVal = this.lVal;
+                   this.set(this.lVal);
                    
                    cAns = questdlg( ...
                        this.stF2TOptions.cQuestion, ...
@@ -137,7 +139,7 @@ classdef Toggle < mic.Base
                            return
                        otherwise
                            % switch
-                           this.lVal = ~this.lVal;
+                           this.set(~this.lVal);
                    end
                    
                elseif this.lVal && this.stT2FOptions.lAsk
@@ -145,7 +147,7 @@ classdef Toggle < mic.Base
                    % ask before switching from true to false (see comments
                    % above for more info)
                    
-                   this.lVal = this.lVal;
+                   this.set(this.lVal);
                    
                    cAns = questdlg( ...
                        this.stT2FOptions.cQuestion, ...
@@ -161,12 +163,12 @@ classdef Toggle < mic.Base
                            return
                        otherwise
                            % switch
-                           this.lVal = ~this.lVal;
+                           this.set(~this.lVal);
                    end
                    
                else
                    % update
-                   this.lVal = logical(get(src, 'Value'));
+                   this.set(logical(get(src, 'Value')));
                end
            end
            
@@ -184,25 +186,25 @@ classdef Toggle < mic.Base
 %                        % reset the uicontrol so it looks like it did
 %                        % before click
 %                        
-%                        this.lVal = this.lVal;
+%                        this.set(this.lVal);
 %                        
 %                        cAns = questdlg(this.cAskMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
 %                        switch cAns
 %                            case 'Yes'
 %                                % switch
-%                                this.lVal = ~this.lVal;
+%                                this.set(~this.lVal);
 %                            otherwise
 %                                return
 %                        end
 %                    else
 %                        % update
-%                        this.lVal = logical(get(src, 'Value'));
+%                        this.set(logical(get(src, 'Value')));
 %                    end
 %            end
        end
        
        
-       function setValWithoutNotification(this, lVal)
+       function setWithoutNotification(this, lVal)
            
             if this.lVal == lVal
                 % Don't need to do anything
@@ -243,9 +245,11 @@ classdef Toggle < mic.Base
            
        end
        
+       function l = get(this)
+           l = this.lVal;
+       end
        
-       
-       function set.lVal(this, l)
+       function set(this, l)
            
            
 
@@ -320,61 +324,22 @@ classdef Toggle < mic.Base
            end
        end
        
-        function show(this)
-    
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-            end
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-            
-
-        end
+        
         
         function setTextOff(this, cText)
            
             this.cTextOff = cText;
-            this.lVal = this.lVal; % redraw
+            this.set(this.lVal); % redraw
             
         end
         
         function setTextOn(this, cText)
            
             this.cTextOn = cText;
-            this.lVal = this.lVal; % redraw
+            this.set(this.lVal); % redraw
             
         end
         
-         function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
-        
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-            
-         end
-        
-         function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
-       
          
     end
 end

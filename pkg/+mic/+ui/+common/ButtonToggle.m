@@ -1,4 +1,4 @@
-classdef ButtonToggle < mic.Base
+classdef ButtonToggle < mic.interface.ui.common.Logical & mic.ui.common.Base
 
     % uibt
     
@@ -17,13 +17,13 @@ classdef ButtonToggle < mic.Base
 
     properties
        
-        lVal = false            % true/false
+        
 
     end
 
 
     properties (Access = private)
-        hUI
+        lVal = false            % true/false
         cTextT = 'True'         % "True" text
         cTextF = 'False'        % "False" text
         u8ImgT = uint8(0)         % "True" image
@@ -31,7 +31,6 @@ classdef ButtonToggle < mic.Base
         lImg = false          % use image?
         lAsk = false
         cMsg = 'Are you sure you want to do that?'
-        cTooltip = 'Tooltip: set me!';
     end
 
 
@@ -66,8 +65,8 @@ classdef ButtonToggle < mic.Base
                 'Callback', @this.cb ...
                 );
             
-            % Set lVal to update button image
-            this.lVal = this.lVal;
+            % Set to update button image
+            this.set(this.lVal)
             
         end
 
@@ -92,21 +91,7 @@ classdef ButtonToggle < mic.Base
            end
         end
         
-        function show(this)
-    
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-            end
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-        end
+       
         
         function lReturn = isVisible(this)
             
@@ -122,8 +107,13 @@ classdef ButtonToggle < mic.Base
             end
             
         end
+        
+        function l = get(this)
+            l = this.lVal;
+        end
             
-        function set.lVal(this, l)
+            
+        function set(this, l)
             
             % this.msg('set.lVal');
             
@@ -149,33 +139,6 @@ classdef ButtonToggle < mic.Base
                         
             
         end
-        
-        
-         function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
-        
-            this.cTooltip = cText;
-            
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-            
-         end
-        
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
-         
         
 
     end
