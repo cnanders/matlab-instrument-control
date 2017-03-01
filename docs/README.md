@@ -181,7 +181,9 @@ l = isInitialized(this)
 <a name="device-required"></a>
 ### Providing a `device` to a Device UI Control
 
-Each `mic.ui.device.*` must be provided with a `device`.  The `device` can be passed during instantion of the UI control or set with the `setDevice()` method later on.  The provided `device` must implement the interface that corresponds to the UI control. e,g., the `mic.ui.device.GetSetNumber` UI contorl requires a `device` that implements `mic.interface.device.GetSetNumber`.  
+Each `mic.ui.device.*` must be provided with a `device`.  The `device` can be passed during instantiation of the UI control or set with the `setDevice()` method later on.  The provided `device` must implement the interface that corresponds to the UI control. Examples:
+- `mic.ui.device.GetSetNumber` UI controls require a `device` that implements `mic.interface.device.GetSetNumber`
+- `mic.ui.device.GetSetLogical` UI controls require a `device` that implements `mic.interface.device.GetSetLogical` 
 
 <a name="device-wiring-up"></a>
 ### UI Controls Evoke Methods of Their `device`
