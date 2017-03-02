@@ -135,10 +135,17 @@ classdef App < handle
         end
         
         function delete(this)
-            
-            
-            
-            
+            this.deleteUi();
+        end
+        
+        function deleteUi(this)
+            delete(this.uiDeviceX);
+            delete(this.uiDeviceY);
+            delete(this.uiDeviceMode);
+            delete(this.uiDeviceAwesome);
+            delete(this.uiButtonUseDeviceData);
+            delete(this.uiToggleAll);
+            delete(this.clock);
         end
         
     
