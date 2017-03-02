@@ -1,6 +1,6 @@
 # About
 
-This example shows you how to hook up an arbitrary vendor-provided device API to a `mic.ui.device.*` so you can control the device with a ui
+This example shows you how to hook up an arbitrary vendor-provided device API to a `mic.ui.device.*` so you can control the device with a UI.  Run `launch_app` to begin.
 
 # /vendor
 
