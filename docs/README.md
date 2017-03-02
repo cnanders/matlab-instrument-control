@@ -218,18 +218,22 @@ All `mic.device.*` “virtual” `devices` mock real hardware; e.g., they take t
 
 ## API
 
-FIX ME
+All `mic.ui.device.*` UI controls expose a full-featured API that allows them to be accessed and controlled programatically.  See `mic.interface.ui.device.*` for more information.
 
 ## Code Examples
 
-- `tests/ui/device/*` contains working code examples for building each `mic.ui.device.*` class.  
-- `examples/devices/*` shows you how to hook up an arbitrary vendor-provided device API to a `mic.ui.device.*` so you can control the device with a UI.  This process involves building a “translator“ that translates the vendor-provided API into the `mic.interface.device.GetSetNumber` interface.
+### Tests
+`tests/ui/device/*` contains working code examples for building each `mic.ui.device.*` class. 
 
+### Application
+`examples/app/*` is an application that builds a UI for a made-up instrument.  The made-up instrument has two motorized stages (x, and y), an internal text setting, and a binary switch.  It is assumed that the vendor provided a device API that lets MATLAB talk to the instrument from the command line.  Our job is to build a UI.  
+
+This example demonstrates how to hook up an arbitrary vendor-provided API to a `mic.ui.device.*` UI controls.  This process involves building “translators“ that translate the vendor-provided API into the `mic.interface.device.*` interfaces that the UI controls are expecting.  It also demonstrates how consume data from the UI controls using their internal API. 
 
 <a name="control-local-variables"></a>
 # Controlling Local Variables Instead of Hardware
 
-The only requirement of the `device` provided to `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  If you want to implement a `device` to set and get local data that a MATLAB application can consume, go for it.  In fact, the work is already done for you! This is precisely what happens when `mic.ui.device.*` UI controls are in “virtual” mode.  See `examples/local-data` for a working code example that consumes user-controled local data with a MATLAB application.
+The only requirement of the `device` provided to `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  If you want to implement a `device` to set and get local data that a MATLAB application can consume, go for it.  In fact, the work is already done for you! This is precisely what happens when `mic.ui.device.*` UI controls are in “virtual” mode.  See `examples/app` for a working code example that consumes user-controled local data with a MATLAB application.
 
 ## `mic.ui.device.*`
 
