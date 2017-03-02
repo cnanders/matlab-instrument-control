@@ -21,7 +21,15 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
 
 
     events
+        
+        % When it is pressed. Always
         ePress
+        
+        % Fired in two situations
+        % 1. If confirmation dialog approval is required and the user
+        % authorizes
+        % 2. If confirmation dialog approval is not required and the user
+        % presses.
         eChange  
     end
 

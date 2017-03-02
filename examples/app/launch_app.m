@@ -1,0 +1,42 @@
+[cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
+
+% mic library
+cDirMic = fullfile(cDirThis, '..', '..', 'pkg');
+addpath(genpath(cDirMic));
+
+% this application
+cDirApp = fullfile(cDirThis, '..');
+addpath(genpath(cDirApp));
+
+purge
+
+app = App();
+
+%
+% FUN STUFF TO COPY TO THE COMMAND WINDOW
+
+% 1.
+% Click the jog button a few times so the value is not zero
+
+% 2. 
+% Copy this code to command window
+
+
+% Get value in mm units
+app.uiDeviceX.getValCal('mm')
+% Get value in um units
+app.uiDeviceX.getValCal('um')
+% Get value in the display units (whatever they happen to be)
+app.uiDeviceX.getValCalDisplay()
+% Get value in raw units (no conversion from the device)
+app.uiDeviceX.getValRaw()
+
+
+
+%{
+app.uiDeviceX.turnOn()
+app.uiDeviceX.turnOff()
+app.uiDeviceX.disable()
+app.uiDeviceX.setDestCal(5, 'mm')
+app.uiDeviceX.moveToDest()
+%}

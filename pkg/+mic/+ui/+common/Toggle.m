@@ -7,7 +7,7 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
     end
     
     
-    % @param {char} cTextOff - the text to show when the toggle is off
+    % @param {char} cTextFalse - the text to show when the toggle is off
        
        
     properties (Access = private)
@@ -23,11 +23,11 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
         u8ImgOff = imread(fullfile(mic.Utils.pathImg(), 'toggle', 'horiz-1', 'toggle-horiz-24-false-yellow.png'));           
         
         
-        % @param {char} cTextOn - the text to show when the toggle is on
-        cTextOn = 'On'
+        % @param {char} cTextTrue - the text to show when the toggle is on
+        cTextTrue = 'On'
         
-        % @param {char} cTextOn - the text to show when the toggle is off
-        cTextOff = 'Off'                   
+        % @param {char} cTextTrue - the text to show when the toggle is off
+        cTextFalse = 'Off'                   
         
         % @param {logical} [lImg = false] - use img instead of text
         lImg = false
@@ -66,10 +66,10 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
     
     methods
         
-       % cTextOnstructor
+       % cTextTruestructor
        %{
-                cTextOff, ...
-               cTextOn, ...
+                cTextFalse, ...
+               cTextTrue, ...
                lImg, ...            % optional
                u8ImgOff, ...        % optional
                u8ImgOn, ...         % optional
@@ -231,10 +231,10 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
                    % string
                    if this.lVal
                         % on
-                        set(this.hUI, 'String', this.cTextOn);
+                        set(this.hUI, 'String', this.cTextTrue);
                    else
                        % off
-                       set(this.hUI, 'String', this.cTextOff);
+                       set(this.hUI, 'String', this.cTextFalse);
                    end
                end
 
@@ -292,10 +292,10 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
                        % string
                        if this.lVal
                             % on
-                            set(this.hUI, 'String', this.cTextOn);
+                            set(this.hUI, 'String', this.cTextTrue);
                        else
                            % off
-                           set(this.hUI, 'String', this.cTextOff);
+                           set(this.hUI, 'String', this.cTextFalse);
                        end
                    end
                    
@@ -328,14 +328,14 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
         
         function setTextOff(this, cText)
            
-            this.cTextOff = cText;
+            this.cTextFalse = cText;
             this.set(this.lVal); % redraw
             
         end
         
         function setTextOn(this, cText)
            
-            this.cTextOn = cText;
+            this.cTextTrue = cText;
             this.set(this.lVal); % redraw
             
         end

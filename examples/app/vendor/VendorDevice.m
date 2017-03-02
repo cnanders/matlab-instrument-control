@@ -10,6 +10,7 @@ classdef VendorDevice < handle
         dMeanX = 5;
         dMeanY = 10;
         dSig = 0.5;
+        lAwesome = false;
         
         ceModes = { ...
             'Mode 1', ...
@@ -53,6 +54,21 @@ classdef VendorDevice < handle
             u8Idx = ceil(rand(1) * 3);
             c = this.ceModes{u8Idx};
             fprintf('VendorDevice getMode()\n');
+        end
+        
+        function turnOnAwesome(this)
+            this.lAwesome = true;
+            fprintf('VendorDevice turnOnAwesome()\n');
+        end
+        
+        function turnOffAwesome(this)
+            this.lAwesome = false;
+            fprintf('VendorDevice turnOffAwesome()\n');
+        end
+        
+        function l = getAwesomeState(this)
+            l = this.lAwesome;
+            fprintf('VendorDevice getAwesomeState()\n');
         end
         
     end

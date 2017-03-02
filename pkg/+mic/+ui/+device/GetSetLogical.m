@@ -1,4 +1,5 @@
-classdef GetSetLogical < mic.ui.device.Base
+classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
+                            mic.ui.device.Base
 
     % mic.ui.common.Toggle lets you issue commands set(true/false)
     % there will be an indicator that shows a red/green dot baset on the
@@ -16,7 +17,6 @@ classdef GetSetLogical < mic.ui.device.Base
         cTooltipDeviceOff = 'Connect to the real API';
         cTooltipDeviceOn = 'Disconnect the real API (go into virtual mode)';
         cTooltipInitButton = 'Send the initialize command to this device';
-
         
     end
 
@@ -27,12 +27,11 @@ classdef GetSetLogical < mic.ui.device.Base
     properties (SetAccess = private)
         cName   % name identifier
         cLabel = 'Fix me'
-        lVal = false   % boolean status of device
-        lActive     % boolean to tell whether the motor is active or not
     end
 
     properties (Access = protected)
         
+        lVal = false   % boolean status of device
         
         % @param {ConfigGetSetNumber 1x1} [config = new ConfigGetSetNumber()] - the config instance
         %   !!! WARNING !!!
@@ -102,16 +101,6 @@ classdef GetSetLogical < mic.ui.device.Base
         % {uint8 24x24} image when device.get() returns false
         u8ImgFalse = imread(fullfile(mic.Utils.pathImg(), 'hiot-false-24.png'));
         
-        
-        
-        
-        % { < mic.interface.device.GetSetLogical 1x1}  
-        % Can be set after initialized or passed in
-        device             
-        
-        % { < mic.interface.device.GetSetLogical 1x1}
-        % Builds its own
-        deviceVirtual
                 
         % {cell of X 1xm} - varargin list of arguments for instantiating
         % the mic.ui.common.Toggle instance.  To pass it into the
@@ -139,9 +128,10 @@ classdef GetSetLogical < mic.ui.device.Base
         % {mic.ui.commin.ImageLogical 1x1} visual state
         uiilValue
         
+        
         % {logical 1x1} true in moments after calling device.initialize()
         % and before device.isInitialized() returns true. false otherwise
-        lIsInitializing
+        lIsInitializing = false
                
                         
     end
@@ -177,7 +167,24 @@ classdef GetSetLogical < mic.ui.device.Base
             this.init()            
         end
         
-                
+         
+        function enable(this)
+
+        
+            this.uitCommand.enable()
+            this.uitxName.enable()
+            this.uitDevice.enable()
+            this.uiilValue.enable()
+        end
+        
+        function disable(this)
+            
+            this.uitCommand.disable()
+            this.uitxName.disable()
+            this.uitDevice.disable()
+            this.uiilValue.disable()
+        end
+        
         function build(this, hParent, dLeft, dTop)
           
             dHeight = this.dHeight;
@@ -353,20 +360,25 @@ classdef GetSetLogical < mic.ui.device.Base
             end
             
         end
+                
         
-        
-        function setDevice(this, device)
-            this.device = device;
+        function set(this, l)
+            % Programatic equivalent of pressing the command toggle to
+            % given state
+            this.uitCommand.set(l);
         end
         
-        function device = getDevice(this)
-            if this.lActive
-                device = this.device;
-            else
-                device = this.deviceVirtual;
-            end 
+        function l = get(this)
+            l = this.getDevice().get();
+        end
+        
+        function initialize(this)
+           
+            this.lIsInitializing = true;
+            this.getDevice().initialize();
             
         end
+        
         
     end %methods
     
@@ -508,6 +520,8 @@ classdef GetSetLogical < mic.ui.device.Base
             
         end
         
+      
+        
         function onClock(this) 
            
             try
@@ -522,16 +536,9 @@ classdef GetSetLogical < mic.ui.device.Base
                 
                 this.uiilValue.set(this.lVal);
                 
+                this.updateInitializedButton();
                 
-                % Update visual appearance of button to reflect state
-                lInitialized = this.getDevice.isInitialized();
-                if this.lShowInitButton
-                    if lInitialized
-                        this.uibInit.setU8Img(this.u8InitTrue);
-                    else
-                        this.uibInit.setU8Img(this.u8InitFalse);
-                    end
-                end
+               
             
                                                
             catch err
@@ -565,7 +572,7 @@ classdef GetSetLogical < mic.ui.device.Base
         end
         
         function onDeviceChange(this, src, evt)
-            if src.lVal
+            if src.get()
                 this.turnOn();
             else
                 this.turnOff();
@@ -579,13 +586,27 @@ classdef GetSetLogical < mic.ui.device.Base
             
         end
         
-        function initialize(this)
-           
-            this.lIsInitializing = true;
-            this.getDevice().initialize();
-            % this.disable();
+        
+        function updateInitializedButton(this)
+            
+            lInitialized = this.getDevice.isInitialized();
+                
+            if this.lShowInitButton
+                if lInitialized
+                    this.uibInit.setU8Img(this.u8InitTrue);
+                else
+                    this.uibInit.setU8Img(this.u8InitFalse);
+                end
+            end
+
+            if this.lIsInitializing && ...
+               lInitialized
+                this.lIsInitializing = false;
+            end
             
         end
+        
+        
     end
 
 end %class

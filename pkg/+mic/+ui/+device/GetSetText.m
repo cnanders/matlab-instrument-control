@@ -1,4 +1,5 @@
-classdef GetSetText < mic.ui.device.Base
+classdef GetSetText < mic.interface.ui.device.GetSetText & ...
+                      mic.ui.device.Base
     
     properties (Constant)
        
@@ -58,8 +59,6 @@ classdef GetSetText < mic.ui.device.Base
         cTooltipDeviceOn = 'Disconnect the real Device / hardware (go into virtual mode)';
         cTooltipInitButton = 'Send the initialize command to this device';
         
-        deviceVirtual        % virtual Device (for test and debugging).  Builds its own DevicevHardwareIO
-        device         % Device to the low level controls.  Must be set after initialized.
         
         clock       % clock 
         cLabel = 'CHANGE ME' % name to be displayed by the UI element
@@ -113,8 +112,7 @@ classdef GetSetText < mic.ui.device.Base
         % eChange events
         cValPrev = '...'
         
-        % {logical 1x1} true when using real device
-        lActive = false   
+           
         
         % {logical 1x1} true when stopped or at its target
         lReady = true
@@ -125,10 +123,10 @@ classdef GetSetText < mic.ui.device.Base
         % see lShowInitButon
         uibInit
         
+        
         % {logical 1x1} true in moments after calling device.initialize()
         % and before device.isInitialized() returns true. false otherwise
-        lIsInitializing
-        
+        lIsInitializing = false
         
     end
     
@@ -364,20 +362,7 @@ classdef GetSetText < mic.ui.device.Base
            
         end
         
-        function setDevice(this, device)
-            this.device = device;
-        end
         
-        function setDeviceVirtual(this, device)
-            
-            if ~isempty(this.deviceVirtual) && ...
-                isvalid(this.deviceVirtual)
-                delete(this.deviceVirtual);
-            end
-
-            this.deviceVirtual = device;
-            
-        end
         
         
         function delete(this)
@@ -437,25 +422,16 @@ classdef GetSetText < mic.ui.device.Base
             end
             this.uitxVal.set(cVal);
             
-            lInitialized = this.getDevice.isInitialized();
-                
-            % Update visual appearance of button to reflect state
-            if this.lShowInitButton
-                if lInitialized
-                    this.uibInit.setU8Img(this.u8InitTrue);
-                else
-                    this.uibInit.setU8Img(this.u8InitFalse);
-                end
-            end
+            this.updateInitializedButton();
                 
             
         end 
         
-        function c = val(this)
+        function c = get(this)
             c = this.getDevice().get();
         end
         
-        function c = dest(this)
+        function c = getDest(this)
             c = this.uieDest.get();
         end
         
@@ -504,6 +480,14 @@ classdef GetSetText < mic.ui.device.Base
             this.uitxLabelDevice.disable();
             this.uitxLabelStores.disable();
         end
+        
+        function initialize(this)
+           
+            this.lIsInitializing = true;
+            this.getDevice().initialize();
+            
+        end
+        
         
        
         
@@ -626,7 +610,7 @@ classdef GetSetText < mic.ui.device.Base
         end
         
         function onDeviceChange(this, src, evt)
-            if src.lVal
+            if src.get()
                 this.turnOn();
             else
                 this.turnOff();
@@ -652,7 +636,7 @@ classdef GetSetText < mic.ui.device.Base
         % Deprecated (un-deprecitate if you want to move to dest on enter
         % keypress
         
-        function handleDest(this, src, evt)
+        function onDest(this, src, evt)
             if uint8(get(this.hParent,'CurrentCharacter')) == 13
                 this.moveToDest();
             end
@@ -672,6 +656,25 @@ classdef GetSetText < mic.ui.device.Base
             end
             
 
+        end
+        
+        function updateInitializedButton(this)
+            
+            lInitialized = this.getDevice.isInitialized();
+                
+            if this.lShowInitButton
+                if lInitialized
+                    this.uibInit.setU8Img(this.u8InitTrue);
+                else
+                    this.uibInit.setU8Img(this.u8InitFalse);
+                end
+            end
+
+            if this.lIsInitializing && ...
+               lInitialized
+                this.lIsInitializing = false;
+            end
+            
         end
         
                 
@@ -720,17 +723,7 @@ classdef GetSetText < mic.ui.device.Base
         function lOut = validateDest(this)
             lOut = true;
         end
-        
-       
-        
-        function device = getDevice(this)
-            if this.lActive
-                device = this.device;
-            else
-                device = this.deviceVirtual;
-            end 
-            
-        end
+                
         
         function dOut = getWidth(this)
             dOut = 0;
@@ -780,13 +773,7 @@ classdef GetSetText < mic.ui.device.Base
             
         end
         
-        function initialize(this)
-           
-            this.lIsInitializing = true;
-            this.getDevice().initialize();
-            % this.disable();
-            
-        end
+        
         
     end
 

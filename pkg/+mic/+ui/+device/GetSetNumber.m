@@ -1,4 +1,5 @@
-classdef GetSetNumber < mic.ui.device.Base
+classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
+                        mic.ui.device.Base 
     
 %HARDWAREIO Class that creates the controls to a specific piece of hardware
 % Contrary to Axis Class, this class is meant to have direct access to the
@@ -30,7 +31,7 @@ classdef GetSetNumber < mic.ui.device.Base
         % @param {char 1xm} cName - the name of the instance.  
         %   Must be unique within the entire project / codebase
         cName = 'CHANGE ME' % name identifier
-        lActive = false   % boolean to tell whether the motor is active or not
+        
         lReady = false  % true when stopped or at its target
         
         % {logical 1x1} store if delete() has been called.  When true,
@@ -44,7 +45,7 @@ classdef GetSetNumber < mic.ui.device.Base
 
     end
 
-    properties (Access = protected)
+    properties (SetAccess = private, GetAccess = protected)
         
         dHeight = 26;   % height of the row for controls
         dHeightBtn = 24;
@@ -99,8 +100,7 @@ classdef GetSetNumber < mic.ui.device.Base
         cTooltipDeviceOn = 'Disconnect the real Device / hardware (go into virtual mode)';
         cTooltipInitButton = 'Send the initialize command to this device';
         
-        deviceVirtual        % virtual Device (for test and debugging).  Builds its own DevicevHardwareIO
-        device         % Device to the low level controls.  Must be set after initialized.
+        
         
         % @param {clock 1x1} clock - the clock
         clock 
@@ -150,7 +150,6 @@ classdef GetSetNumber < mic.ui.device.Base
         
         
         u8Bg
-        
                 
         
         %u8Plus = imread(fullfile(mic.Utils.pathImg(), 'axis-plus-24.png'));
@@ -259,9 +258,11 @@ classdef GetSetNumber < mic.ui.device.Base
         % now, I'm going to cast all values as double
         % cTypeDest = 'd'
         
-        % {logical 1x1} true after the initialize() command has been issued
-        % up until getDevice().isInitialized() returns true
+        
+        % {logical 1x1} true in moments after calling device.initialize()
+        % and before device.isInitialized() returns true. false otherwise
         lIsInitializing = false
+        
     end
     
 
@@ -554,16 +555,16 @@ classdef GetSetNumber < mic.ui.device.Base
             
             msg = sprintf(...
                 'stepPos from %1.*f %s by + %1.*f %s', ...
-                this.unit().precision, ...
-                this.valCalDisplay(), ...
-                this.unit().name, ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
+                this.getValCalDisplay(), ...
+                this.getUnit().name, ...
+                this.getUnit().precision, ...
                 this.uieStep.get(), ...
-                this.unit().name ...
+                this.getUnit().name ...
             );
             this.msg(msg, 3);
             
-            % dDest = this.valCalDisplay() + this.uieStep.get()
+            % dDest = this.getValCalDisplay() + this.uieStep.get()
             dDestCal = this.uieDest.get() + this.uieStep.get();
            
             this.uieDest.set(dDestCal);
@@ -577,16 +578,16 @@ classdef GetSetNumber < mic.ui.device.Base
         
             msg = sprintf(...
                 'stepNeg from %1.*f %s by - %1.*f %s', ...
-                this.unit().precision, ...
-                this.valCalDisplay(), ...
-                this.unit().name, ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
+                this.getValCalDisplay(), ...
+                this.getUnit().name, ...
+                this.getUnit().precision, ...
                 this.uieStep.get(), ...
-                this.unit().name ...
+                this.getUnit().name ...
             );
             this.msg(msg, 3);
         
-            % dDest = this.valCalDisplay() + this.uieStep.get()
+            % dDest = this.getValCalDisplay() + this.uieStep.get()
             dDestCal = this.uieDest.get() - this.uieStep.get();
            
             this.uieDest.set(dDestCal);
@@ -598,7 +599,7 @@ classdef GetSetNumber < mic.ui.device.Base
         % an absolute value in a particular unit.
         %   @param {double} dCal - desired destination in an abs calibrated
         %       unit (regardless of the UI's "abs/rel" state).
-        %   @param {char} [cUnit = this.unit().name] - the name of the 
+        %   @param {char} [cUnit = this.getUnit().name] - the name of the 
         %       unit you are passing in. If this is not set, it will be
         %       assumed that the unit is unit the UI is showing.
         %   EXAMPLE: If the UI was put into "rel" mode when the value was
@@ -607,7 +608,7 @@ classdef GetSetNumber < mic.ui.device.Base
         %       See also SETDESTCAL, SETDESTRAW
         
             if nargin == 1
-                cUnit = this.unit().name;
+                cUnit = this.getUnit().name;
             end
             
             % Convert the absolute value in the passed unit to raw, then convert from raw to
@@ -615,7 +616,7 @@ classdef GetSetNumber < mic.ui.device.Base
             dRaw = this.cal2raw(dCalAbs, cUnit, false);
             
             % Set dest
-            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
+            this.uieDest.set(this.raw2cal(dRaw, this.getUnit().name, this.uitRel.get()));
         
             
         end
@@ -630,7 +631,7 @@ classdef GetSetNumber < mic.ui.device.Base
         %       (relative to a stored zero).  If you need to set the
         %       destination with an "abs" value even when the UI is displaying
         %       a "rel" value, use setDestCalAbs.  
-        %   @param {char} [cUnit = this.unit().name] - the name of the 
+        %   @param {char} [cUnit = this.getUnit().name] - the name of the 
         %       unit you are passing in. If this is not set, it will be
         %       assumed that the unit is unit the UI is showing.
         %   EXAMPLE: If the UI was put into "rel" mode when the value
@@ -641,14 +642,14 @@ classdef GetSetNumber < mic.ui.device.Base
 
        
             if nargin == 2
-                cUnit = this.unit().name;
+                cUnit = this.getUnit().name;
             end
             
             % Convert from the passed unit to raw, then convert from raw to
             % the display unit
             
             dRaw = this.cal2raw(dCal, cUnit, this.uitRel.get());
-            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
+            this.uieDest.set(this.raw2cal(dRaw, this.getUnit().name, this.uitRel.get()));
             
            
         end
@@ -661,7 +662,7 @@ classdef GetSetNumber < mic.ui.device.Base
         %raw value.  The raw value is converted to the unit and abs/rel
         %settings of the UI
         
-            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
+            this.uieDest.set(this.raw2cal(dRaw, this.getUnit().name, this.uitRel.get()));
         end
                 
         
@@ -679,12 +680,12 @@ classdef GetSetNumber < mic.ui.device.Base
             
             msg = sprintf( ...
                 'moving from %1.*f %s to %1.*f %s', ...
-                this.unit().precision, ...
-                this.valCalDisplay(), ...
-                this.unit().name, ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
+                this.getValCalDisplay(), ...
+                this.getUnit().name, ...
+                this.getUnit().precision, ...
                 this.uieDest.get(), ...
-                this.unit().name ...
+                this.getUnit().name ...
             );
         
             this.msg(msg, 3);
@@ -694,7 +695,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % update its value from the device Device.
             
             this.lReady = false;         
-            dRaw = this.cal2raw(this.uieDest.get(), this.unit().name, this.uitRel.get());
+            dRaw = this.cal2raw(this.uieDest.get(), this.getUnit().name, this.uitRel.get());
             this.getDevice().set(dRaw);
                        
         end
@@ -730,7 +731,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % set(this.hImage, 'Visible', 'off');
                         
             % Update destination values to match device values
-            % this.setDestCalDisplay(this.valCalDisplay());
+            % this.setDestCalDisplay(this.getValCalDisplay());
             
             % Kill the Devicev
             if ~isempty(this.deviceVirtual) && ...
@@ -760,34 +761,14 @@ classdef GetSetNumber < mic.ui.device.Base
             this.uitDevice.set(false);
             this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             
-            % this.setDestCalDisplay(this.valCalDisplay());
+            % this.setDestCalDisplay(this.getValCalDisplay());
             % set(this.hImage, 'Visible', 'on');
             % set(this.hPanel, 'BackgroundColor', this.dColorOff);
             
             notify(this, 'eTurnOff');
         end
         
-        function setDevice(this, device)
-            this.device = device;
-        end
-                
-        function setDeviceVirtual(this, device)
-            
-            if ~isempty(this.deviceVirtual) && ...
-                isvalid(this.deviceVirtual)
-                delete(this.deviceVirtual);
-            end
-
-            this.deviceVirtual = device;
-            
-            %{
-            try
-                this.uieDest.set(this.deviceVirtual.get());
-            catch err
-                this.uieDest.set(0);
-            end
-            %}
-        end
+        
         
         
         function delete(this)
@@ -860,95 +841,9 @@ classdef GetSetNumber < mic.ui.device.Base
         end
         
         
-        function onClock(this) 
-        %onClock Callback triggered by the clock
-        %   HardwareIO.onClock()
-        %   updates the position reading and the hio status (=/~moving)
         
-            if this.lDeleted
-                fprintf('onClock() %s returning (already deleted)', this.cName);
-                return
-            end
-            
-            try
-                
-                %AW 2014-9-9
-                %TODO : this should be refactored in a readRaw function
-                %see HardwareO for example
-                %make sure diode etc have it also
-               
-                % 2016.11.02 CNA always cast as double.  Underlying unit
-                % may not be double
-                
-                this.dValRaw = this.getDevice().get();  
-                
-                
-                % 2014.05.19 
-                % Need to update a property lIsThere which is true when
-                % the destination and the position match within a tolerance
-                % (for now we will set tolerance to zero)
-                % 2014.11.19: changing this so that there is a tolerance:
-                
-                
-                % 2014.11.20: Linking this check to the device call which asks
-                % stage if it's ready, which means that it's either stopped
-                % or reached its target.
-                
-                if ~this.lDisableSet
-                    this.lReady = this.getDevice().isReady();
-                    this.updatePlayButton()
-                else
-                    % The Device(V) doesn't implement isReady since this is a
-                    % HardwareIO
-                end
-                
-                this.updateDisplayValue();
-                
-                lInitialized = this.getDevice.isInitialized();
-                
-                % Update visual appearance of button to reflect state
-                if this.lShowInitButton
-                    if lInitialized
-                        this.uibInit.setU8Img(this.u8InitTrue);
-                    else
-                        this.uibInit.setU8Img(this.u8InitFalse);
-                    end
-                end
-                
-                if this.lShowInitState
-                    this.uiilInitState.set(lInitialized);
-                end
-                
-                
-                if this.lIsInitializing && ...
-                   lInitialized
-                    this.lIsInitializing = false;
-                    % this.enable();
-                end
-                
-               
-            catch err
-                this.msg(getReport(err),2);
-        %         %AW(5/24/13) : Added a timer stop when the axis instance has been
-        %         %deleted
-        %         if (strcmp(err.identifier,'MATLAB:class:InvalidHandle'))
-        %                 %msgbox({'Axis Timer has been stopped','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-        %                 stop(this.t);
-        %         else
-        %             this.msg(getReport(err));
-        %         end
         
-                % CA 2016 remove the task from the timer
-                if isvalid(this.clock) && ...
-                   this.clock.has(this.id())
-                    this.clock.remove(this.id());
-                end
-                
-            end %try/catch
-
-        end 
-        
-        function dOut = valCal(this, cUnit)
+        function dOut = getValCal(this, cUnit)
         %VALCAL Get the abs value (not relative to a stored zero) in a calibrated unit.
         %
         %   @param {char} cUnit - the name of the unit you want the result
@@ -958,13 +853,13 @@ classdef GetSetNumber < mic.ui.device.Base
         %   @returns {double} - the calibrated value
         %
         %   If you want the value showed in the display (with the active
-        %   display unit and abs/rel state use valCalDisplay()
+        %   display unit and abs/rel state use getValCalDisplay()
                         
             dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
             
         end
         
-        function dOut = valCalDisplay(this)
+        function dOut = getValCalDisplay(this)
         %VALCALDISPLAY Get the value as shown in the UI with the active
         %display unit and abs/rel state
         %
@@ -972,18 +867,18 @@ classdef GetSetNumber < mic.ui.device.Base
         %
         %   see also VALCAL 
                         
-            dOut = this.raw2cal(this.getDevice().get(), this.unit().name, this.uitRel.get());
+            dOut = this.raw2cal(this.getDevice().get(), this.getUnit().name, this.uitRel.get());
             
         end
         
-        function dOut = valRaw(this)
+        function dOut = getValRaw(this)
         %VALRAW Get the value (not the destination) in raw units. This
         %value is also accessible with the dValRaw property
            dOut = this.getDevice().get(); 
         end
         
         
-        function dOut = destCal(this, cUnit)
+        function dOut = getDestCal(this, cUnit)
         %DESTCAL Get the abs destination in a calibrated unit.  
         %
         %   @param {char} cUnit - the name of the unit you want the result
@@ -996,13 +891,13 @@ classdef GetSetNumber < mic.ui.device.Base
             % Convert from the UI (unit, rel/abs) into raw, then convert from raw
             % into the specified absolute unit
             
-            dRaw = this.cal2raw(this.uieDest.get(), this.unit().name, this.uitRel.get());
+            dRaw = this.cal2raw(this.uieDest.get(), this.getUnit().name, this.uitRel.get());
             dOut = this.raw2cal(dRaw, cUnit, false);
             
         end
         
         
-        function dOut = destCalDisplay(this)
+        function dOut = getDestCalDisplay(this)
         %DESTCALDISPLAY Get the destinatino as shown in the UI with the active
         %display unit and abs/rel state 
         %   @return {double} - the calibrated value
@@ -1012,7 +907,7 @@ classdef GetSetNumber < mic.ui.device.Base
         end
         
 
-        function dOut = destRaw(this)
+        function dOut = getDestRaw(this)
         %DESTRAW Get the abs dest value in raw units. Raw value can never
         %changed with the UI configuration so this returns the same thing
         %regardless of UI configuration.
@@ -1021,12 +916,12 @@ classdef GetSetNumber < mic.ui.device.Base
         
             % CAL =  slope * (RAW - offset)
             % (CAL / slope) + offset = RAW
-            dOut = this.cal2raw(this.uieDest.get(), this.unit().name, this.uitRel.get());
+            dOut = this.cal2raw(this.uieDest.get(), this.getUnit().name, this.uitRel.get());
         
         end
         
         % @return {struct 1x1}
-        function stOut = unit(this)
+        function stOut = getUnit(this)
         %UNIT Retrive the active display unit definition structure 
         % (slope, offset, precision)
             stOut = this.config.unit(this.uipUnit.val());
@@ -1038,20 +933,14 @@ classdef GetSetNumber < mic.ui.device.Base
         %   @param {char} cUnit - the name of the unit, i.e., "mm", "m"
         
             for n = 1 : length(this.config.ceUnits)
-                this.config.ceUnits{n}.name
+                this.config.ceUnits{n}.name;
                 if strcmp(cUnit, this.config.ceUnits{n}.name)
                     this.uipUnit.u8Selected = uint8(n);
                 end
             end            
         end
         
-        function initialize(this)
-           
-            this.lIsInitializing = true;
-            this.getDevice().initialize();
-            % this.disable();
-            
-        end
+       
         
         function enable(this)
             
@@ -1123,25 +1012,92 @@ classdef GetSetNumber < mic.ui.device.Base
             
         end
         
-        
-        function device = getDevice(this)
-            if this.lActive
-                device = this.device;
-            else
-                device = this.deviceVirtual;
-            end 
+        function initialize(this)
+           
+            this.lIsInitializing = true;
+            this.getDevice().initialize();
             
         end
         
         
         
         
-
+        
     end %methods
     
     methods (Access = protected)
             
+        function onClock(this) 
+        %onClock Callback triggered by the clock
+        %   HardwareIO.onClock()
+        %   updates the position reading and the hio status (=/~moving)
+        
+            if this.lDeleted
+                fprintf('onClock() %s returning (already deleted)', this.cName);
+                return
+            end
+            
+            try
+                
+                %AW 2014-9-9
+                %TODO : this should be refactored in a readRaw function
+                %see HardwareO for example
+                %make sure diode etc have it also
+               
+                % 2016.11.02 CNA always cast as double.  Underlying unit
+                % may not be double
+                
+                this.dValRaw = this.getDevice().get();  
+                
+                
+                % 2014.05.19 
+                % Need to update a property lIsThere which is true when
+                % the destination and the position match within a tolerance
+                % (for now we will set tolerance to zero)
+                % 2014.11.19: changing this so that there is a tolerance:
+                
+                
+                % 2014.11.20: Linking this check to the device call which asks
+                % stage if it's ready, which means that it's either stopped
+                % or reached its target.
+                
+                if ~this.lDisableSet
+                    this.lReady = this.getDevice().isReady();
+                    this.updatePlayButton()
+                else
+                    % The Device(V) doesn't implement isReady since this is a
+                    % HardwareIO
+                end
+                
+                this.updateDisplayValue();
+                
+                this.updateInitializedButton();
+                
+                
+                
+                
+               
+            catch err
+                this.msg(getReport(err),2);
+        %         %AW(5/24/13) : Added a timer stop when the axis instance has been
+        %         %deleted
+        %         if (strcmp(err.identifier,'MATLAB:class:InvalidHandle'))
+        %                 %msgbox({'Axis Timer has been stopped','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+        %                 stop(this.t);
+        %         else
+        %             this.msg(getReport(err));
+        %         end
+        
+                % CA 2016 remove the task from the timer
+                if isvalid(this.clock) && ...
+                   this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                end
+                
+            end %try/catch
 
+        end 
+        
         function init(this)           
         %INIT Initializes the class
         %   HardwareIO.init()
@@ -1176,8 +1132,8 @@ classdef GetSetNumber < mic.ui.device.Base
             st2.cDefault    = st2.cAnswer2;
 
             this.uitDevice = mic.ui.common.Toggle( ...
-                'cTextOff', 'enable', ...   
-                'cTextOn', 'disable', ...  
+                'cTextFalse', 'enable', ...   
+                'cTextTrue', 'disable', ...  
                 'lImg', true, ...
                 'u8ImgOff', this.u8ToggleOff, ...
                 'u8ImgOn', this.u8ToggleOn, ...
@@ -1208,8 +1164,8 @@ classdef GetSetNumber < mic.ui.device.Base
             );
         
             this.uitRel = mic.ui.common.Toggle( ...
-                'cTextOff', 'abs', ... % off (showing abs)
-                'cTextOn', 'rel', ... % on (showing rel)
+                'cTextFalse', 'abs', ... % off (showing abs)
+                'cTextTrue', 'rel', ... % on (showing rel)
                 'lImg', false, ...
                 'u8ImgOff',  this.u8Abs, ...
                 'u8ImgOn', this.u8Rel ...
@@ -1298,22 +1254,7 @@ classdef GetSetNumber < mic.ui.device.Base
 
             
 
-            % event listeners
-
-            
-            % addlistener(this.uitPlay,   'eChange', @this.handleUI);
-            
-            addlistener(this.uieDest, 'eEnter', @this.onDestEnter);
-            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
-            addlistener(this.uibtPlay,   'eChange', @this.onPlayChange);
-            addlistener(this.uitRel,   'eChange', @this.onRelChange);
-            addlistener(this.uipUnit,   'eChange', @this.onUnitChange);
-
-            addlistener(this.uieDest, 'eChange', @this.onDestChange);
-            addlistener(this.uieStep, 'eChange', @this.onStepChange);
-            addlistener(this.uibStepPos, 'eChange', @this.onStepPosPress);
-            addlistener(this.uibStepNeg, 'eChange', @this.onStepNegPress);
-            addlistener(this.uibZero, 'eChange', @this.onSetZeroPress);
+           
                  
            
             
@@ -1363,6 +1304,26 @@ classdef GetSetNumber < mic.ui.device.Base
             this.uitxLabelRange = mic.ui.common.Text(...
                 'cVal', this.cLabelRange ...
             );
+            this.uitxRange = mic.ui.common.Text('cVal', '[... - ...]');
+           
+        
+         % event listeners
+
+            
+            % addlistener(this.uitPlay,   'eChange', @this.handleUI);
+            
+            addlistener(this.uieDest, 'eEnter', @this.onDestEnter);
+            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
+            addlistener(this.uibtPlay,   'eChange', @this.onPlayChange);
+            addlistener(this.uitRel,   'eChange', @this.onRelChange);
+            addlistener(this.uipUnit,   'eChange', @this.onUnitChange);
+
+            addlistener(this.uieDest, 'eChange', @this.onDestChange);
+            addlistener(this.uieStep, 'eChange', @this.onStepChange);
+            addlistener(this.uibStepPos, 'eChange', @this.onStepPosPress);
+            addlistener(this.uibStepNeg, 'eChange', @this.onStepNegPress);
+            addlistener(this.uibZero, 'eChange', @this.onSetZeroPress);
+            
             
             this.uitDevice.setTooltip(this.cTooltipDeviceOff);
             this.uitxName.setTooltip('The name of this device');
@@ -1376,16 +1337,15 @@ classdef GetSetNumber < mic.ui.device.Base
             this.updateStepTooltips();
             this.uipUnit.u8Selected = this.u8UnitIndex;
             
-            this.uitxRange = mic.ui.common.Text('cVal', '[... - ...]');
-            this.updateRange();
             
+            % this.updateRange();
             this.load();
             
             
         end
         
         function onDeviceChange(this, src, evt)
-            if src.lVal
+            if src.get()
                 this.turnOn();
             else
                 this.turnOff();
@@ -1420,9 +1380,7 @@ classdef GetSetNumber < mic.ui.device.Base
             this.stepNeg();
         end
         
-        function handleIndex(this, src, evt)
-            this.index();
-        end
+        
         
         function onInitChange(this, src, evt)
             
@@ -1449,7 +1407,7 @@ classdef GetSetNumber < mic.ui.device.Base
         % Deprecated (un-deprecitate if you want to move to dest on enter
         % keypress
         
-        function handleDest(this, src, evt)
+        function onDest(this, src, evt)
             if uint8(get(this.hParent,'CurrentCharacter')) == 13
                 this.moveToDest();
             end
@@ -1475,7 +1433,7 @@ classdef GetSetNumber < mic.ui.device.Base
            cUnitPrev = this.config.ceUnits{this.u8UnitIndex}.name;
            dRaw = this.cal2raw(this.uieDest.get(), cUnitPrev, this.uitRel.get());
             
-            this.uieDest.set(this.raw2cal(dRaw, this.unit().name, this.uitRel.get()));
+            this.uieDest.set(this.raw2cal(dRaw, this.getUnit().name, this.uitRel.get()));
             
             % Update u8UnitIndex
             this.u8UnitIndex = this.uipUnit.u8Selected;
@@ -1495,14 +1453,14 @@ classdef GetSetNumber < mic.ui.device.Base
                 return
             end
             
-            dMin = this.raw2cal(this.config.dMin, this.unit().name, this.uitRel.get());
-            dMax = this.raw2cal(this.config.dMax, this.unit().name, this.uitRel.get());
+            dMin = this.raw2cal(this.config.dMin, this.getUnit().name, this.uitRel.get());
+            dMax = this.raw2cal(this.config.dMax, this.getUnit().name, this.uitRel.get());
             
             cVal = sprintf(...
                 '[%.*f, %.*f]', ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
                 dMin, ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
                 dMax ...
             );
             this.uitxRange.set(cVal);            
@@ -1518,14 +1476,14 @@ classdef GetSetNumber < mic.ui.device.Base
                     
                     cVal = sprintf(...
                         '%.*f', ...
-                        this.unit().precision, ...
-                        this.valCalDisplay() ...
+                        this.getUnit().precision, ...
+                        this.getValCalDisplay() ...
                     );
                 case 'e'
                     cVal = sprintf(...
                         '%.*e', ...
-                        this.unit().precision, ...
-                        this.valCalDisplay() ...
+                        this.getUnit().precision, ...
+                        this.getValCalDisplay() ...
                     );
            end 
             
@@ -1548,6 +1506,33 @@ classdef GetSetNumber < mic.ui.device.Base
            this.cValPrev = cVal;
             
         end
+        
+        
+        function updateInitializedButton(this)
+            
+            lInitialized = this.getDevice.isInitialized();
+                
+            if this.lShowInitButton
+                if lInitialized
+                    this.uibInit.setU8Img(this.u8InitTrue);
+                else
+                    this.uibInit.setU8Img(this.u8InitFalse);
+                end
+            end
+
+            %{
+            if this.lShowInitState
+                this.uiilInitState.set(lInitialized);
+            end
+            %}
+
+            if this.lIsInitializing && ...
+               lInitialized
+                this.lIsInitializing = false;
+            end
+            
+        end
+        
         
         function updatePlayButton(this)
             
@@ -1678,7 +1663,7 @@ classdef GetSetNumber < mic.ui.device.Base
             cePrompt = {'New calibrated value of current position:'};
             cTitle = 'Input';
             dLines = 1;
-            ceDefaultAns = {num2str(this.valCalDisplay())};
+            ceDefaultAns = {num2str(this.getValCalDisplay())};
             ceAnswer = inputdlg(...
                 cePrompt,...
                 cTitle,...
@@ -1706,7 +1691,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % Solve for offset1 (offsets are alway in RAW units)
             % offset1 = offset0 - (cal1 - cal0)/slope0  
            
-            dNewOffset = this.unit().offset - (str2double(ceAnswer{1}) - this.valCalDisplay())/this.unit().slope;
+            dNewOffset = this.getUnit().offset - (str2double(ceAnswer{1}) - this.getValCalDisplay())/this.getUnit().slope;
             this.dZeroRaw = dNewOffset;
             
             this.updateZeroTooltip();
@@ -1720,7 +1705,7 @@ classdef GetSetNumber < mic.ui.device.Base
             this.onSetPress(src, evt);
             return;
             
-            this.dZeroRaw = this.valRaw(); % raw units            
+            this.dZeroRaw = this.getValRaw(); % raw units            
             this.updateZeroTooltip();
             
             % Force to "Rel" mode
@@ -1735,7 +1720,7 @@ classdef GetSetNumber < mic.ui.device.Base
             % calibrated unit
             
             this.lRelVal = this.uitRel.get();
-            this.uieDest.set(this.valCalDisplay());
+            this.uieDest.set(this.getValCalDisplay());
             this.updateRelTooltip();
             this.updateRange();
             
@@ -1748,9 +1733,9 @@ classdef GetSetNumber < mic.ui.device.Base
         function updateZeroTooltip(this)
             cMsg = sprintf(...
                 'Update the stored zero. It is currently %1.*f %s', ...
-                this.unit().precision, ...
-                this.raw2cal(this.dZeroRaw, this.unit().name, false), ...
-                this.unit().name ...
+                this.getUnit().precision, ...
+                this.raw2cal(this.dZeroRaw, this.getUnit().name, false), ...
+                this.getUnit().name ...
             );            
             this.uibZero.setTooltip(cMsg);
         end
@@ -1759,16 +1744,16 @@ classdef GetSetNumber < mic.ui.device.Base
         function updateStepTooltips(this)
             cMsgNeg = sprintf(...
                 'Decrease goal by %1.*f %s.', ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
                 this.uieStep.get(), ...
-                this.unit().name ...
+                this.getUnit().name ...
             ); 
         
             cMsgPos = sprintf(...
                 'Increase goal by %1.*f %s.', ...
-                this.unit().precision, ...
+                this.getUnit().precision, ...
                 this.uieStep.get(), ...
-                this.unit().name ...
+                this.getUnit().name ...
             ); 
             this.uibStepPos.setTooltip(cMsgPos);
             this.uibStepNeg.setTooltip(cMsgNeg);

@@ -14,10 +14,10 @@
 		- [Device UI Controls Evoke Methods of Their `device`](#device-wiring-up)
 		- [`device` Implementation Handles Hardware Communication](#device-implementation)
 	- [“Virtual” `device`](#device-virtual)
+	- [API](#device-api)
 	- [Code Examples](#device-code)
 	- [mic.ui.device.*](#mic.ui.device.*)
-
-Docs are a work in progress.
+- [Controlling Local Variables Instead of Hardware](#control-matlab-variables)
 
 <a name="common"></a>
 # Standard UI Controls (Toggle, Edit, Button, etc.)
@@ -216,11 +216,20 @@ All `mic.ui.device.*` UI controls automatically create their own “virtual” `
 
 All `mic.device.*` “virtual” `devices` mock real hardware; e.g., they take time to get to a target value.
 
+## API
+
+FIX ME
+
 ## Code Examples
 
 - `tests/ui/device/*` contains working code examples for building each `mic.ui.device.*` class.  
 - `examples/devices/*` shows you how to hook up an arbitrary vendor-provided device API to a `mic.ui.device.*` so you can control the device with a UI.  This process involves building a “translator“ that translates the vendor-provided API into the `mic.interface.device.GetSetNumber` interface.
 
+
+<a name="control-local-variables"></a>
+# Controlling Local Variables Instead of Hardware
+
+The only requirement of the `device` provided to `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  If you want to implement a `device` to set and get local data that a MATLAB application can consume, go for it.  In fact, the work is already done for you! This is precisely what happens when `mic.ui.device.*` UI controls are in “virtual” mode.  See `examples/local-data` for a working code example that consumes user-controled local data with a MATLAB application.
 
 ## `mic.ui.device.*`
 
@@ -292,6 +301,7 @@ All `mic.device.*` “virtual” `devices` mock real hardware; e.g., they take t
 
 
 
+
 # Guide and MATLAB App Designer
 
 [Guide](https://www.mathworks.com/discovery/matlab-gui.html) and [MATLAB App Designer](https://www.mathworks.com/products/matlab/app-designer.html) can be used to create simple GUIs that manipulate data within MATLAB.  These two options make it possible to get something simple up and running quickly, but lack the organizational structure that large, complicated projects and instruments require. Moreover, they lack a well-defined interface for hooking into hardware. 
@@ -325,10 +335,8 @@ Think of “device” as a property of an instruemnt that you can get or set; do
 
 In this particualr example, you would most likely want to disable many of the optional features of `mic.ui.device.GetSetNumber`.  
 
-# Using MIC to Control MATLAB Variables Instead of Hardware
 
-The only requirement of the `device` we pass into `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  If you want to implement a `device` to set and get variables of a MATLAB application and entirely forgo the notion of controlling hardware, go for it.  This is,  in fact, exactly what happens when all of the `mic.ui.device.*` UI controls are in virtual mode.
-
+<!--
 # Extra
 
 99% of the time we communicate with hardware we: 
@@ -362,3 +370,4 @@ When we exchange data with hardware, the data always has a type.  Common user-fa
 </table>
 
 `mic.ui.device.*` contains a UI control for each common user-facing data type. 
+-->
