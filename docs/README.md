@@ -25,9 +25,7 @@
 <a name="common-overview"></a>
 ## Overview
 
-The MIC library provides namespaced, object-oriented wrappers around most of MATLAB’s `uicontrol` elements.  They are located at `mic.ui.common.*`. 
-
-The following code can be used to create “MIC” versions of `edit` and `toggle` uicontrols. 
+The MIC library provides namespaced, object-oriented wrappers around most of MATLAB’s `uicontrol` elements.  They are located at `mic.ui.common.*`.  The following code can be used to create “MIC” versions of `edit` and `toggle` uicontrols. 
 
 ```matlab
 % Instantiation
@@ -182,7 +180,7 @@ l = isInitialized(this)
 <a name="device-required"></a>
 ### Providing a `device` to a Device UI Control
 
-Each `mic.ui.device.*` must be provided with a `device`.  The `device` can be passed during instantiation of the UI control or set with the `setDevice()` method later on.  The provided `device` must implement the device interface that matches the UI control. Examples:
+Each `mic.ui.device.*` UI control must be provided with a `device`.  The `device` can be passed during instantiation of the UI control or set with the `setDevice()` method later on.  The provided `device` must implement the device interface that matches the UI control. Examples:
 - `mic.ui.device.GetSetNumber` UI controls require a `device` that implements `mic.interface.device.GetSetNumber`
 - `mic.ui.device.GetSetLogical` UI controls require a `device` that implements `mic.interface.device.GetSetLogical` 
 
@@ -209,10 +207,10 @@ The `device` implementation is responsible for communicating with hardware when 
 
 All device UI controls have a “Device” toggle.  When the “Device” toggle is set to `false` (the default), `device` calls, e.g., `device.get()`,  are routed to a “virtual” `device`.  This is useful during the development phase before harware is available. 
 
-All `mic.ui.device.*` UI controls automatically create their own “virtual” `device` on instantiation; virtualization of hardware is supported by default without any configuration. Examples:
+All `mic.ui.device.*` UI controls automatically create their own “virtual” `device` on instantiation; virtualization of hardware is supported by default. Examples:
 
-- `mic.ui.device.GetSetNumber` UI controls instantiate a `mic.device.GetSetNumber`, a `device` that implements `mic.interface.device.GetSetNumber`
-- `mic.ui.device.GetSetLogical` UI controls instantiate a `mic.device.GetSetLogical`, a `device` that implements `mic.interface.device.GetSetLogical`
+- `mic.ui.device.GetSetNumber` UI controls instantiate a `mic.device.GetSetNumber`, which is a `device` that implements `mic.interface.device.GetSetNumber`
+- `mic.ui.device.GetSetLogical` UI controls instantiate a `mic.device.GetSetLogical`, which is a `device` that implements `mic.interface.device.GetSetLogical`
 
 All `mic.device.*` “virtual” `devices` mock real hardware; e.g., they take time to get to a target value.
 
@@ -228,7 +226,7 @@ All `mic.ui.device.*` UI controls expose a full-featured API that allows them to
 ### Application
 `examples/app/*` is an application that builds a UI for a made-up instrument.  The made-up instrument has two motorized stages (x, and y), an internal text setting, and a binary switch.  It is assumed that the vendor provided a device API that lets MATLAB talk to the instrument from the command line.  Our job is to build a UI.  
 
-This example demonstrates how to hook up an arbitrary vendor-provided API to a `mic.ui.device.*` UI controls.  This process involves building “translators“ that translate the vendor-provided API into the `mic.interface.device.*` interfaces that the UI controls are expecting.  It also demonstrates how consume data from the UI controls using their internal API. 
+This example demonstrates how to hook up an arbitrary vendor-provided API to `mic.ui.device.*` UI controls.  This process involves building “translators“ that translate the vendor-provided API into the `mic.interface.device.*` interfaces that the UI controls are expecting.  It also demonstrates how consume data from the UI controls using their internal API. 
 
 <a name="control-local-variables"></a>
 # Controlling Local Variables Instead of Hardware
