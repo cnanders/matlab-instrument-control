@@ -43,7 +43,7 @@ uiEdit.build(h, 10, 10, 100, 30);
 uiToggle.build(h, 10, 50, 100, 30);
 ```
 
-![mic.ui.device.GetSetNumber GIF](img/simple-example-a.jpg?raw=true)
+![mic.ui.device.GetSetNumber GIF](docs/img/simple-example-a.jpg?raw=true)
 
 Their values can be retreived with the `get()` method.
 
@@ -55,7 +55,7 @@ uiEdit.get()
 uiToggle.get()
 ``` 
 
-![mic.ui.device.GetSetNumber GIF](img/simple-example-b.jpg?raw=true)
+![mic.ui.device.GetSetNumber GIF](docs/img/simple-example-b.jpg?raw=true)
 
 Their values can be set with the `set()` method
 
@@ -67,7 +67,7 @@ uiEdit.set('Hello');
 uiToggle.set(true);
 ```
 
-![mic.ui.device.GetSetNumber GIF](img/simple-example-c.jpg?raw=true)
+![mic.ui.device.GetSetNumber GIF](docs/img/simple-example-c.jpg?raw=true)
 
 Several other `mic.ui.common.*` UI controls expose `set()` and `get()` methods.  The following table summarizes them along with their type:
 
@@ -127,18 +127,18 @@ Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.comm
 THe MIC library provdes namespaced, object-oriented UI components that control devices (hardware). They are located at `mic.ui.device.*`. Device UI controls come in three varieties, based on common user-facing data types:
 
 ### `mic.ui.device.GetSetNumber`
-![mic.ui.device.GetSetNumber GIF](img/mic.ui.device.GetSetNumber.gif?raw=true)
+![mic.ui.device.GetSetNumber GIF](docs/img/mic.ui.device.GetSetNumber.gif?raw=true)
 
 `mic.ui.device.GetSetNumber` is a UI control designed to control a numeric (`single`, `double`, `int*`, `uint*`) property of a device.  The standard use case is controlling the position of a motorized stage. As the above .gif shows, the UI supports all of the functionality you would expect, including units.
 
 ### `mic.ui.device.GetSetLogical`
-![mic.ui.device.GetSetLogical GIF](img/mic.ui.device.GetSetLogical-2.gif?raw=true)
+![mic.ui.device.GetSetLogical GIF](docs/img/mic.ui.device.GetSetLogical-2.gif?raw=true)
 
 `mic.ui.device.GetSetLogical` is a UI control designed to control a `logical` property of a device.  The standard use case is controlling a binary switch. 
 
 
 ### `mic.ui.device.GetSetText`
-![mic.ui.device.GetSetText GIF](img/mic.ui.device.GetSetText.gif?raw=true)
+![mic.ui.device.GetSetText GIF](docs/img/mic.ui.device.GetSetText.gif?raw=true)
 
 `mic.ui.device.GetSetText` is a UI control designed to control a `char` property of a device.  The standard use case is controlling instrument configuration values.
 
@@ -240,7 +240,7 @@ The only requirement of the `device` provided to `mic.ui.device.*` UI controls i
 <a name="mic.ui.device.GetSetNumber"></a>
 ### `mic.ui.device.GetSetNumber`
 
-![mic.ui.device.GetSetNumber GIF](img/mic.ui.device.GetSetNumber.gif?raw=true)
+![mic.ui.device.GetSetNumber GIF](docs/img/mic.ui.device.GetSetNumber.gif?raw=true)
 
 - `device` implements `mic.interface.device.GetSetNumber`.
 - Use this for getting / setting numeric properties of hardware. 
