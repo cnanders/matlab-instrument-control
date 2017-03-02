@@ -178,7 +178,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   implements this (which may access more than one HardwareIO
         %   instance) implements this function
         fhValidateDest
-        dValRaw % value in raw units (updated by clock)
         
         
         uipStores % UIPopupStruct
@@ -1039,27 +1038,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             try
                 
-                %AW 2014-9-9
-                %TODO : this should be refactored in a readRaw function
-                %see HardwareO for example
-                %make sure diode etc have it also
-               
                 % 2016.11.02 CNA always cast as double.  Underlying unit
                 % may not be double
-                
-                this.dValRaw = this.getDevice().get();  
-                
-                
-                % 2014.05.19 
-                % Need to update a property lIsThere which is true when
-                % the destination and the position match within a tolerance
-                % (for now we will set tolerance to zero)
-                % 2014.11.19: changing this so that there is a tolerance:
-                
-                
-                % 2014.11.20: Linking this check to the device call which asks
-                % stage if it's ready, which means that it's either stopped
-                % or reached its target.
                 
                 if ~this.lDisableSet
                     this.lReady = this.getDevice().isReady();
@@ -1070,12 +1050,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 end
                 
                 this.updateDisplayValue();
-                
                 this.updateInitializedButton();
-                
-                
-                
-                
+                                
                
             catch err
                 this.msg(getReport(err),2);
