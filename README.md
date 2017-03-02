@@ -1,4 +1,4 @@
-MATLAB Instrument Control is a namespaced, object-oriented MATLAB library for programmatically creating GUIs that control scientific instrumentation.  
+MATLAB Instrument Control (MIC) is a namespaced, object-oriented MATLAB library for programmatically creating GUIs that control scientific instrumentation.  
 
 # Contents
 
@@ -27,7 +27,7 @@ MATLAB Instrument Control is a namespaced, object-oriented MATLAB library for pr
 <a name="common-overview"></a>
 ## Overview
 
-The MIC library provides namespaced, object-oriented wrappers around most of MATLAB’s `uicontrol` elements.  They are located at `mic.ui.common.*`.  The following code can be used to create “MIC” versions of `edit` and `toggle` uicontrols. 
+The MIC library provides namespaced, object-oriented wrappers around most of MATLAB’s `uicontrol` elements.  They are located at `mic.ui.common.*`.  The following code can be used to create “MIC” versions of `edit` and `toggle` uicontrols, for example. 
 
 ```matlab
 % Instantiation
@@ -116,7 +116,7 @@ Each `mic.ui.common.*` UI control implements at least the `mic.interface.ui.comm
 <a name="common-code"></a>
 ## Code Examples
 
-`tests/ui/common/*` contains working code examples for building each `mic.ui.common.*` class and responding to the events that they emit. 
+`tests/ui/common/*` contains working code examples for building each `mic.ui.common.*` class and responding to its events. 
 
 
 <a name="device"></a>
@@ -228,14 +228,16 @@ All `mic.ui.device.*` UI controls expose a full-featured API that allows them to
 ### Application
 `examples/app/*` is an application that builds a UI for a made-up instrument.  The made-up instrument has two motorized stages (x, and y), an internal text setting, and a binary switch.  It is assumed that the vendor provided a device API that lets MATLAB talk to the instrument from the command line.  Our job is to build a UI.  
 
-This example demonstrates how to hook up an arbitrary vendor-provided API to `mic.ui.device.*` UI controls.  This process involves building “translators“ that translate the vendor-provided API into the `mic.interface.device.*` interfaces that the UI controls are expecting.  It also demonstrates how consume data from the UI controls using their internal API. 
+This example demonstrates how to hook up an arbitrary vendor-provided API to `mic.ui.device.*` UI controls.  This process involves building “translators“ that translate the vendor-provided API into the `mic.interface.device.*` interfaces that the UI controls require.  It also demonstrates how consume data from the UI controls using their internal API. 
 
 <a name="control-local-variables"></a>
 # Controlling Local Variables Instead of Hardware
 
-The only requirement of the `device` provided to `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  If you want to implement a `device` to set and get local data that a MATLAB application can consume, go for it.  In fact, the work is already done for you! This is precisely what happens when `mic.ui.device.*` UI controls are in “virtual” mode.  See `examples/app` for a working code example that consumes user-controled local data with a MATLAB application.
+The only requirement of the `device` provided to `mic.ui.device.*` UI controls is that it implements `mic.interface.device.*`. *How* it implents that interface is entirely up to you.  If you want to implement a `device` to set and get local data that a MATLAB application can consume, go for it.  In fact, the work is already done for you as this is precisely what happens when `mic.ui.device.*` UI controls are in “virtual” mode.  See `examples/app` for a working code example that consumes user-controled local data with a MATLAB application.
 
+# Why MATLAB?
 
+MATLAB is ubiquitous in science.  
 
 # Why Not Guide and MATLAB App Designer?
 
