@@ -89,7 +89,7 @@ classdef   GetSetNumber < mic.interface.ui.device.Base
         %display unit and abs/rel state
         
         d = getValRaw(this)
-        %VALRAW Get the value in raw units. 
+        %VALRAW Get the value in  raw units. 
         
         % @return { struct 1x1 }
         st = getUnit(this)

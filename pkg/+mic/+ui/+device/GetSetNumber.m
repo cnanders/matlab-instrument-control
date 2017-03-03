@@ -157,9 +157,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         u8Plus = imread(fullfile(mic.Utils.pathImg(), 'jog', 'axis-step-forward-24-7.png'));
         u8Minus = imread(fullfile(mic.Utils.pathImg(), 'jog', 'axis-step-back-24-7.png'));
         
-        u8Rel = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '1', 'rel-24.png'));
-        u8Abs = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '1', 'abs-24.png'));
-        u8Zero = imread(fullfile(mic.Utils.pathImg(), 'zero', 'axis-zero-24-2.png'));
+        %u8Rel = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '1', 'rel-24.png'));
+        %u8Abs = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '1', 'abs-24.png'));
+        %u8Zero = imread(fullfile(mic.Utils.pathImg(), 'zero', 'axis-zero-24-2.png'));
+        
+        u8Rel = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '5', 'rel-24.png'));
+        u8Abs = imread(fullfile(mic.Utils.pathImg(), 'abs-rel', '5', 'abs-24.png'));
+        u8Zero = imread(fullfile(mic.Utils.pathImg(), 'set', 'set-24.png'));
         
         
         % @param {ConfigGetSetNumber 1x1} [config = new ConfigGetSetNumber()] - the config instance
@@ -871,8 +875,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
         
         function dOut = getValRaw(this)
-        %VALRAW Get the value (not the destination) in raw units. This
-        %value is also accessible with the dValRaw property
+        %VALRAW Get the value (not the destination) in raw units. 
            dOut = this.getDevice().get(); 
         end
         
@@ -1142,7 +1145,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uitRel = mic.ui.common.Toggle( ...
                 'cTextFalse', 'abs', ... % off (showing abs)
                 'cTextTrue', 'rel', ... % on (showing rel)
-                'lImg', false, ...
+                'lImg', true, ...
                 'u8ImgOff',  this.u8Abs, ...
                 'u8ImgOn', this.u8Rel ...
             );
