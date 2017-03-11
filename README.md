@@ -207,7 +207,7 @@ The `device` implementation is responsible for communicating with hardware when 
 <a name="device-virtual"></a>
 ## “Virtual” `devices`
 
-All device UI controls have a “Device” toggle.  When the “Device” toggle is set to `false` (the default), `device` calls, e.g., `device.get()`,  are routed to a “virtual” `device`.  This is useful during the development phase before harware is available. 
+All device UI controls have a “Device” toggle.  When the “Device” toggle is set to `false` (the default), `device` calls, e.g., `device.get()`,  are routed to a “virtual” `device`.  This is useful during the development phase before hardware is available. 
 
 All `mic.ui.device.*` UI controls automatically create their own “virtual” `device` on instantiation; virtualization of hardware is supported by default. Examples:
 
@@ -242,6 +242,11 @@ MATLAB is ubiquitous in science.
 # Why Not Guide and MATLAB App Designer?
 
 [Guide](https://www.mathworks.com/discovery/matlab-gui.html) and [MATLAB App Designer](https://www.mathworks.com/products/matlab/app-designer.html) can be used to create UIs for simple applications that require user control of local data.  Unfortunately, the cookie-cutter .m file that these tools output lacks the organizational structure that large, complicated projects require. Moreover, there is no well-defined interface for hooking into hardware. 
+
+# Hungarian Notation
+
+This repo uses [MATLAB Hungarian notation](https://github.com/cnanders/matlab-hungarian) for variable names.  
+
 
 <!--
 # Notes
