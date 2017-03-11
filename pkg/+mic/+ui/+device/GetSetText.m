@@ -182,9 +182,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         % See also HARDWAREIO, INIT, DELETE       
             
         
-            if ~isempty(this.clock)
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+            
             
             dHeight = this.dHeight;
             if this.lShowLabels
@@ -605,6 +603,10 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             this.uibtPlay.setTooltip('Go to goal');
             
             this.load();
+            
+            if ~isempty(this.clock)
+                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            end
             
             
         end

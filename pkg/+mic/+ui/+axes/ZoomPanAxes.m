@@ -43,9 +43,7 @@ classdef ZoomPanAxes < mic.Base
     
 	properties
                 
-        dXPan
-        dYPan
-        dZoom
+        
         hHggroup
                 
     end
@@ -56,6 +54,22 @@ classdef ZoomPanAxes < mic.Base
     
     properties (Access = private)
          
+        
+        lDragging = false
+        
+        dXDrag
+        dYDrag
+        
+        dDragStartLeft
+        dDragStartLeftRel
+        dDragStartBottom
+        dDragStartBottomRel
+        
+        dXPan
+        dYPan
+        dZoom
+        
+        hParent
         hPanel
         hSliderZoom
         hSliderXPan
@@ -130,14 +144,15 @@ classdef ZoomPanAxes < mic.Base
                 
         function build(this, hParent, dLeft, dTop)
             
-            
+            this.hParent = hParent
 
             % Panel
             this.hPanel = uipanel(...
-                'Parent', hParent,...
+                'Parent', this.hParent,...
                 'Units', 'pixels',...
                 'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([dLeft dTop this.dAxesWidth this.dAxesHeight], hParent) ...
+                'Position', mic.Utils.lt2lb([dLeft dTop this.dAxesWidth this.dAxesHeight], this.hParent), ...
+                'ButtonDownFcn', @this.onPanelButtonDown ...
             );
         
             % 'Title', 'Reticle Coarse Stage',...
@@ -162,11 +177,8 @@ classdef ZoomPanAxes < mic.Base
                 'DataAspectRatio', [1 1 1],...
                 'PlotBoxAspectRatio', [this.dAxesWidth this.dAxesHeight 1],...
                 'HandleVisibility', 'on', ...
-                'ButtonDownFcn', @this.handleAxesClick ...
+                'ButtonDownFcn', @this.onAxesButtonDown ...
             );
-            
-        
-            
             
             this.hSliderXPan = uicontrol(...
                 'Parent', this.hPanel,...
@@ -203,6 +215,7 @@ classdef ZoomPanAxes < mic.Base
                 'Style', 'slider', ...
                 'Min', this.dZoomMin, ...
                 'Max', this.dZoomMax, ...
+                'Callback', @this.onSliderZoom, ...
                 'Value', 1, ...
                 'SliderStep', [this.dMinorStep this.dMajorStep],...
                 'Position', mic.Utils.lt2lb( ...
@@ -239,16 +252,29 @@ classdef ZoomPanAxes < mic.Base
             %}
                         
             
-            lh2 = addlistener(this.hSliderXPan, 'ContinuousValueChange', @this.handleSliderXPan);
-            lh3 = addlistener(this.hSliderYPan, 'ContinuousValueChange', @this.handleSliderYPan);
-            lh1 = addlistener(this.hSliderZoom, 'ContinuousValueChange', @this.handleSliderZoom);
+            lh2 = addlistener(this.hSliderXPan, 'ContinuousValueChange', @this.onSliderXPan);
+            lh3 = addlistener(this.hSliderYPan, 'ContinuousValueChange', @this.onSliderYPan);
+            lh1 = addlistener(this.hSliderZoom, 'ContinuousValueChange', @this.onSliderZoom);
             
             
-            this.hHggroup = hggroup('Parent', this.hAxes);
-            this.dZoom = 1;
+            this.hHggroup = hggroup(...
+                'Parent', this.hAxes, ...
+                'ButtonDownFcn', @this.onGroupButtonDown ...
+            );
             
+            % set(this.hSliderZoom, 'Value', .99);
+            set(this.hSliderZoom, 'Value', 1);
+            this.onSliderZoom()
+            set(this.hParent, 'WindowScrollWheelFcn', @this.onScrollWheel);
             
-            set(hParent, 'WindowScrollWheelFcn', @this.handleScrollWheel);
+            set(this.hParent,'WindowButtonDownFcn', @this.onWindowButtonDown);
+            set(this.hParent,'WindowButtonUpFcn', @this.onWindowButtonUp);
+            set(this.hParent,'WindowButtonMotionFcn', @this.onWindowButtonMotion);
+            % set(this.hParent,'WindowFocusLostFcn', @this.onWindowFocusLost);
+            %set(this.hParent,'KeyPressFcn', @this.onKeyPress);
+            %set(this.hParent,'KeyReleaseFcn', @this.onKeyRelease);
+            %set(this.hParent,'ModeStartFcn', @this.onModeStart);
+            %set(this.hParent,'ModeStopFcn', @this.onModeEnd);
 
             
         end
@@ -294,9 +320,27 @@ classdef ZoomPanAxes < mic.Base
             
         end
         %}
+
         
-        function this = set.dZoom(this, dVal)
+        function d = getPanX(this)
+            d = get(this.hSliderXPan, 'Value');
+        end
+        
+        function d = getPanY(this)
+            d = get(this.hSliderYPan, 'Value');
+        end
+        
+        function d = getZoom(this)
+            d = get(this.hSliderZoom, 'Value'); 
+        end
                 
+
+    end
+    
+    methods (Access = private)
+        
+        function updateLimitsOnZoom(this)
+            
             % Depending on the aspect ratio of the axes vs the aspect ratio
             % of the content you want to display within the axes, we do
             % different things for zoom:
@@ -330,7 +374,8 @@ classdef ZoomPanAxes < mic.Base
             % current limits in x and y and then shift the newly scaled
             % (zoomed) limits by the current center position.
         
-           
+            dVal = get(this.hSliderZoom, 'Value'); 
+            
             dXLimits = get(this.hAxes, 'Xlim');
             dYLimits = get(this.hAxes, 'Ylim');
             
@@ -462,11 +507,11 @@ classdef ZoomPanAxes < mic.Base
             set(this.hSliderXPan, 'SliderStep', [this.dMinorStep/dVal this.dMajorStep/dVal]);
             set(this.hSliderYPan, 'SliderStep', [this.dMinorStep/dVal this.dMajorStep/dVal]);
              
-            this.dZoom = dVal;
-                                    
+            
         end
         
-        function this = set.dXPan(this, dVal)
+        function updateLimitsOnPanX(this)
+            dVal = get(this.hSliderXPan, 'Value');
             
             % The pan slider has a value of lowCAL on the left and
             % increases linearly to a value of highCAL on the right. As we
@@ -500,17 +545,18 @@ classdef ZoomPanAxes < mic.Base
             % Set axis limits
             
             set(this.hAxes, 'Xlim', [dLimMin dLimMax]);
-                        
+              
         end
         
-        function this = set.dYPan(this, dVal)
+        function updateLimitsOnPanY(this)
+            
+            dVal = get(this.hSliderYPan, 'Value');
             
             % The pan slider has a value of lowCAL on the left and
             % increases linearly to a value of highCAL on the right. As we
             % pan, we want to keep the zoom level fixed.  This means we
             % need to make sure the xlim and ylim properties have the same
             % range (max-min) before and after the pan.
-            
             
             dLimits = get(this.hAxes, 'Ylim');
             dRange = dLimits(2) - dLimits(1);
@@ -537,25 +583,19 @@ classdef ZoomPanAxes < mic.Base
             % Set axis limits
             
             set(this.hAxes, 'Ylim', [dLimMin dLimMax]);
-                        
-        end
             
-
-    end
-    
-    methods (Access = private)
-        
-        
-        function handleSliderXPan(this, ~, ~)
-            this.dXPan = get(this.hSliderXPan, 'Value');
         end
         
-        function handleSliderYPan(this, ~, ~)
-            this.dYPan = get(this.hSliderYPan, 'Value');
+        function onSliderXPan(this, ~, ~)
+            this.updateLimitsOnPanX()
         end
         
-        function handleSliderZoom(this, ~, ~)
-            this.dZoom = get(this.hSliderZoom, 'Value'); 
+        function onSliderYPan(this, ~, ~)
+            this.updateLimitsOnPanY()
+        end
+        
+        function onSliderZoom(this, ~, ~)
+            this.updateLimitsOnZoom()
         end        
                 
         function init(this)
@@ -568,9 +608,142 @@ classdef ZoomPanAxes < mic.Base
 
         end 
         
-        function handleAxesClick(this, src, evt)
+        %{
+        set(this.hParent,'WindowButtonDownFcn', @this.onWindowButtonDown);
+            set(this.hParent,'WindowButtonUpFcn', @this.onWindowButtonUp);
+            set(this.hParent,'WindowButtonMotionFcn', @this.onWindowButtonMotion);
+            set(this.hParent,'WindowFocusLostFcn', @this.onWindowFocusLost);
+       %}     
             
-            this.msg('ZoomPanAxis.handleAxesClick()');
+        function onWindowButtonDown(this, src, evt)
+            
+            this.lDragging = true;
+            
+            % Get the scene position the mouse clicked
+            
+            % [this.dXDrag, this.dYDrag] = this.getScenePositionOfMouse();
+             %{
+            cMsg = sprintf(...
+                'onWindowButtonDown clicked (%1.3f, %1.3f)', ...
+                this.dXDrag, ...
+                this.dYDrag ...
+            );
+            %}
+        
+            
+            [this.dDragStartLeftRel, this.dDragStartBottomRel] = this.getRelativePositionOfMouse();
+            [this.dDragStartLeft, this.dDragStartBottom, dWidth, dHeight] = this.getVisibleSceneLBWH();
+           
+            cMsg = sprintf(...
+                'onWindowButtonDown clicked REL (%1.3f, %1.3f); left,bottom = (%1.3f, %1.3f)', ...
+                this.dDragStartLeftRel, ...
+                this.dDragStartBottomRel, ...
+                this.dDragStartLeft, ...
+                this.dDragStartBottom ...
+            );
+            this.msg(cMsg);
+            
+        end
+        
+        function onWindowButtonUp(this, src, evt)
+            
+            this.lDragging = false;
+            this.msg('onWindowButtonUp');
+            
+        end
+        
+        function d = getVisibleSceneWidth(this)
+            dXLim = get(this.hAxes, 'Xlim');
+            d = dXLim(2) - dXLim(1);
+        end
+        
+        function d = getVisibleSceneHeight(this)
+            dYLim = get(this.hAxes, 'Ylim');
+            d = dYLim(2) - dYLim(1);
+        end
+        
+        function d = getVisibleSceneLeft(this)
+            dXLim = get(this.hAxes, 'Xlim');
+            d = dXLim(1);
+            
+        end
+        
+        function d = getVisibleSceneBottom(this)
+            dYLim = get(this.hAxes, 'Ylim');
+            d = dYLim(1);
+        end
+        
+        function [dLeft, dBottom, dWidth, dHeight] = getVisibleSceneLBWH(this)
+            
+            dXLim = get(this.hAxes, 'Xlim');
+            dYLim = get(this.hAxes, 'Ylim');
+            
+            dWidth = dXLim(2) - dXLim(1);
+            dHeight = dYLim(2) - dYLim(1);
+           
+            dLeft = dXLim(1);
+            dBottom = dYLim(1);
+            
+        end
+        
+        function onWindowButtonMotion(this, src, evt)
+            
+            if ~this.lDragging
+                return
+            end
+            
+            % Adjust the left and bottom limit of the axes to keep
+            % this.dXDrag and dYDrag under the mouse
+            
+            [dLeftRel, dBottomRel] = this.getRelativePositionOfMouse();
+            [dLeft, dBottom, dWidth, dHeight] = this.getVisibleSceneLBWH();
+            
+            % x1 = left1 + width * leftRel1 
+            % x2 = left2 + width * leftRel2
+            %
+            % Set x2 = x1
+            %
+            % left1 + width * leftRel1 = left2 + width * leftRel2
+            % left1 + width * (leftRel1 - leftRel2) = left2
+            
+            
+            dLeft2 = this.dDragStartLeft + dWidth * (this.dDragStartLeftRel - dLeftRel);
+            dBottom2 = this.dDragStartBottom + dHeight * (this.dDragStartBottomRel - dBottomRel);
+            
+            % cMsg = sprintf('L_before %1.3f, L_after % 1.3f', this.dDragStartLeft, dLeft2);
+            % this.msg(cMsg);
+            
+            dXPan = dLeft2 + dWidth / 2;
+            dYPan = dBottom2 + dHeight / 2;
+            
+            set(this.hSliderXPan, 'Value', dXPan);
+            set(this.hSliderYPan, 'Value', dYPan);
+
+            this.updateLimitsOnPanX();
+            this.updateLimitsOnPanY();
+            
+            % this.msg('onWindowButtonMotion');
+            
+        end
+        
+        function onWindowFocusLost(this, src, evt)
+            this.msg('onWindowFocusLost');
+            
+        end
+        
+        function onGroupButtonDown(this, src, evt)
+            
+            this.msg('.onGroupButtonDown()');
+            
+            
+        end
+        
+        function onAxesButtonDown(this, src, evt)
+            
+            % 2017.03.09 Right now this only fires when the user clicks on
+            % the background, i.e., not on a patch feature that has been drawn
+            
+            this.msg('.onAxesButtonDown()');
             
             % Update crosshair
             
@@ -582,30 +755,196 @@ classdef ZoomPanAxes < mic.Base
 
         end
         
-        function handleScrollWheel(this, src, evt)
+        function onPanelButtonDown(this, src, evt)
+            
+            % 2017.03.09 Right now this only fires when the user clicks on
+            % the background, i.e., not on a patch feature that has been drawn
+            
+            this.msg('onPanelButtonDown()');
+            
+            % Update crosshair
+            
+            % dCursor = get(this.hFigure, 'CurrentPoint')     % [left bottom]
+            dAxes = get(this.hAxes, 'Position');             % [left bottom width height]
+            dPanel = get(this.hPanel, 'Position');
+            
+            notify(this,'eClick');
+
+        end
+        
+        % Get fractional position of mouse cursor relative to position
+        % of the bounding panel
+        
+        function [dLeftRel, dBottomRel] = getRelativePositionOfMouse(this)
+             
+            % [left bottom] location of cursor in parent figure.  
+            % Will need to check if the cursor is inside this axes
+            dCursor = get(this.hParent, 'CurrentPoint');
+            
+            % {double 1x1} dLeft mouse position relative to left side of
+            % the parent figure (pixels)
+            dLeft = dCursor(1);
+            
+            % {double 1x1} dBottom mouse position relative to bottom of
+            % the parent figure (pixels)
+            dBottom = dCursor(2);
+            
+            dPanelPos = get(this.hPanel, 'Position');
+            dPanelLeft =      dPanelPos(1);
+            dPanelBottom =    dPanelPos(2);
+            dPanelWidth =     dPanelPos(3);
+            dPanelHeight =    dPanelPos(4);
+                    
+            % Fractional position how far mouse is from left bottom of the
+            % panel.  (1,1) is all the way in the top right corner. 
+            
+            dLeftRel = (dLeft - dPanelLeft) / dPanelWidth;
+            dBottomRel = (dBottom - dPanelBottom) / dPanelHeight;
+            
+            %{
+            cMsg = sprintf('panel (L,B) (%1.0f,%1.0f), mouse (%1.0f,%1.0f) rel (%1.3f, %1.3f)', ...
+                dPanelLeft, ...
+                dPanelBottom, ...
+                dLeft, ...
+                dBottom, ...
+                dLeftRel, ...
+                dBottomRel ...
+            );
+            
+            this.msg(cMsg);
+            %}
+            
+        end
+        
+        function [dX, dY] = getScenePositionOfMouse(this)
+            
+            [dLeftRel, dBottomRel] = this.getRelativePositionOfMouse();
+            
+            dXLim = get(this.hAxes, 'Xlim');
+            dYLim = get(this.hAxes, 'Ylim');
+            
+            dWidth = dXLim(2) - dXLim(1);
+            dHeight = dYLim(2) - dYLim(1);
+           
+            dLeft = dXLim(1);
+            dBottom = dYLim(1);
+            
+            dX = dLeft + dWidth * dLeftRel;
+            dY = dBottom + dHeight * dBottomRel;
+            
+        end
+        
+        
+        
+       
+        function onScrollWheel(this, src, evt)
             
            % this.msg(num2str(evt.VerticalScrollCount));
+            
+           % Store x and y limits before zoom for later
            
+           dXLim1 = get(this.hAxes, 'Xlim');
+           dYLim1 = get(this.hAxes, 'Ylim');
+            
+           dWidth1 = dXLim1(2) - dXLim1(1);
+           dHeight1 = dYLim1(2) - dYLim1(1);
+           
+           dLeft1 = dXLim1(1);
+           dBottom1 = dYLim1(1);
+            
            % Increase/decrease zoom by a constant raised to the power
            % VerticalScrollCount
            % scale factor
            
            dMult = 1.02^(-evt.VerticalScrollCount);
-           dNewZoom = this.dZoom*dMult;
+           dZoom1 = this.getZoom();
+           dZoom2 = dZoom1 * dMult;
            
-           % this.msg(sprintf('zoom (before) %1.2f', this.dZoom));
-           % this.msg(sprintf('zoom (after) %1.2f', dNewZoom));
-           
-           if (dNewZoom < this.dZoomMin)
-               dNewZoom = this.dZoomMin;
+           if dZoom2 < 1
+               return
            end
            
-           if (dNewZoom > this.dZoomMax)
-               dNewZoom = this.dZoomMax;
+           if dZoom2 > this.dZoomMax
+               return
            end
            
-           this.dZoom = dNewZoom;
-           set(this.hSliderZoom, 'Value', dNewZoom);
+           % this.msg(sprintf('zoom (before) %1.2f', dZoom1));
+           % this.msg(sprintf('zoom (after) %1.2f', dZoom2));
+           
+           if (dZoom2 < this.dZoomMin)
+               dZoom2 = this.dZoomMin;
+           end
+           
+           if (dZoom2 > this.dZoomMax)
+               dZoom2 = this.dZoomMax;
+           end
+           
+           
+           set(this.hSliderZoom, 'Value', dZoom2);
+           this.updateLimitsOnZoom();
+           
+            
+            % 2 2017.03.09
+            % Now want the scene coordinate under the mouse to stay under
+            % the mouse during zoom (like Google Maps).  This requires
+            % adjusting pan x and pan y during the zoom.  
+                       
+            [dLeftRel, dBottomRel] = this.getRelativePositionOfMouse();
+
+            
+            % Use fractional position and limits to compute the scene
+            % coordinate that the mouse is over.  
+            % dXMin <= x <= dXMax
+            % dYMin <= x <= dYMax
+                        
+            dX = dLeft1 + dWidth1 * dLeftRel;
+            dY = dBottom1 + dHeight1 * dBottomRel;
+            
+            % After zooming, we need to satisfy the above equations again.
+            %
+            % Since the mouse does not move:
+            % dLeftRel stays constant 
+            % dBottomRel stays constnat
+            %
+            % Additionally, we want the scene coordinate under the mouse 
+            % to stay the same before and after.  This
+            % lets us solve for a new lower x lim and lower y lim
+            
+            % x1 = xLeft1 + width1 * rel (before)
+            % x2 = xLeft2 + width2 * rel (after)
+           
+            
+            % Set: x1 = x2 
+            % Set: width2 = width1 / relzoom
+            % (positive zoom causes that the width to shrink by the zoom
+            % factor)
+            
+            
+            % Solution
+            %
+            % (before)              = (after)
+            % xLeft1 + width1 * rel = xLeft2 + (width1 / relzoom) * rel
+            % xLeft1 + width1 * rel * (1 - 1/relzoom) = xLeft2
+            
+            % Now solve for pan
+            %
+            % Pan = xLeft2 + width2 / 2
+            % Pan = xLeft2 + width1 / relzoom / 2
+                       
+            % Update the value of the pan 
+             
+            dLeft2 = dLeft1 + dWidth1 * dLeftRel * ( 1 - 1/dMult);
+            dBottom2 = dBottom1 + dHeight1 * dBottomRel * (1 - 1/dMult);
+
+            dXPan2 = dLeft2 + dWidth1 / dMult / 2;
+            dYPan2 = dBottom2 + dHeight1 / dMult / 2;
+
+            set(this.hSliderXPan, 'Value', dXPan2);
+            set(this.hSliderYPan, 'Value', dYPan2);
+
+            this.updateLimitsOnPanX();
+            this.updateLimitsOnPanY();
+          
                        
         end
 

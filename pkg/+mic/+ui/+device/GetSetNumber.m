@@ -328,9 +328,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % See also HARDWAREIO, INIT, DELETE       
             
         
-            if ~isempty(this.clock)
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+            
                                     %'BorderWidth',0, ... 
 
             dHeight = this.dHeight;
@@ -1319,6 +1317,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             % this.updateRange();
             this.load();
+            
+            if ~isempty(this.clock)
+                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            end
             
             
         end
