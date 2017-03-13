@@ -15,6 +15,10 @@ Need to make contracts inside of setApi to check to see if the device is an inst
 ### mic.ui.device.GetSetText
 - Adding clock task inside init() instead of build()
 
+# 1.0.0-beta.2
+
+- Renamed /pkg to /src
+
 # 1.0.0-beta.1
 
 - Namespaced the library (massive restructuring)

@@ -1,5 +1,5 @@
 [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
-cDirMic = fullfile(cDirThis, '..', '..', '..', 'pkg');
+cDirMic = fullfile(cDirThis, '..', '..', '..', 'src');
 addpath(genpath(cDirMic));
 
 purge
