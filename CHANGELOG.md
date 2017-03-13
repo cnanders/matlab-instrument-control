@@ -3,6 +3,17 @@
 
 Need to make contracts inside of setApi to check to see if the device is an instance of mic.interface.device.*
 -->
+# 1.0.0-beta.2
+
+### mic.ui.axes.ZoomPanAxes
+- When zooming, the scene coordinate under the mouse now stays fixed like in Google Maps.  This required adjusting pan x and pan y during zoom.
+- Now supports click to pan.  Children graphical objects, e.g., `patch` with `HitTest` set to `on` (the default) will absorb/block the click from reaching to the low-level `hggroup`.  Anything you want to be able to “click to pan”, must have its `HitTest` property set to `off`.
+
+### mic.ui.device.GetSetNumber
+- Adding clock task inside init() instead of build()
+
+### mic.ui.device.GetSetText
+- Adding clock task inside init() instead of build()
 
 # 1.0.0-beta.2
 
