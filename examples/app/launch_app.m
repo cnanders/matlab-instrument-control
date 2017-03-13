@@ -1,7 +1,7 @@
 [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
 
 % mic library
-cDirMic = fullfile(cDirThis, '..', '..', 'pkg');
+cDirMic = fullfile(cDirThis, '..', '..', 'src');
 addpath(genpath(cDirMic));
 
 % this application
