@@ -4,11 +4,11 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
 
     properties (Access = private)
         clock                      % Clock
-        dPeriod = 50/1000;
+        dPeriod = 200/1000;
         lIsInitialized = false;
         
         % {uint8 1x1} number of clock periods to move through path
-        u8PathCycles = 5; 
+        u8PathCycles = 10; 
         
         % {uint8 1x1} current path cycle (resets after move complete)
         u8PathCycle = 1; 
