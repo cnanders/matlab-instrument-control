@@ -13,7 +13,7 @@ Need to make contracts inside of setApi to check to see if the device is an inst
 ### mic.ui.device.GetSetNumber
 
 - Updated `cal2raw()` and `raw2cal()` to support inverse units.
-- Updated `updateRange()` to support inverse units
+- Updated `updateRange()` to support inverse units.  This includes a special case when the non-inverted calibrated range spans zero.  In this scenario, the inverted range looks like [-inf -X] [Y +inf].
 
 
 # 1.0.0-beta.2
