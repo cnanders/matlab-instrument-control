@@ -8,7 +8,7 @@ Need to make contracts inside of setApi to check to see if the device is an inst
 
 ### mic.config.GetSetNumber
 
-- Added support for “invert” property in config files.  Defaults to false if not provided in the configuration file
+- Added support for “invert” property in config files.  Unit structures now have a `invert` property of type `logical` that defaults to false if the “invert” field is not provided in the config .json file. 
 
 ### mic.ui.device.GetSetNumber
 
