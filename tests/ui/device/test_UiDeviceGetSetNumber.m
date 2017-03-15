@@ -10,9 +10,12 @@ test.build(h, 10, 10);
 
 
 test.ui.getUnit()
-test.ui.setDestCal(15, 'mm')
-test.ui.getDestCal('mm')
-test.ui.setUnit('um')
+test.ui.setDestCal(15, 'nm')
+test.ui.getDestCal('nm')
+test.ui.setDestCal(92, 'eV')
+test.ui.getDestCal('eV')
+
+% test.ui.setUnit('um')
 
 %{
 clock = mic.Clock('master');   

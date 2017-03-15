@@ -146,6 +146,13 @@ classdef GetSetNumber < mic.Base
                 if ischar(this.ceUnits{n}.precision)
                     this.ceUnits{n}.precision = eval(this.ceUnits{n}.precision);
                 end
+                
+                if ~isfield(this.ceUnits{n}, 'invert')
+                    % Default to false
+                    this.ceUnits{n}.invert = false;
+                else
+                    this.ceUnits{n}.invert = eval(this.ceUnits{n}.invert);
+                end
             end
             
         end

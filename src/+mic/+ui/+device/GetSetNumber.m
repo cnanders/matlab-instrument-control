@@ -1428,24 +1428,75 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                     
         end
 
+        
         function updateRange(this)
            
             if ~this.lShowRange
                 return
             end
             
-            dMin = this.raw2cal(this.config.dMin, this.getUnit().name, this.uitRel.get());
-            dMax = this.raw2cal(this.config.dMax, this.getUnit().name, this.uitRel.get());
+            stUnit = this.getUnit() ;
+             
+            if stUnit.invert
+                
+                % Need to check if the cal value (including offset
+                % abs/rel) of rawMin/ rawMax surround zero.  If they do,
+                % there will be two ranges. One from [-inf to 1/dMin] and
+                % one from [1/dMax to +inf].  This is due to the inversion
+                % and zero mapping to infinity.
+                
+                dCalMin = this.raw2cal(this.config.dMin, stUnit.name, this.uitRel.get());
+                dCalMax = this.raw2cal(this.config.dMax, stUnit.name, this.uitRel.get()); 
+                
+                if dCalMin < 0 && dCalMax > 0
+                    
+                    
+                    cVal = sprintf(...
+                        '[-inf, %.*f] [%.*f, inf]', ...
+                        stUnit.precision, ...
+                        dCalMin, ...
+                        stUnit.precision, ...
+                        dCalMax ...
+                    );
+                else
+                    
+                    % Since we are inverting, the min value will be the cal
+                    % val of dMax and the max value will be the cal value
+                    % of dMin
+                    
+                    dCalMin = this.raw2cal(this.config.dMax, stUnit.name, this.uitRel.get());
+                    dCalMax = this.raw2cal(this.config.dMin, stUnit.name, this.uitRel.get());
+
+                    cVal = sprintf(...
+                        '[%.*f, %.*f]', ...
+                        stUnit.precision, ...
+                        dCalMin, ...
+                        stUnit.precision, ...
+                        dCalMax ...
+                    );
+
+                    
+                end
+                
+            else
+                
+                dCalMin = this.raw2cal(this.config.dMin, stUnit.name, this.uitRel.get());
+                dCalMax = this.raw2cal(this.config.dMax, stUnit.name, this.uitRel.get());
+
+                cVal = sprintf(...
+                    '[%.*f, %.*f]', ...
+                    stUnit.precision, ...
+                    dCalMin, ...
+                    stUnit.precision, ...
+                    dCalMax ...
+                );
+                
+            end
             
-            cVal = sprintf(...
-                '[%.*f, %.*f]', ...
-                this.getUnit().precision, ...
-                dMin, ...
-                this.getUnit().precision, ...
-                dMax ...
-            );
-            this.uitxRange.set(cVal);            
+            this.uitxRange.set(cVal); 
+            
         end
+        
         function updateDisplayValue(this)
             
             % Precision can be a number, or an asterisk (*) to refer to an
@@ -1539,16 +1590,35 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %
         % See also RAW2CAL
         
-            stUnitDef = this.config.unit(cUnit);
-                    
+            stUnit = this.config.unit(cUnit);
+            
+            
+            % INVERT == false
             % cal = slope * (raw - offset)
             % (cal / slope) + offset = raw
             
+            
+            % INVERT == true
+            % cal = slope * (raw - offset)^-1
+            % slope / cal = raw - offset
+            % raw = slope / cal + offset
+            
+            
+            
             if (lRel)
                 % Offset is replaced by the stored dZeroRaw in rel mode
-                dOut = dCal/stUnitDef.slope + this.dZeroRaw;
+                
+                if stUnit.invert
+                    dOut = stUnit.slope / dCal + this.dZeroRaw;
+                else
+                    dOut = dCal/stUnit.slope + this.dZeroRaw;
+                end
             else
-                dOut = dCal/stUnitDef.slope + stUnitDef.offset;
+                if stUnit.invert
+                    dOut = stUnit.slope / dCal + stUnit.offset;
+                else
+                    dOut = dCal/stUnit.slope + stUnit.offset;
+                end
             end
 
         end
@@ -1563,15 +1633,23 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %
         % See also CAL2RAW
         
-            stUnitDef = this.config.unit(cUnit);
+            stUnit = this.config.unit(cUnit);
 
             % cal = slope * (raw - offset)
             
             if (lRel)
                 % Offset is replaced by the stored dZeroRaw in rel mode
-                dOut = stUnitDef.slope * (dRaw - this.dZeroRaw);
+                if (stUnit.invert)
+                    dOut = stUnit.slope * (dRaw - this.dZeroRaw)^-1;
+                else
+                    dOut = stUnit.slope * (dRaw - this.dZeroRaw);
+                end
             else
-                dOut = stUnitDef.slope * (dRaw - stUnitDef.offset);
+                if stUnit.invert
+                    dOut = stUnit.slope * (dRaw - stUnit.offset)^-1;
+                else
+                    dOut = stUnit.slope * (dRaw - stUnit.offset);
+                end
             end
             
             
@@ -1670,7 +1748,14 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % Subtract EQ1 from EQ2:
             % cal1 - cal0 = slope0 * (-offset1 + offset0)
             % Solve for offset1 (offsets are alway in RAW units)
-            % offset1 = offset0 - (cal1 - cal0)/slope0  
+            % offset1 = offset0 - (cal1 - cal0)/slope0 
+            
+            % 2017.03.15 This works the same way if invert is true,
+            % fortunately.  I didn't write out the math but I think two
+            % things cancel 1: there are different equations since in
+            % invert mode the equation is cal = slope * (raw - offset)^-1
+            % additionally, you have to consider that the value the person
+            % types in is in inverse units.
            
             dNewOffset = this.getUnit().offset - (str2double(ceAnswer{1}) - this.getValCalDisplay())/this.getUnit().slope;
             this.dZeroRaw = dNewOffset;

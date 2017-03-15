@@ -3,6 +3,19 @@
 
 Need to make contracts inside of setApi to check to see if the device is an instance of mic.interface.device.*
 -->
+
+# 1.0.0-beta.3
+
+### mic.config.GetSetNumber
+
+- Added support for “invert” property in config files.  Defaults to false if not provided in the configuration file
+
+### mic.ui.device.GetSetNumber
+
+- Updated `cal2raw()` and `raw2cal()` to support inverse units.
+- Updated `updateRange()` to support inverse units
+
+
 # 1.0.0-beta.2
 
 ### mic.ui.axes.ZoomPanAxes

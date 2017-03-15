@@ -9,17 +9,21 @@
 		},
 		{
 			"name": "eV",
-			"slope": "1/1240",
+			"slope": "1240",
 			"offset": 0,
-			"precision": 1
+			"precision": 3,
+            "invert": "true"
 		},
 		{
 			"name": "keV",
-			"slope": "1/1240/1000",
+			"slope": "1240/1000",
 			"offset": 0,
-			"precision": 1
+			"precision": 3,
+            "invert": "true"
 		}
-	]
+	],
+    "min": 0.1,
+    "max": 40 
 }	
 	
 	
