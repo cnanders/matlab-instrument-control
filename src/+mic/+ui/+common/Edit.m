@@ -481,6 +481,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             this.set(xVal);
             this.lNotify = true;
         end
+        
         function set(this, xVal)
            % @parameter {mixed 1x1} xVal: can be any type the Edit supports
 

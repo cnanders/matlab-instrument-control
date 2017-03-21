@@ -8,7 +8,8 @@ classdef List < mic.Base
     end
     
       
-    properties
+    properties (SetAccess = private)
+        
         ceOptions               % cell of options
         u8Selected              % uint8 of selected options
         ceSelected              % cell of selected options
@@ -68,6 +69,16 @@ classdef List < mic.Base
     methods
         
        % constructor
+       
+       % LEGACY
+       %{
+        ceOptions, ...
+        cLabel, ...
+        lShowDelete, ...
+        lShowMove, ...
+        lShowLabel, ...
+        lShowRefresh ...
+       %}
        
        function this= List(varargin)
            

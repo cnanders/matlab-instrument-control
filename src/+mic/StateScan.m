@@ -64,7 +64,12 @@ classdef StateScan < mic.Base
     %
     % RECIPE must only contain two properties: "unit" {struct} and "values"
     % {cell of struct}
-    
+    %
+    % # Recommended Patterns
+    %
+    % If you need to initialize the system by setting many properties and 
+    % then scan only a couple properties, the first value in "values"
+    % should contain the initial state.  
     
     
     properties (Constant)
@@ -77,29 +82,76 @@ classdef StateScan < mic.Base
  
     end
     
+    
     properties (SetAccess = private)
        
         % {uint8 1x1} index of recipe.values list that is currently executing
-       u8Index  
-       % {cell of struct} list of value structures that define each state
-       ceValues 
+        u8Index  
+        
+        % {cell of struct} list of value structures that define each state
+        ceValues 
        
-       stUnit
+        stUnit
         
     end
     
     properties (Access = private)
        
-       dDelay = 0.02;   % how often isThere() is called
+        % {double 1x1} - how often fhIsAtState() and fhIsAcquired() are
+        % called
+        dDelay = 0.02;  
        
-       cl
-       fhSetState % see constructor
-       fhIsAtState % see constructor
-       fhAcquire % see constructor
-       fhIsAcquired
-       fhOnComplete
-       fhOnAbort
-       lPaused = false;
+        % {mic.Clock 1x1}
+        clock
+        
+        % {logical 1x1} - true when paused
+        lPaused = false;
+        
+        
+        % @param {function_handle} fhSetState(stUnit, stState) - function to update the
+        % N-dimensional (N-motor / N-degree-of-freedom) destination 
+        % of the system and tell the system to go to the destination.
+        % The consumer of this function is responsible for handling
+        % any order of operations, etc. to bring the system to the
+        % state. 
+        % 	@param {struct} stUnit - the unit definition structure 
+        %   @param {struct} stState - the state
+        fhSetState
+        
+        % @param {function_handle} fhIsAtState(stUnit, stState) - function that receives a
+        % state and returns a logical to indicate if they system is
+        % at that state
+        %   @param {struct} stUnit - the unit definition structure 
+        %   @param {struct} stState - the state
+        %   @returns {logical} - true if the system is at the state
+        fhIsAtState
+        
+        % @param {function_handle} fhAcquire(stUnit, stState) - function
+        % that is called after the system reaches each state.  In most cases,
+        % a task or action will be performed inside of this function.
+        %
+        % If the task that needs to be performed is not identical at each
+        % state, states should contain information required to
+        % execute the desired task at that state.  The recommended approach
+        % is to make a "task" property on each state that is an object with
+        % the required information
+        %
+        % Since you are the creator of the state objects, and the creator of the 
+        % handler function, you can do whatever you want.  
+        fhAcquire
+        
+        % @param {function_handle} fhIsAcquired(stUnit, stState) - return true if the
+        % acquire process for the current state is complete.
+        fhIsAcquired
+        
+        % @param {function_handle} fhOnComplete - function to call when
+        % scan has completed successfully.
+        fhOnComplete
+        
+        % @param {function_handle} fhOnAbort - function to call when scan
+        % was stopped prematurely
+        fhOnAbort
+        
        
     end
     
@@ -120,7 +172,7 @@ classdef StateScan < mic.Base
        % constructor
        
         function this= StateScan( ....
-                cl , ...
+                clock, ...
                 stRecipe, ...
                 fhSetState, ...
                 fhIsAtState, ...
@@ -129,37 +181,15 @@ classdef StateScan < mic.Base
                 fhOnComplete, ...
                 fhOnAbort)
           
-        %   @param {clock} cl - the clock
+        
         %   @param {struct} stRecipe - see below
         %       @prop {struct} unit - defines the unit of
         %           every degree of freedom that will be controlled.  See notes
         %           at the top of this class for more explanation.
         %       @prop {cell of any} values - list of value structures that
         %           define each state. 
-        %   @param {function_handle} fhSetState(stUnit, stState) - function to update the
-        %        N-dimensional (N-motor / N-degree-of-freedom) destination 
-        %        of the system and tell the system to go to the destination.
-        %        The consumer of this function is responsible for handling
-        %        any order of operations, etc. to bring the system to the
-        %        state. 
-        %        @param {struct} stUnit - the unit definition structure 
-        %        @param {struct} stState - the state
-        %    @param {function_handle} fhIsAtState(stUnit, stState) - function that receives a
-        %        state and returns a logical to indicate if they system is
-        %        at that state
-        %        @param {struct} stUnit - the unit definition structure 
-        %        @param {struct} stState - the state
-        %        @returns {logical} - true if the system is at the state
-        %    @param {function_handle} fhAcquire - function that performs a
-        %        measurement
-        %    @param {function_handle} fhIsAcquired - return true if the
-        %       acquire process for the current state is complete.
-        %    @param {function_handle} fhOnComplete - function to call when
-        %       scan has completed successfully.
-        %    @param {function_handle} fhOnAbort - function to call when scan
-        %       was stopped prematurely
-       
-            this.cl = cl;
+        
+            this.clock = clock;
             this.stUnit = stRecipe.unit;
             this.ceValues = stRecipe.values;
             this.fhSetState = fhSetState;
@@ -235,7 +265,7 @@ classdef StateScan < mic.Base
             this.fhSetState(this.stUnit, this.ceValues{this.u8Index});
             
             % Start checking the state
-            this.cl.add(@this.handleClockIsAtState, this.id(), this.dDelay); 
+            this.clock.add(@this.handleClockIsAtState, this.id(), this.dDelay); 
             
         end
         
@@ -257,7 +287,7 @@ classdef StateScan < mic.Base
                 this.fhAcquire(this.stUnit);
                 
                 % Start checking for acquire complete
-                this.cl.add(@this.handleClockIsAcquired, this.id(), this.dDelay);
+                this.clock.add(@this.handleClockIsAcquired, this.id(), this.dDelay);
                                 
             end
             
@@ -295,9 +325,9 @@ classdef StateScan < mic.Base
         
         function removeClockTask(this)
             
-            if isvalid(this.cl) && ...
-               this.cl.has(this.id())
-                this.cl.remove(this.id());
+            if isvalid(this.clock) && ...
+               this.clock.has(this.id())
+                this.clock.remove(this.id());
             end 
             
         end
