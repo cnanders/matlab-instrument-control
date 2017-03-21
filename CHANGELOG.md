@@ -4,6 +4,12 @@
 Need to make contracts inside of setApi to check to see if the device is an instance of mic.interface.device.*
 -->
 
+# 1.0.0-beta.4
+
+### mic.ui.device.GetSetNumber
+
+- Added [`dValDeviceDefault` = 0] prop that is now used to set the `dVal` prop of the `mic.device.GetSetNumber` “virtual” device on instantiation.
+
 # 1.0.0-beta.3
 
 ### mic.config.GetSetNumber
