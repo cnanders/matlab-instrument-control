@@ -4,13 +4,17 @@
 cDirMic = fullfile(cDirThis, '..', '..', 'src');
 addpath(genpath(cDirMic));
 
-% this application
-cDirApp = fullfile(cDirThis, '..');
-addpath(genpath(cDirApp));
+% example/app src
+cDirSrc = fullfile(cDirThis, 'src');
+addpath(genpath(cDirSrc));
+
+% vendor
+cDirVendor = fullfile(cDirThis, 'vendor');
+addpath(genpath(cDirVendor));
 
 purge
 
-app = App();
+app = app.App();
 
 %
 % FUN STUFF TO COPY TO THE COMMAND WINDOW

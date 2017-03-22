@@ -10,6 +10,6 @@ This example demonstrates how to hook up an arbitrary vendor-provided API to `mi
 
 Provides a fake device API that mimics something a vendor might provide.  The vendor-provided device API does not match the `mic.interface.device.*` interface that the `mic.ui.device.*` UI classes need
 
-# /translators
+# /src/+app/+device
 
-“Translators” are something that translate one interface into another
+Set of “Translators” that implement `mic.interface.device.*` from a VendorDevice instance

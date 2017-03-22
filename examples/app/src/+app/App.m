@@ -94,10 +94,10 @@ classdef App < handle
             % is no need since you can access thrm through the
             % mic.ui.device.*
 
-            getSetNumberX = VendorDevice2GetSetNumber(this.vendorDevice, 'x');
-            getSetNumberY = VendorDevice2GetSetNumber(this.vendorDevice, 'y');
-            getTextMode = VendorDevice2GetText(this.vendorDevice, 'mode');
-            getSetLogicalAwesome = VendorDevice2GetSetLogical(this.vendorDevice, 'awesome');
+            getSetNumberX = app.device.VendorDevice2GetSetNumber(this.vendorDevice, 'x');
+            getSetNumberY = app.device.VendorDevice2GetSetNumber(this.vendorDevice, 'y');
+            getTextMode = app.device.VendorDevice2GetText(this.vendorDevice, 'mode');
+            getSetLogicalAwesome = app.device.VendorDevice2GetSetLogical(this.vendorDevice, 'awesome');
 
             this.uiDeviceX.setDevice(getSetNumberX);
             this.uiDeviceY.setDevice(getSetNumberY);
