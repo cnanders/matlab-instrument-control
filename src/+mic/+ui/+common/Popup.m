@@ -172,7 +172,7 @@ classdef Popup < mic.Base
                
        end
        
-       function out = val(this)
+       function out = get(this)
            
             % returns a mixed type (whatever type)
             out = this.ceOptions{this.u8Selected};

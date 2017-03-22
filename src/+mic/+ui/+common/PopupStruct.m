@@ -205,7 +205,7 @@ classdef PopupStruct < mic.Base
                
        end
        
-       function out = val(this)
+       function out = get(this)
        %VAL
        %    @returns {struct 1x1} - the u8Selected index of this.ceOptions 
        %        (it is a sctuct)
