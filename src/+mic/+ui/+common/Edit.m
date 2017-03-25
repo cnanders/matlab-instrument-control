@@ -8,16 +8,21 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
 
     properties
 
-        cData = ''  %this is what the textbox contains. feel free to access it directly...
         
-
         % val is not a property because it can be several different types.
         % We use get() and set() methods that force the correct type
     end
 
 
     properties (Access = private)
+
+        % {char 1x1 or 1x2} - 'u8, 'u16', 'u32', 'u64', 'i8, 'i16', 'i32',
+        % 'i64', 's', 'd', 'c' (Hungarin Prefix)
         cType = 'c';
+
+        % {char 1xm} - the text string of the textbox
+        cData = '' 
+        
         cHorizontalAlignment = 'left'
         lShowLabel = true;
         hLabel
@@ -96,7 +101,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
                 'Style', 'edit', ...
                 'String', this.cData, ...
                 'KeyPressFcn',@this.uie_keyPressFcn, ... % 'KeyReleaseFcn', @this.onKeyRelease, ...
-                'Callback', @this.cb, ...
+                'Callback', @this.onEdit, ...
                 'TooltipString', this.cTooltip, ...
                 'ButtonDownFcn',@this.uie_ButtonDownFcn, ...
                 'HorizontalAlignment', this.cHorizontalAlignment ...
@@ -108,12 +113,9 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         end
 
         %% event handlers
-        function cb(this, src, evt)
+        function onEdit(this, src, evt)
 
-            switch src
-                case this.hUI
-                    this.cData = get(src, 'String');
-            end  
+            this.cData = get(src, 'String');
             
             if uint8(this.cKeyPressLast) == 13
                 if (this.lNotify)
@@ -125,31 +127,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
 
         %% modifiers
 
-        %%%%%% Setting the allowed data type
-        function set.cType(this, cInputType)
-
-            if ischar(cInputType)
-                if (strcmp(cInputType,'c') ...
-                   || strcmp(cInputType,'s') ...
-                   || strcmp(cInputType,'d') ...
-                   || strcmp(cInputType,'i8') ...
-                   || strcmp(cInputType,'i16') ...
-                   || strcmp(cInputType,'i32') ...
-                   || strcmp(cInputType,'i64') ...
-                   || strcmp(cInputType,'u8') ...
-                   || strcmp(cInputType,'u16') ...
-                   || strcmp(cInputType,'u32') ...
-                   || strcmp(cInputType,'u64'))  
-
-                    this.cType= cInputType;
-                    %Force to type bounds
-                    [xMinType xMaxType] = this.getTypeBounds();
-                    this.xMin = xMinType;
-                    this.xMax = xMaxType;
-                end
-            end
-        end
-
+        
         %%%%%% Forcing the range to match data type
         function [xMin xMax] = getTypeBounds(this)
 
@@ -307,115 +285,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
 
         end
 
-        %%%%%%% Validating data
-        function set.cData(this, cInputData)
-            % properties
-            if this.cType == 'c' %general case #implement parsing ?
-                this.cData = cInputData;
-            else %No chars in the string ?
-                try
-                    dInputData = eval(cInputData);
-                    if (isequal(size(dInputData),[1 1]) ... 
-                        && isempty(regexp(cInputData,':','ONCE')) ... 
-                        && (isempty(this.xMin) || dInputData>=this.xMin) ...
-                        && (isempty(this.xMax) || dInputData<=this.xMax )) %within boundaries ?
-
-                        % 2012.04.18 CNA
-                        % When this.xMin = [], there is no min bound (this
-                        % can only happen for type double).  Likewise, when
-                        % this.xMax = [], there is no max bound (again,
-                        % this can only happen for type double)
-
-                        %allow simple inbox calculations then reformat result
-                        if (~isempty(regexp(cInputData,'[-+*/^eE]','ONCE')) && isempty(regexp(cInputData,'e[+-]','ONCE')))
-                            this.cData = num2str(eval(cInputData));
-                        elseif isempty(regexp(cInputData,'[a-df-z]','ONCE')) %can be removed if we want to allow complex calculations
-                            this.cData = cInputData;
-                        end
-                    else
-
-                       % 2012.04.22 CNA
-                       % Adding message when trying to enter a value
-                       % outside of the limtis
-
-                       cMsg = sprintf('The val you are trying to set (%s) not between the limits: low = %1.2e, high = %1.2e.  Restoring last good value.', ...
-                            cInputData, ...
-                            this.xMin, ...
-                            this.xMax ...
-                            );
-                        cTitle = 'Edit.set.cData() error';
-                        msgbox(cMsg, cTitle, 'warn') 
-
-
-                    end
-                catch err
-                    
-                    %{
-                    if (strcmp(err.identifier,'MATLAB:UndefinedFunction'))
-                        msgbox({'Not a regular expression entered in the eval()','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    elseif (strcmp(err.identifier,'MATLAB:m_unexpected_sep'))
-                        msgbox({'no default value','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    elseif (strcmp(err.identifier,'MATLAB:minrhs'))
-                        msgbox({'You have tried to use a buitin function, without argument. Builtin functions are not supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    elseif (strcmp(err.identifier,'MATLAB:m_unbalanced_parens'))
-                        msgbox({'You have tried to use a built-in function, without proper parenthesis. Besides, built-in functions are not supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    else
-                        msgbox({'set.cData reported an exception of type :',err.identifier,'that is not yet supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                        %rethrow(err);
-                    end
-                    %}
-                    rethrow(err);
-                end
-            end
-
-            % ui
-            if ~isempty(this.hUI) && ishandle(this.hUI)
-               set(this.hUI, 'String', this.cData);
-            end
-
-        %             fprintf('Edit.set.cData(%s) this.cLabel = %s\n', ...
-        %                 this.cData, ...
-        %                 this.cLabel);
-
-
-            %{
-            2013.08.07 CNA 
-            Store a typecast version of cData so the get() function can quickly
-            retrieve it.  Why? get() is called in all of the timercb functions and
-            is called more than any other function so we need it to be blazing
-            fast.
-            %}
-
-            switch this.cType
-                case 'c'
-                    this.xVal = this.cData;
-                case 's'
-                    this.xVal = single(eval(this.cData));
-                case 'd'
-                    this.xVal = double(eval(this.cData));
-                case 'i8'
-                    this.xVal = int8(eval(this.cData));
-                case 'i16'
-                    this.xVal = int16(eval(this.cData));
-                case 'i32'
-                    this.xVal = int32(eval(this.cData));
-                case 'i64'
-                    this.xVal = int64(eval(this.cData));
-                case 'u8'
-                    this.xVal = uint8(eval(this.cData));
-                case 'u16'
-                    this.xVal = uint16(eval(this.cData));
-                case 'u32'
-                    this.xVal = uint32(eval(this.cData));
-                case 'u64'
-                    this.xVal = uint64(eval(this.cData));
-            end
-
-            if this.lNotify
-                notify(this,'eChange');
-            end
-
-        end
+        
 
         function xValue = get(this)
             xValue = this.xVal;
@@ -631,9 +501,180 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
                 l = false;
             end
         end
+
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.xVal = this.xVal;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.set(st.xVal);
+        end
+
+        %%%%%%% Validating data
+        function set.cData(this, cInputData)
+            % properties
+            if this.cType == 'c' %general case #implement parsing ?
+                this.cData = cInputData;
+            else %No chars in the string ?
+                try
+                    dInputData = eval(cInputData);
+                    if (isequal(size(dInputData),[1 1]) ... 
+                        && isempty(regexp(cInputData,':','ONCE')) ... 
+                        && (isempty(this.xMin) || dInputData>=this.xMin) ...
+                        && (isempty(this.xMax) || dInputData<=this.xMax )) %within boundaries ?
+
+                        % 2012.04.18 CNA
+                        % When this.xMin = [], there is no min bound (this
+                        % can only happen for type double).  Likewise, when
+                        % this.xMax = [], there is no max bound (again,
+                        % this can only happen for type double)
+
+                        %allow simple inbox calculations then reformat result
+                        if (~isempty(regexp(cInputData,'[-+*/^eE]','ONCE')) && isempty(regexp(cInputData,'e[+-]','ONCE')))
+                            this.cData = num2str(eval(cInputData));
+                        elseif isempty(regexp(cInputData,'[a-df-z]','ONCE')) %can be removed if we want to allow complex calculations
+                            this.cData = cInputData;
+                        end
+                    else
+
+                       % 2012.04.22 CNA
+                       % Adding message when trying to enter a value
+                       % outside of the limtis
+
+                       cMsg = sprintf('The val you are trying to set (%s) not between the limits: low = %1.2e, high = %1.2e.  Restoring last good value.', ...
+                            cInputData, ...
+                            this.xMin, ...
+                            this.xMax ...
+                            );
+                        cTitle = 'Edit.set.cData() error';
+                        msgbox(cMsg, cTitle, 'warn') 
+
+
+                    end
+                catch me
+                    
+                    % There was an error on eval() which means that the
+                    % text value could not be cast as a numeric type
+
+                    % Restore the last good value and show a warning
+                    this.cData = this.cData;
+
+
+                    cMsg = sprintf('"%s" is not valid.  Restoring previous value of "%s".', ...
+                        cInputData, ...
+                        this.cData ...
+                    );
+                    cTitle = 'Edit.set.cData() error';
+                    msgbox(cMsg, cTitle, 'warn');
+ 
+
+                    %{
+                    if (strcmp(err.identifier,'MATLAB:UndefinedFunction'))
+                        msgbox({'Not a regular expression entered in the eval()','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+                    elseif (strcmp(err.identifier,'MATLAB:m_unexpected_sep'))
+                        msgbox({'no default value','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+                    elseif (strcmp(err.identifier,'MATLAB:minrhs'))
+                        msgbox({'You have tried to use a buitin function, without argument. Builtin functions are not supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+                    elseif (strcmp(err.identifier,'MATLAB:m_unbalanced_parens'))
+                        msgbox({'You have tried to use a built-in function, without proper parenthesis. Besides, built-in functions are not supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+                    else
+                        msgbox({'set.cData reported an exception of type :',err.identifier,'that is not yet supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+                        %rethrow(err);
+                    end
+                    %}
+                    % rethrow(err);
+                end
+            end
+
+            % ui
+            if ~isempty(this.hUI) && ishandle(this.hUI)
+               set(this.hUI, 'String', this.cData);
+            end
+
+        %             fprintf('Edit.set.cData(%s) this.cLabel = %s\n', ...
+        %                 this.cData, ...
+        %                 this.cLabel);
+
+
+            %{
+            2013.08.07 CNA 
+            Store a typecast version of cData so the get() function can quickly
+            retrieve it.  Why? get() is called in all of the timercb functions and
+            is called more than any other function so we need it to be
+            fast.
+            %}
+
+            switch this.cType
+                case 'c'
+                    this.xVal = this.cData;
+                case 's'
+                    this.xVal = single(eval(this.cData));
+                case 'd'
+                    this.xVal = double(eval(this.cData));
+                case 'i8'
+                    this.xVal = int8(eval(this.cData));
+                case 'i16'
+                    this.xVal = int16(eval(this.cData));
+                case 'i32'
+                    this.xVal = int32(eval(this.cData));
+                case 'i64'
+                    this.xVal = int64(eval(this.cData));
+                case 'u8'
+                    this.xVal = uint8(eval(this.cData));
+                case 'u16'
+                    this.xVal = uint16(eval(this.cData));
+                case 'u32'
+                    this.xVal = uint32(eval(this.cData));
+                case 'u64'
+                    this.xVal = uint64(eval(this.cData));
+            end
+
+            if this.lNotify
+                notify(this,'eChange');
+            end
+
+        end
+
+
+        %%%%%% Setting the allowed data type
+        function set.cType(this, cInputType)
+
+            if ischar(cInputType)
+                if (strcmp(cInputType,'c') ...
+                   || strcmp(cInputType,'s') ...
+                   || strcmp(cInputType,'d') ...
+                   || strcmp(cInputType,'i8') ...
+                   || strcmp(cInputType,'i16') ...
+                   || strcmp(cInputType,'i32') ...
+                   || strcmp(cInputType,'i64') ...
+                   || strcmp(cInputType,'u8') ...
+                   || strcmp(cInputType,'u16') ...
+                   || strcmp(cInputType,'u32') ...
+                   || strcmp(cInputType,'u64'))  
+
+                    this.cType= cInputType;
+                    %Force to type bounds
+                    [xMinType xMaxType] = this.getTypeBounds();
+                    this.xMin = xMinType;
+                    this.xMax = xMaxType;
+                end
+            end
+        end
         
         
         
+
+    end
+
+    methods (Access = protected)
+
+
+        
+
 
     end
 end

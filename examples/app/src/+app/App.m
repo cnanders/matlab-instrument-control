@@ -14,16 +14,30 @@ classdef App < handle
         hFigure
     end
     
+    properties (Access = private)
+        cDirSave
+    end
+    
     methods
         
         function this = App()
             
+            cDirThis = fileparts(mfilename('fullpath'));
+            this.cDirSave = fullfile( ...
+                cDirThis, ...
+                '..', ...
+                '..', ...
+                'save' ...
+            );
+        
             this.initClock();
             this.initUi();
             this.addUiListeners();
             this.setUiTooltips();
             this.initDevices();
             this.build();
+            
+            this.loadStateFromDisk();
             
         end
         
@@ -135,10 +149,13 @@ classdef App < handle
         end
         
         function delete(this)
+            this.saveStateToDisk();
+
             this.deleteUi();
         end
         
         function deleteUi(this)
+                        
             delete(this.uiDeviceX);
             delete(this.uiDeviceY);
             delete(this.uiDeviceMode);
@@ -146,6 +163,18 @@ classdef App < handle
             delete(this.uiButtonUseDeviceData);
             delete(this.uiToggleAll);
             delete(this.clock);
+            
+        end
+        
+        function st = save(this)
+           st = struct();
+           st.uiDeviceX = this.uiDeviceX.save();
+           st.uiDeviceY = this.uiDeviceY.save();
+        end
+        
+        function load(this, st)
+           this.uiDeviceX.load(st.uiDeviceX);
+           this.uiDeviceY.load(st.uiDeviceY);
         end
         
     
@@ -172,6 +201,28 @@ classdef App < handle
             this.uiDeviceMode.get()
             this.uiDeviceAwesome.get()
             
+        end
+        
+        function saveStateToDisk(this)
+            st = this.save();
+            save(this.file(), 'st');
+            
+        end
+        
+        function loadStateFromDisk(this)
+            if exist(this.file(), 'file') == 2
+                fprintf('loadStateFromDisk()\n');
+                load(this.file()); % populates variable st in local workspace
+                this.load(st);
+            end
+        end
+        
+        function c = file(this)
+            mic.Utils.checkDir(this.cDirSave);
+            c = fullfile(...
+                this.cDirSave, ...
+                ['saved-state', '.mat']...
+            );
         end
         
     end

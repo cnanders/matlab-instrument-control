@@ -117,6 +117,17 @@ classdef Utils
             [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
             c = fullfile(cDirThis, '..', 'save');
         end
+
+        function checkDir(cPath)
+        %CHECKDIR Check that the dir at cPath exists. Make if needed
+            
+            if (exist(cPath, 'dir') ~= 7)
+                cMsg = sprintf('checkDir() creating dir %s', cPath);
+                fprintf('%s\n', cMsg);
+                mkdir(cPath);
+            end
+            
+        end
         
         
         

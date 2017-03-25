@@ -926,7 +926,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function stOut = getUnit(this)
         %UNIT Retrive the active display unit definition structure 
         % (slope, offset, precision)
-            stOut = this.config.unit(this.uipUnit.val());
+            stOut = this.config.unit(this.uipUnit.get());
             
         end
         
@@ -937,7 +937,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             for n = 1 : length(this.config.ceUnits)
                 this.config.ceUnits{n}.name;
                 if strcmp(cUnit, this.config.ceUnits{n}.name)
-                    this.uipUnit.u8Selected = uint8(n);
+                    this.uipUnit.setSelectedIndex(uint8(n));
                 end
             end            
         end
@@ -1021,7 +1021,39 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
         end
         
-        
+        function st = save(this)
+            st = struct();
+            st.uitRel = this.uitRel.save();
+            st.uipUnit = this.uipUnit.save();
+            % st.uieDest = this.uieDest.save();
+            st.dZeroRaw = this.dZeroRaw;
+        end
+                
+        function load(this, st)
+            
+            this.msg('load()');
+    
+            %{
+            if  this.lShowDest && ...
+                ~isempty(this.uieDest)
+                this.uieDest.load(st.uieDest)
+            end
+            %}
+
+            if  this.lShowRel && ...
+                ~isempty(this.uitRel)
+                this.uitRel.load(st.uitRel)
+                % this.onRelChange([],[]);
+            end
+
+            if  this.lShowUnit && ...
+                ~isempty(this.uipUnit)
+                this.uipUnit.load(st.uipUnit);
+            end
+
+            this.dZeroRaw = st.dZeroRaw;
+
+        end
         
         
         
@@ -1314,11 +1346,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.updateRelTooltip();
             this.updateZeroTooltip();
             this.updateStepTooltips();
-            this.uipUnit.u8Selected = this.u8UnitIndex;
+            this.uipUnit.setSelectedIndex(this.u8UnitIndex);
             
             
             % this.updateRange();
-            this.load();
+            % this.load();
             
             if ~isempty(this.clock)
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
@@ -1337,7 +1369,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         function onStoresChange(this, src, evt)
-            this.setDestRaw(src.val().raw);
+            this.setDestRaw(src.get().raw);
             this.moveToDest();
             
         end
@@ -1406,10 +1438,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
            % to raw and then from raw into new unit
           
            
+           ceOptions = this.uipUnit.getOptions();
            msg = sprintf(...
                'Changed display units from %s to %s', ...
-               this.uipUnit.ceOptions{this.u8UnitIndex}, ...
-               this.uipUnit.val() ...
+               ceOptions{this.u8UnitIndex}, ...
+               this.uipUnit.get() ...
            );
             this.msg(msg, 3);
             
@@ -1419,7 +1452,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uieDest.set(this.raw2cal(dRaw, this.getUnit().name, this.uitRel.get()));
             
             % Update u8UnitIndex
-            this.u8UnitIndex = this.uipUnit.u8Selected;
+            this.u8UnitIndex = this.uipUnit.getSelectedIndex();
             
             this.updateZeroTooltip();
             this.updateStepTooltips();
@@ -1659,63 +1692,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
                 
         
-                
-        function load(this)
-            
-            this.msg('load()');
-            
-            
-            if exist(this.file(), 'file') == 2
-                load(this.file()); % populates variable s in local workspace
-                this.loadClassInstance(s); 
-            end
-            
-            % Update unit UiPopup to saved state
-            if  this.lShowUnit && ...
-                ~isempty(this.uipUnit)
-                this.uipUnit.u8Selected = this.u8UnitIndex;
-            end
-            
-            % Set dZeroRaw (happens automaticallY)
-            
-            % Update abs/rel UiToggle toggle to saved state
-            % The first set does not trigger a nofity (should probably
-            % address this at some point) so manually call the handler.
-
-            this.uitRel.set(this.lRelVal);
-            this.onRelChange([],[]);
-            
-        end
         
-        function save(this)
-            
-            this.msg('save()');
-            
-            % Create a nested recursive structure of all public properties
-            s = this.saveClassInstance();
-            
-            % Only want to save u8UnitIndex
-            
-            %{
-            s = struct();
-            s.u8UnitIndex = this.u8UnitIndex;
-            %}
-                                    
-            % Save
-            
-            save(this.file(), 's');
-                        
-        end
         
-        function cReturn = file(this)
-            
-            this.checkDir(this.cDirSave);
-            cReturn = fullfile(...
-                this.cDirSave, ...
-                [this.cName, '.mat']...
-            );
-            
-        end
         
         
         % Allow the user to set the current raw position to any desired calibrated value

@@ -23,6 +23,13 @@ classdef GetSetText < mic.interface.ui.device.Base
         
         % Call device.set() passing mic.ui.common.Edit.get()
         moveToDest(this)
+
+        % @return {struct 1x1} the state to save
+        st = save(this)
+
+        % @para {struct 1x1} st - the state to load (must match signature
+        % returned by save)
+        load(this, st)
                 
   
     end

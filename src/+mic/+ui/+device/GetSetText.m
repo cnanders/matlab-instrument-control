@@ -485,6 +485,23 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             this.getDevice().initialize();
             
         end
+
+
+        function st = save(this)
+            st = struct();
+            st.uieDest = this.uieDest.save();
+        end
+                
+        function load(this, st)
+            
+            this.msg('load()');
+    
+            if  this.lShowDest && ...
+                ~isempty(this.uieDest)
+                this.uieDest.load(st.uieDest)
+            end
+
+        end
         
         
        
@@ -601,9 +618,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             this.uitxVal.setTooltip('The value of this device');
             this.uieDest.setTooltip('Change the goal value');
             this.uibtPlay.setTooltip('Go to goal');
-            
-            this.load();
-            
+                        
             if ~isempty(this.clock)
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
@@ -621,7 +636,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         
         
         function onStoresChange(this, src, evt)
-            this.setDest(this.uipStores().val().val);
+            this.setDest(this.uipStores().get().val);
             this.moveToDest();
         end
         
@@ -678,49 +693,6 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             end
             
         end
-        
-                
-        function load(this)
-            
-            this.msg('load()', 7);
-
-            if exist(this.file(), 'file') == 2
-                load(this.file()); % populates variable s in local workspace
-                this.loadClassInstance(s); 
-            end
-            
-            
-        end
-        
-        function save(this)
-            
-            this.msg('save()', 7);
-            
-            % Create a nested recursive structure of all public properties
-            % s = this.saveClassInstance();
-            
-            % Only want to save u8UnitIndex
-            
-            s = struct();
-            s.u8UnitIndex = this.u8UnitIndex;
-                                    
-            % Save
-            
-            save(this.file(), 's');
-                        
-        end
-        
-        function cReturn = file(this)
-            
-            this.checkDir(this.cDirSave);
-            cReturn = fullfile(...
-                this.cDirSave, ...
-                [this.cName, '.mat']...
-            );
-            
-        end
-        
-        
         
         function lOut = validateDest(this)
             lOut = true;

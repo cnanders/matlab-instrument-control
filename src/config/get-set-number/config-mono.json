@@ -22,6 +22,16 @@
             "invert": "true"
 		}
 	],
+    "stores": [
+        {
+            "name": "euv",
+            "raw": 13.5
+        },
+        {
+            "name": "xeuv",
+            "raw": 6.75
+        }
+    ],
     "min": 0.1,
     "max": 40 
 }	

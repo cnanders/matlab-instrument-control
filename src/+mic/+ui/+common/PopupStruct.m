@@ -17,8 +17,7 @@ classdef PopupStruct < mic.Base
     
     properties
         
-        % {uint8 1x1} the active / selected index
-        u8Selected      
+             
 
     end
     
@@ -48,6 +47,9 @@ classdef PopupStruct < mic.Base
         
         % {logical 1x1} show the tooltip?
         lShowTooltip = true;
+        
+        % {uint8 1x1} the active / selected index
+        u8Selected 
         
        
         hLabel
@@ -83,7 +85,7 @@ classdef PopupStruct < mic.Base
             );
             %}
             
-            this.ceOptions = {stOption1, stOption2};
+            this.setOptions({stOption1, stOption2});
             
             for k = 1 : 2: length(varargin)
                 % this.msg(sprintf('passed in %s', varargin{k}));
@@ -120,7 +122,7 @@ classdef PopupStruct < mic.Base
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
                 'Style', 'popupmenu', ...
                 'String', this.getLabels(), ...
-                'Callback', @this.cb, ...
+                'Callback', @this.onPopup, ...
                 'TooltipString', this.cTooltip, ...
                 'HorizontalAlignment','left'...
             );
@@ -128,19 +130,15 @@ classdef PopupStruct < mic.Base
        end
        
        
-       function cb(this, src, evt)
-           
-            switch src
-                case this.hUI
-                    this.u8Selected = uint8(get(src, 'Value'));
-            end
-
+       function onPopup(this, src, evt)
+           this.u8Selected = uint8(get(src, 'Value'));
+           notify(this,'eChange');
        end
        
        
        % modifiers
        
-       function set.ceOptions(this, ceVal)
+       function setOptions(this, ceVal)
        %SETCEOPTIONS
        
           
@@ -181,12 +179,14 @@ classdef PopupStruct < mic.Base
                 set(this.hUI, 'String', this.getLabels());               
            end
            
-           
            notify(this,'eChange');
            
        end
        
-       function set.u8Selected(this, u8Val)
+       % Programatically set the active item of the Popup as if the user
+       % had done it
+       % @param {uint8 1x1} the desired index
+       function setSelectedIndex(this, u8Val)
            
            % prop
            if isinteger(u8Val)
@@ -205,12 +205,9 @@ classdef PopupStruct < mic.Base
                
        end
        
-       function out = get(this)
-       %VAL
-       %    @returns {struct 1x1} - the u8Selected index of this.ceOptions 
-       %        (it is a sctuct)
-       
-            out = this.ceOptions{this.u8Selected};
+       % @returns {struct 1x1} the u8Selected index of this.ceOptions 
+       function st = get(this)       
+            st= this.ceOptions{this.u8Selected};
        end
        
        function show(this)
@@ -264,8 +261,28 @@ classdef PopupStruct < mic.Base
                 set(this.hUI, 'TooltipString', this.cTooltip);
             end
             
+         end
+        
+         
+         function ce = getOptions(this)
+             ce = this.ceOptions;
+         end
+         
+         function u8 = getSelectedIndex(this)
+             u8 = this.u8Selected;
+         end
+        
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.u8Selected = this.u8Selected;
         end
         
+        % @param {struct} state to load
+        function load(this, st)
+            this.setSelectedIndex(st.u8Selected);
+        end
     end
     
 

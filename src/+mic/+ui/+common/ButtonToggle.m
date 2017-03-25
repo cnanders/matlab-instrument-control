@@ -139,6 +139,19 @@ classdef ButtonToggle < mic.interface.ui.common.Logical & mic.ui.common.Base
                         
             
         end
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.lVal = this.get();
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.set(st.lVal);
+        end
+
+        
         
 
     end

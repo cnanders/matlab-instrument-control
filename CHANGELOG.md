@@ -4,6 +4,36 @@
 Need to make contracts inside of setApi to check to see if the device is an instance of mic.interface.device.*
 -->
 
+# 1.0.0-beta.5
+
+Implemented `save()` and `load()` methods for classes with a state that can persist across sessions:
+
+- mic.ui.common.ButtonToggle
+- mic.ui.common.Toggle
+- mic.ui.common.Popup
+- mic.ui.common.PopupStruct
+- mic.ui.common.List
+- mic.ui.common.Edit
+- mic.ui.common.Checkbox
+- mic.ui.device.GetSetNumber
+- mic.ui.device.GetSetText
+
+Deleted most of mic.Base since it no longer has `loadClassInstance` and `saveClassInstance` methods which were the bulk of this class.
+
+### examples/app/src/+app/App.m
+Added `save()` and `load()` methods and `saveStateToDisk()` and `loadStateFromDisk()` methods that persist UI state across sessions
+
+### mic.ui.common.List
+
+- Got rid of setters
+- Added `get()`, `getOptions()`, `getSelectedIndexes()`, `setOptions()` and `setSelectedIndexes()` methods
+- Fixed bug with `onMoveDown()` method when more than one item was selected while performing the action
+
+### mic.ui.common.Popup/Select
+
+- Got rid of setters
+- Added  `get()`, `getOptions()`, `getSelectedIndex()`, `setOptions()` and `setSelectedIndex()` methods
+
 # 1.0.0-beta.4
 
 ### mic.ui.device.GetSetNumber
@@ -18,7 +48,7 @@ Need to make contracts inside of setApi to check to see if the device is an inst
 
 ### mic.ui.device.GetSetNumber
 
-- Updated `cal2raw()` and `raw2cal()` to support inverse units.
+- Updated `cal2raw()` and `raw2cal()` methods to support inverse units.
 - Updated `updateRange()` to support inverse units.  This includes a special case when the non-inverted calibrated range spans zero.  In this scenario, the inverted range looks like [-inf -X] [Y +inf].
 
 

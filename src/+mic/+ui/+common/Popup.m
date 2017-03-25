@@ -15,14 +15,13 @@ classdef Popup < mic.Base
     
     properties
         
-        u8Selected = uint8(1)     % get selected index (force uint8)
         % cSelected
 
     end
     
     properties (SetAccess = private)
         
-        ceOptions = {'one' 'two' 'three'}      % cell array of mixed type
+        
     end
     
     properties (Access = private)
@@ -32,6 +31,12 @@ classdef Popup < mic.Base
         lShowLabel = true
         cLabel = 'Fix me'
         cTooltip = 'Tooltip: set me!'
+        
+        % {uint8 1x1} - selected index
+        u8Selected = uint8(1)
+        
+        % {cell 1xm} - list of options.  Usually a cell of char
+        ceOptions = {'one' 'two' 'three'}
     end
     
     
@@ -82,7 +87,7 @@ classdef Popup < mic.Base
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
                 'Style', 'popupmenu', ...
                 'String', this.ceOptions, ...
-                'Callback', @this.cb, ...
+                'Callback', @this.onPopup, ...
                 'Value', this.u8Selected, ...
                 'TooltipString', this.cTooltip, ...
                 'HorizontalAlignment','left'...
@@ -92,18 +97,21 @@ classdef Popup < mic.Base
        end
        
        
-       function cb(this, src, evt)
-           
-            switch src
-                case this.hUI
-                    this.u8Selected = uint8(get(src, 'Value'));
-            end
+       function onPopup(this, src, evt)
+            this.u8Selected = uint8(get(src, 'Value'));
+            notify(this,'eChange');
 
        end
        
+       function ce = getOptions(this)
+           ce = this.ceOptions;
+       end
        
-       % modifiers
+       function u8 = getSelectedIndex(this)
+           u8 = this.u8Selected;
+       end
        
+             
       
        
        function setOptions(this, ceVal)
@@ -150,8 +158,8 @@ classdef Popup < mic.Base
            
        end
        
-       function set.u8Selected(this, u8Val)
-           
+       % {uint8 1x1} the item of this.ceOptions to select
+       function setSelectedIndex(this, u8Val)
            
            % this.msg(sprintf('%s u8Selected %1d', this.id(), u8Val));
            
@@ -172,9 +180,9 @@ classdef Popup < mic.Base
                
        end
        
+       
+       % {x 1x1} the value of the popup
        function out = get(this)
-           
-            % returns a mixed type (whatever type)
             out = this.ceOptions{this.u8Selected};
        end
        
@@ -220,7 +228,7 @@ classdef Popup < mic.Base
             
         end
         
-         function setTooltip(this, cText)
+        function setTooltip(this, cText)
         %SETTOOLTIP
         %   @param {char 1xm} cText - the text of the tooltip
         
@@ -230,6 +238,19 @@ classdef Popup < mic.Base
             end
             
         end
+
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.u8Selected = this.u8Selected;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.setSelectedIndex(st.u8Selected);
+        end
+
         
     end
 end

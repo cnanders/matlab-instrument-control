@@ -45,7 +45,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
                 'BackgroundColor',  'white', ...
                 'Position',         mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
                 'Style',            'checkbox', ...
-                'Callback',         @this.cb, ...
+                'Callback',         @this.onCheckbox, ...
                 'Value',            this.lChecked, ...
                 'String',           this.cLabel ...
             );
@@ -54,7 +54,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
        
 
        % Callback
-       function cb(this, src, evt)
+       function onCheckbox(this, src, evt)
            this.lChecked = logical(get(src, 'Value'));
        end
        
@@ -62,7 +62,6 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
            l = this.lChecked;
        end
        
-       % Modifiers
        function set(this, lChecked)
            
            % Rules
@@ -80,6 +79,17 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
            notify(this,'eChange');
                
        end
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.lChecked = this.lChecked;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.set(st.lChecked);
+        end
        
        
        

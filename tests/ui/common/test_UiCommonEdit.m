@@ -9,14 +9,16 @@ purge
 
 h = figure;
 
-uiEdit = mic.ui.common.Edit( ...
+ui = mic.ui.common.Edit( ...
     'cLabel', 'Saved pos', ...
     'cType', 'd' ...
 );
 
-uiEdit.build(h, 10, 10, 100, 30);
+ui.build(h, 10, 10, 100, 30);
 
-cb = @(src, evt) (fprintf('pressed enter %1.2f\n', uiEdit.get()));
-addlistener(uiEdit, 'eEnter', cb);
+cbEnter = @(src, evt) (fprintf('eEnter callback ui.get() = %1.2f\n', ui.get()));
+addlistener(ui, 'eEnter', cbEnter);
 
 
+cbChange = @(src, evt) (fprintf('eChange callback ui.get() = %1.2f\n', ui.get()));
+addlistener(ui, 'eEnter', cbChange);

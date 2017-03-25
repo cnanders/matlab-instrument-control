@@ -26,12 +26,31 @@ end
             
 h = figure();
 
-uiPopup = mic.ui.common.PopupStruct( ...
+ui = mic.ui.common.PopupStruct( ...
     'ceOptions', ceOptions ...
 );
 
-uiPopup.build(h, 10, 10, 300, 30);
+ui.build(h, 10, 10, 300, 30);
 
-cb = @(src, evt) (fprintf('mic.ui.common.Popup eChange to item %1d\n', src.u8Selected));
-addlistener(uiPopup, 'eChange', cb);
+cb = @(src, evt) (fprintf('mic.ui.common.Popup eChange to item %1d\n', src.getSelectedIndex()));
+addlistener(ui, 'eChange', cb);
+
+
+u8Num = 3;
+ceOptions2 = cell(1, u8Num);
+for n = 1 : u8Num
+                
+    stOption = struct( ...
+        'cLabel', sprintf('Val %1.0f', n), ...
+        'cVal', n ...
+    );
+    ceOptions2{n} = stOption;
+
+    fprintf('{\n');
+    fprintf('"name": "%d",\n', n);
+    fprintf('"raw": %d\n', n);
+    fprintf('},\n');
+  
+end
+
 

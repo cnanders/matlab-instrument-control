@@ -108,7 +108,12 @@ classdef   GetSetNumber < mic.interface.ui.device.Base
         %come into play here because the dest and the step are in the same
         %unit.  Identical to the user clicking the "+jog" button
         
-        
+        % @return {struct 1x1} the state to save
+        st = save(this)
+
+        % @para {struct 1x1} st - the state to load (must match signature
+        % returned by save)
+        load(this, st)
   
     end
     

@@ -10,9 +10,7 @@ classdef List < mic.Base
       
     properties (SetAccess = private)
         
-        ceOptions               % cell of options
-        u8Selected              % uint8 of selected options
-        ceSelected              % cell of selected options
+                   
     end
     
     
@@ -40,7 +38,7 @@ classdef List < mic.Base
         % {logical 1x1} show label
         lShowLabel = true   
         
-        % {logical 1x1} show show refresh button.  If you show this, you
+        % {logical 1x1} show show onRefresh button.  If you show this, you
         % need to supply the function handle to use that returns a cell of
         % options
         lShowRefresh = true
@@ -56,6 +54,16 @@ classdef List < mic.Base
         dWidthDn        = 20;
         dWidthRefresh   = 60;
         dPad            = 10;
+
+
+        % {cell 1xn} list of options
+        ceOptions              
+
+        % {uint8 1xm} list of selected indexes
+        u8Selected 
+           
+        % {cell 1xm} list of selected values
+        ceSelected   
         
     end
     
@@ -123,7 +131,7 @@ classdef List < mic.Base
                 'String', this.ceOptions, ...
                 'Min', 0, ...
                 'Max', 2, ... % allows for multiple selection
-                'Callback', @this.cb ...
+                'Callback', @this.onList ...
            );
             
            dRight = dLeft + dWidth;
@@ -140,7 +148,7 @@ classdef List < mic.Base
                 'HorizontalAlignment', 'Center',...
                 'Style', 'pushbutton', ...
                 'String', 'X',...
-                'Callback', @this.cb ...
+                'Callback', @this.onDelete ...
                 );
             
                 dRight = dRight - this.dWidthDelete - this.dPad;
@@ -160,7 +168,7 @@ classdef List < mic.Base
                     'HorizontalAlignment', 'Center',...
                     'Style', 'pushbutton', ...
                     'String', 'Up',...
-                    'Callback', @this.cb ...
+                    'Callback', @this.onMoveUp ...
                 );
             
                dRight = dRight - this.dWidthUp - this.dPad;
@@ -175,7 +183,7 @@ classdef List < mic.Base
                     'HorizontalAlignment', 'Center',...
                     'Style', 'pushbutton', ...
                     'String', 'Dn',...
-                    'Callback', @this.cb ...
+                    'Callback', @this.onMoveDown ...
                );
             
                dRight = dRight - this.dWidthDn - this.dPad;
@@ -195,7 +203,7 @@ classdef List < mic.Base
                 'HorizontalAlignment', 'Center', ...
                 'Style', 'pushbutton', ...
                 'String', 'Refresh', ...
-                'Callback', @this.cb ...
+                'Callback', @this.onRefresh ...
                 ); 
                
            end
@@ -203,46 +211,39 @@ classdef List < mic.Base
        end
        
        
-       function cb(this, src, evt)
-           
-            switch src
-                case this.hUI
-                    this.u8Selected = uint8(get(src, 'Value'));
-                case this.hDelete
-                    this.removeSelected();
-                case this.hMoveUp
-                    this.moveUp();
-                case this.hMoveDown
-                    this.moveDown();
-                case this.hRefresh
-                    this.refresh();
-            end
-
-       end
        
-       
-       function refresh(this)
-           this.msg('refresh');
-           this.ceOptions = this.fhRefresh();
-       end
        
        function setRefreshFcn(this, fh)
            this.fhRefresh = fh;
        end
        
+        % @return % {cell 1xm} list of selected values
+       function ce = get(this)
+            ce = this.ceSelected;
+       end
+
+
+        % @return {uint8 1xm} list of selected indexes
+        function u8 = getSelectedIndexes(this)
+            u8 = this.u8Selected;
+        end
+
+        
+        % @return {cell 1xn} list of options
+        function ce = getOptions(this)
+            ce = this.ceOptions;
+        end
        
-       % modifiers
-       
-       function set.ceOptions(this, ceVal)
+       function setOptions(this, ceVal)
           
            % prop
-           if iscell(ceVal) % empty cell [1x0] is aloud
+           if iscell(ceVal) % empty cell [1x0] is allowed
                 this.ceOptions = ceVal;
                 
                 if isempty(this.ceOptions)
                     % no options in list ...
                     
-                    this.u8Selected = uint8([]); % uint8 [0x0] empty array is aloud
+                    this.u8Selected = uint8([]); % uint8 [0x0] empty array is allowed
                 else
                     % options...
                     
@@ -281,15 +282,15 @@ classdef List < mic.Base
                 set(this.hUI, 'String', this.ceOptions);               
            end
            
-           
            % notify(this,'eChange');
            
        end
        
-       function set.u8Selected(this, u8Val)
+        % @param {uint8 1xm} list of indexes to programatically select
+       function setSelectedIndexes(this, u8Val)
            
            % prop
-           if isinteger(u8Val) % uint8 [0x0] empty array is aloud
+           if isinteger(u8Val) % uint8 [0x0] empty array is allowed
                
                if isempty(u8Val)
                    this.u8Selected = [];
@@ -315,6 +316,7 @@ classdef List < mic.Base
            % add item to beginning of ceOptions
            if ischar(cVal)
                this.ceOptions = {cVal this.ceOptions{:}};
+                this.setOptions(this.ceOptions);
            end
            
        end
@@ -324,12 +326,96 @@ classdef List < mic.Base
            if ischar(cVal)
                this.ceOptions{end+1} = cVal;
                this.u8Selected = uint8(length(this.ceOptions));
+                this.setOptions(this.ceOptions);
            end
            
            
        end
        
-       function removeSelected(this)
+       
+       function insertBefore(this, cVal)
+           % should only work when one option is selected. Inserts before
+           % selected item
+       end
+       
+       function insertAfter(this, cVal)
+           % should only work when one option is selected. Inserts after
+           % selected item
+       end
+       
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.u8Selected = this.u8Selected;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.setSelectedIndexes(st.u8Selected);
+        end
+
+       
+
+
+       
+       
+       
+       
+             
+    end
+
+    methods (Access = protected)
+
+        function onList(this, src, evt)
+            this.u8Selected = uint8(get(src, 'Value'));
+       end
+       
+       
+       function onRefresh(this, src, evt)
+           this.msg('onRefresh');
+           this.setOptions(this.fhRefresh());
+       end
+
+        function onMoveDown(this, src, evt)
+           % moves selected options down the list
+           
+           if max(this.u8Selected) ~= length(this.ceOptions)
+               % loop through each selected item and swap it with the one
+               % above it
+
+               % 2017.03.24 Need to go in reverse order when moving down
+               % multiple
+
+               for n = fliplr(this.u8Selected)
+                   this.ceOptions([n, n + 1]) = this.ceOptions([n + 1, n]);
+               end
+               
+               this.u8Selected = this.u8Selected + 1;
+
+               this.setOptions(this.ceOptions);
+
+           end
+       end
+
+       function onMoveUp(this, src, evt)
+           % moves selected options up the list
+           
+           if min(this.u8Selected) ~= 1
+               % loop through each selected item and swap it with the one
+               % above it
+               for n = this.u8Selected
+                   this.ceOptions([n, n - 1]) = this.ceOptions([n - 1, n]);
+               end
+               
+               this.u8Selected = this.u8Selected - 1;
+               this.setOptions(this.ceOptions);
+           end
+
+           
+       end
+
+        function onDelete(this, src, evt)
            
            % removes selected options ceOptions
            
@@ -347,51 +433,12 @@ classdef List < mic.Base
            notify(this, 'eDelete', mic.EventWithData(stData));
            
            this.ceOptions(this.u8Selected) = [];
-       end
-       
-       function insertBefore(this, cVal)
-           % should only work when one option is selected. Inserts before
-           % selected item
-       end
-       
-       function insertAfter(this, cVal)
-           % should only work when one option is selected. Inserts after
-           % selected item
-       end
-       
-       function moveUp(this)
-           % moves selected options up the list
-           
-           if min(this.u8Selected) ~= 1
-               % loop through each selected item and swap it with the one
-               % above it
-               for n=1:length(this.u8Selected)
-                   this.ceOptions([this.u8Selected(n) this.u8Selected(n)-1]) = this.ceOptions([this.u8Selected(n)-1 this.u8Selected(n)]);
-               end
-               
-               this.u8Selected = this.u8Selected - 1;
-               
-           end
-           
-       end
-       
-       function moveDown(this)
-           % moves selected options down the list
-           
-           if max(this.u8Selected) ~= length(this.ceOptions)
-               % loop through each selected item and swap it with the one
-               % above it
-               for n=1:length(this.u8Selected)
-                   this.ceOptions([this.u8Selected(n) this.u8Selected(n)+1]) = this.ceOptions([this.u8Selected(n)+1 this.u8Selected(n)]);
-               end
-               
-               this.u8Selected = this.u8Selected + 1;
-               
-           end
+
+           this.setOptions(this.ceOptions);
        end
        
        
-       
-             
+
+
     end
 end

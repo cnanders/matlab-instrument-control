@@ -339,6 +339,17 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
             this.set(this.lVal); % redraw
             
         end
+
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.lVal = this.lVal;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.set(st.lVal);
+        end
         
          
     end
