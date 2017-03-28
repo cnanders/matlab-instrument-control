@@ -61,10 +61,7 @@ classdef List < mic.Base
 
         % {uint8 1xm} list of selected indexes
         u8Selected 
-           
-        % {cell 1xm} list of selected values
-        ceSelected   
-        
+                   
     end
     
     
@@ -219,7 +216,7 @@ classdef List < mic.Base
        
         % @return % {cell 1xm} list of selected values
        function ce = get(this)
-            ce = this.ceSelected;
+            ce = this.ceOptions(this.u8Selected);
        end
 
 
@@ -298,8 +295,7 @@ classdef List < mic.Base
                    this.u8Selected = u8Val; 
                end
                
-               % this.ceSelected = this.ceOptions(1,this.u8Selected); % will be cell [1x0] when u8Selected = uint8 [0x0]
-               this.ceSelected = this.ceOptions(this.u8Selected);
+               
            end
            
            % ui
@@ -355,14 +351,11 @@ classdef List < mic.Base
             this.setSelectedIndexes(st.u8Selected);
         end
 
+        function refresh(this)
+            this.setOptions(this.fhRefresh());
+        end
        
-
-
-       
-       
-       
-       
-             
+            
     end
 
     methods (Access = protected)
@@ -374,7 +367,7 @@ classdef List < mic.Base
        
        function onRefresh(this, src, evt)
            this.msg('onRefresh');
-           this.setOptions(this.fhRefresh());
+           this.refresh()
        end
 
         function onMoveDown(this, src, evt)
