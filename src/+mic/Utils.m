@@ -16,6 +16,10 @@ classdef Utils
         dColorActive        = [0.9 0.9 0.9];
         dColorPost          = [0.07 0.38 0.07];
                 
+        
+        dColorEditBgDefault    = [0.94 0.94 0.94];
+        dColorTextBgDefault    = [0.94 0.94 0.94];
+        
         dColorEditBgVerified    = [0.07 0.38 0.07];
         dColorTextBgVerified    = [0.07 0.38 0.07];
          
@@ -774,7 +778,7 @@ classdef Utils
             end
             
             if exist('cFilter', 'var') ~= 1
-                cFilter = '*.mat';
+                cFilter = '*';
             end
             
                                         

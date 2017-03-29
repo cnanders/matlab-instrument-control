@@ -19,7 +19,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
 
     properties      
         % {uint8 1x1} storage of the index of uipUnit
-        u8UnitIndex = 1;
+        u8UnitIndex = uint8(1);
         % {double 1x1 zero offset in raw units when in relative mode}
         dZeroRaw = 0;
         % {logical 1x1 value of uitRel}

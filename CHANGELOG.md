@@ -6,9 +6,22 @@ Need to make contracts inside of setApi to check to see if the device is an inst
 
 # 1.0.0-beta.6
 
+### mic.ui.device.GetSetNumber
+
+- `u8UnitIndex` is now properly cast as `uint8`
+
+### mic.ui.device.Base
+
+- `setDevice()` now checks that the passed `device` extends the correct `mic.interface.device.*` device interface
+
 ### mic.ui.common.List
 
 - Added `refresh()` method that was accidentally removed in 1.0.0-beta.5
+- `setSelectedIndexes()` now shows a warning message if the provided index(es) are not cast as `uint8`
+
+### mic.ui.common.Popup*
+- `setSelectedIndex()` now shows a warning message if the provided index is not cast as `uint8`
+
 
 # 1.0.0-beta.5
 
@@ -24,10 +37,16 @@ Implemented `save()` and `load()` methods for classes with a state that can pers
 - mic.ui.device.GetSetNumber
 - mic.ui.device.GetSetText
 
-Deleted most of mic.Base since it no longer has `loadClassInstance` and `saveClassInstance` methods which were the bulk of this class.
+Deleted most of mic.Base since it no longer has `loadClassInstance` and `saveClassInstance` methods which were the bulk of this class.  
+
+- The `save()` method returns a structure with the UI state that should be saved.  
+- The `load()` method receives a structure and sets the UI elements to match. 
+- _Neither of these methods write to disk or load from disk_.  
+- Each UI component in the application should implement its own `save()` and `load()` methods with identical interfaces.  
+- To persist UI state across sessions, the highest-level UI component should implement `saveToDisk()` and `loadFromDisk()` methods that save (to disk) the structure returned by `save()` and load it and then pass it to `load()`.
 
 ### examples/app/src/+app/App.m
-Added `save()` and `load()` methods and `saveStateToDisk()` and `loadStateFromDisk()` methods that persist UI state across sessions
+Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` methods that persist UI state across sessions
 
 ### mic.ui.common.List
 

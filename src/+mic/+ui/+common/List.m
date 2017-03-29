@@ -66,6 +66,8 @@ classdef List < mic.Base
     
     
     events
+        
+        % {event} whenever the selected index(es) changes
         eChange
         eDelete
     end
@@ -279,7 +281,7 @@ classdef List < mic.Base
                 set(this.hUI, 'String', this.ceOptions);               
            end
            
-           % notify(this,'eChange');
+           
            
        end
        
@@ -295,6 +297,11 @@ classdef List < mic.Base
                    this.u8Selected = u8Val; 
                end
                
+               
+           else
+                cMsg = sprintf('The indexes you provided are not {uint8} type.  Please cast as uint8 and try again.');
+                cTitle = 'uint8 index type required';
+                msgbox(cMsg, cTitle, 'warn') 
                
            end
            
@@ -360,8 +367,9 @@ classdef List < mic.Base
 
     methods (Access = protected)
 
-        function onList(this, src, evt)
+       function onList(this, src, evt)
             this.u8Selected = uint8(get(src, 'Value'));
+            notify(this,'eChange');
        end
        
        

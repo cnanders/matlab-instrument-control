@@ -108,7 +108,7 @@ classdef Popup < mic.Base
        end
        
        function u8 = getSelectedIndex(this)
-           u8 = this.u8Selected;
+           u8 = uint8(this.u8Selected);
        end
        
              
@@ -169,6 +169,11 @@ classdef Popup < mic.Base
                    this.u8Selected = u8Val;
                    % this.cSelected = this.ceOptions{this.u8Selected};
                end
+           else
+               
+               cMsg = sprintf('mic.ui.common.Popup setSelectedIndex() The index you provided is not {uint8} type.  Please cast as uint8 and try again.');
+               cTitle = 'uint8 index type required';
+               msgbox(cMsg, cTitle, 'warn') 
            end
            
            % ui
