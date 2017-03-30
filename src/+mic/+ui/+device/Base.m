@@ -14,9 +14,7 @@ classdef Base < mic.Base
         
         % {logical 1x1} controls routing to real or virtual device
         lActive = false
-        
-        
-        
+                
     end
     
     properties (SetAccess = private)
@@ -40,6 +38,10 @@ classdef Base < mic.Base
 
         end
         
+        function l = isActive(this)
+            l = this.lActive;
+        end
+        
         function device = getDevice(this)
             if this.lActive
                 device = this.device;
@@ -54,12 +56,33 @@ classdef Base < mic.Base
         
         function setDevice(this, device)
             
+            if this.isDevice(device)
+                this.device = device;
+            end
+        end
+                
+        function setDeviceVirtual(this, device)
+            if ~isempty(this.deviceVirtual) && ...
+                isvalid(this.deviceVirtual)
+                delete(this.deviceVirtual);
+            end
+            
+            if this.isDevice(device)
+                this.deviceVirtual = device;
+            end
+            
+        end
+        
+        % @param {x 1x1} device - the value to check
+        % @return {logical 1x1} 
+        function l = isDevice(this, device)
             switch class(this)
                 case 'mic.ui.device.GetSetNumber'
                     if ~isa(device, 'mic.interface.device.GetSetNumber')
                         cMsg = '"mic.ui.device.GetSetNumber" UI controls require devices that implement the "mic.interface.device.GetSetNumber" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
+                        l = false;
                         return
                     end
                 case 'mic.ui.device.GetSetText'
@@ -67,6 +90,7 @@ classdef Base < mic.Base
                         cMsg = '"mic.ui.device.GetSetText" UI controls require devices that implement the "mic.interface.device.GetSetText" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
+                        l = false;
                         return
                     end
                    
@@ -75,6 +99,7 @@ classdef Base < mic.Base
                         cMsg = '"mic.ui.device.GetSetLogical" UI controls require devices that implement the "mic.interface.device.GetSetLogical" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
+                        l = false;
                         return
                     end
                    
@@ -83,6 +108,7 @@ classdef Base < mic.Base
                         cMsg = '"mic.ui.device.GetNumber" UI controls require devices that implement the "mic.interface.device.GetNumber" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
+                        l = false;
                         return
                     end
                     
@@ -91,6 +117,7 @@ classdef Base < mic.Base
                         cMsg = '"mic.ui.device.GetText" UI controls require devices that implement the "mic.interface.device.GetText" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
+                        l = false;
                         return
                     end
                    
@@ -99,20 +126,13 @@ classdef Base < mic.Base
                         cMsg = '"mic.ui.device.GetLogical" UI controls require devices that implement the "mic.interface.device.GetLogical" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
+                        l = false;
                         return
                     end
                    
             end
             
-            this.device = device;
-        end
-                
-        function setDeviceVirtual(this, device)
-            if ~isempty(this.deviceVirtual) && ...
-                isvalid(this.deviceVirtual)
-                delete(this.deviceVirtual);
-            end
-            this.deviceVirtual = device;
+            l = true;
             
         end
                 

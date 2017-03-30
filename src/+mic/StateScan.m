@@ -138,10 +138,15 @@ classdef StateScan < mic.Base
         %
         % Since you are the creator of the state objects, and the creator of the 
         % handler function, you can do whatever you want.  
+        % 	@param {struct} stUnit - the unit definition structure 
+        %   @param {struct} stState - the state
         fhAcquire
         
         % @param {function_handle} fhIsAcquired(stUnit, stState) - return true if the
         % acquire process for the current state is complete.
+        %   @param {struct} stUnit - the unit definition structure 
+        %   @param {struct} stState - the state
+        %   @returns {logical} - true if the system is at the state
         fhIsAcquired
         
         % @param {function_handle} fhOnComplete - function to call when
@@ -341,3 +346,53 @@ classdef StateScan < mic.Base
     end
 
 end
+
+% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
+% COPY THESE PLACEHOLDERS INTO ANY CLASS THAT USES A mic.StateScan
+% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
+
+
+%{
+
+% @param {struct} stUnit - the unit definition structure 
+% @param {struct} stState - the state
+function onStateScanSetState(this, stUnit, stValue)
+            
+end
+
+
+% @param {struct} stUnit - the unit definition structure 
+% @param {struct} stState - the state
+% @returns {logical} - true if the system is at the state
+function l = onStateScanIsAtState(this, stUnit, stValue)
+    l = true;
+end
+
+
+% @param {struct} stUnit - the unit definition structure 
+% @param {struct} stState - the state (possibly contains information about
+the task to execute during acquire)
+function onStateScanAcquire(this, stUnit, stValue)
+
+end
+
+% @param {struct} stUnit - the unit definition structure 
+% @param {struct} stState - the state
+% @returns {logical} - true if the acquisition task is complete
+function l = onStateScanIsAcquired(this, stUnit, stValue)
+    l = true;
+end
+
+
+function onStateScanAbort(this, stUnit)
+
+end
+
+
+function onStateScanComplete(this, stUnit)
+
+end
+
+%}

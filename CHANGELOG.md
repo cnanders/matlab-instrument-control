@@ -1,10 +1,16 @@
 <!--
 # TO DO
 
-Need to make contracts inside of setApi to check to see if the device is an instance of mic.interface.device.*
+Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
+
 -->
 
 # 1.0.0-beta.6
+
+### mic.StateScan
+
+- Added function templates for all functions that this class evokes. They can be copy/pasted into any class that uses `mic.StateScan`
+- Now pass `stValue` into `fhAcquire()` and `fhIsAcquired()`
 
 ### mic.ui.device.GetSetNumber
 
@@ -13,6 +19,7 @@ Need to make contracts inside of setApi to check to see if the device is an inst
 ### mic.ui.device.Base
 
 - `setDevice()` now checks that the passed `device` extends the correct `mic.interface.device.*` device interface
+- added `isActive()` method to programatically check if the UI is routing `device` calls to the “virtual” `device`
 
 ### mic.ui.common.List
 

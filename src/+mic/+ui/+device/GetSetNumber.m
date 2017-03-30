@@ -721,9 +721,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         function turnOn(this)
-        %TURNON Turns the motor on, actually using the Device to control the 
-        %   HardwareIO.turnOn()
-        %
+        
+            % Channel device  
         % See also TURNOFF
 
             this.lActive = true;
@@ -749,10 +748,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         function turnOff(this)
-        %TURNOFF Turns the motor off
-        %   HardwareIO.turnOn()
-        %
-        % See also TURNON
         
             % CA 2014.04.14: Make sure Devicev is available
             
