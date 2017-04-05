@@ -3,12 +3,17 @@ classdef   GetSetNumber < mic.interface.ui.device.Base
     %GETSETNUMBER Summary of this class goes here
     %   Detailed explanation goes here
     
+    % cal vs raw
+    % abs vs rel
+    
     properties
     end
     
     methods (Abstract)
                 
         d = getDestCal(this, cUnit)
+        % CAL vs. RAW === CAL
+        % ABS vs. REL === ABS
         %DESTCAL Get the abs destination in a calibrated unit.  
         %
         %   @param {char} cUnit - the name of the unit you want the result
@@ -18,16 +23,24 @@ classdef   GetSetNumber < mic.interface.ui.device.Base
         %   @return {double} - the calibrated value
         %   see also DESTCALDISPLAY
         
+        
+        
         d = getDestCalDisplay(this)
+        % CAL vs. RAW === CAL
+        % ABS vs. REL === Uses the active UI state
+        % 
         %DESTCALDISPLAY Get the destinatino as shown in the UI with the active
         %display unit and abs/rel state 
         
         d = getDestRaw(this)
+        % CAL vs. RAW === RAW
         %DESTRAW Get the abs dest value in raw units. Raw value can never
         %changed with the UI configuration so this returns the same thing
         %regardless of UI configuration.
         
         setDestCal(this, dCalAbs, cUnit)
+        % CAL vs. RAW === CAL
+        % ABS vs. REL === ABS
         % SETDESTCALABS Update the destination inside the mic.ui.common.Edit based on
         % an absolute value in a particular unit.
         %   @param {double} dCal - desired destination in an abs calibrated
@@ -41,6 +54,9 @@ classdef   GetSetNumber < mic.interface.ui.device.Base
         %       See also SETDESTCAL, SETDESTRAW
         
         setDestCalDisplay(this, dCal, cUnit)
+        % CAL vs. RAW === CAL 
+        % ABS vs. REL === Uses the active UI state.  Assumes the value
+        % passed is same abs/rel state as UI
         %SETDESTCAL Update the destination (cal) inside the dest mic.ui.common.Edit.
         %   @param {double} dCal - desired destination in a calibrated
         %       unit that can be either "abs" or "rel" (should match UI state)

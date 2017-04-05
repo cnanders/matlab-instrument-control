@@ -111,6 +111,7 @@ classdef ZoomPanAxes < mic.Base
     events
         
         eClick
+        eZoom
         
     end
     
@@ -507,7 +508,7 @@ classdef ZoomPanAxes < mic.Base
             set(this.hSliderXPan, 'SliderStep', [this.dMinorStep/dVal this.dMajorStep/dVal]);
             set(this.hSliderYPan, 'SliderStep', [this.dMinorStep/dVal this.dMajorStep/dVal]);
              
-            
+            notify(this, 'eZoom');
         end
         
         function updateLimitsOnPanX(this)

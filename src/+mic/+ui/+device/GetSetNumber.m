@@ -204,7 +204,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         lShowVal = true;
         % {logical 1x1}
         lShowUnit = true;
-        % {logical 1x1}
+        % {logical 1x1} - show the "set/re-zero" button
         lShowZero = true
         % {logical 1x1}
         lShowRel = true
@@ -289,7 +289,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                     
             % Default properties
             
-            this.fhValidateDest = this.validateDest;
+            this.fhValidateDest = this.validateDest;  
+            
+            this.msg('constructor() default config = mic.config.GetSetNumber()');
             this.config = mic.config.GetSetNumber();
                        
             % Override properties with varargin
@@ -297,7 +299,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             for k = 1 : 2: length(varargin)
                 % this.msg(sprintf('passed in %s', varargin{k}));
                 if this.hasProp( varargin{k})
-                    % this.msg(sprintf('settting %s', varargin{k}), 3);
+                    this.msg(sprintf('settting %s', varargin{k}), 3);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -1258,12 +1260,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             %AW(5/24/13) : populating the destination
             this.uieDest.set(this.deviceVirtual.get());
 
-            
 
-           
-                 
-           
-            
             this.uitxLabelName = mic.ui.common.Text(...
                 'cVal', this.cLabelName ...
             );
@@ -1869,13 +1866,22 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
         end
         
+        
         function device = newDeviceVirtual(this)
-        %@return {DevicevHardwareIO}
-            device = mic.device.GetSetNumber(...
-                'cName', this.cName, ...
-                'clock', this.clock, ...
-                'dVal', this.dValDeviceDefault ...
-            );
+        
+            if this.lDisableSet
+                device = mic.device.GetNumber(...
+                    'cName', this.cName, ...
+                    'clock', this.clock, ...
+                    'dVal', this.dValDeviceDefault ...
+                );
+            else
+                device = mic.device.GetSetNumber(...
+                    'cName', this.cName, ...
+                    'clock', this.clock, ...
+                    'dVal', this.dValDeviceDefault ...
+                );
+            end
         end
         
         

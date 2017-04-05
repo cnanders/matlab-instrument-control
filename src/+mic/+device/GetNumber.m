@@ -8,7 +8,7 @@ classdef GetNumber < mic.interface.device.GetNumber
         clock
         
         % {double 1x1} clock period (s)
-        dPeriod = 0.1 
+        dPeriod = 0.5
         
         % {double 1x1} mean value
         dMean = 0 

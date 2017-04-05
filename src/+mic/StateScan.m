@@ -289,7 +289,7 @@ classdef StateScan < mic.Base
                 this.removeClockTask();
                 
                 % Call acuire, passing in units
-                this.fhAcquire(this.stUnit);
+                this.fhAcquire(this.stUnit, this.ceValues{this.u8Index});
                 
                 % Start checking for acquire complete
                 this.clock.add(@this.handleClockIsAcquired, this.id(), this.dDelay);
@@ -303,7 +303,7 @@ classdef StateScan < mic.Base
             
             % this.msg('handleClockIsAcquired');
             
-            if (this.fhIsAcquired())
+            if (this.fhIsAcquired(this.stUnit, this.ceValues{this.u8Index}))
              
                 % Remove the clock task
                 this.removeClockTask();

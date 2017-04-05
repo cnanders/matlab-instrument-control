@@ -5,6 +5,20 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.7
+
+### mic.ui.device.GetSetNumber
+
+- When `lDisableSet` is true, default virtual device is now an instance of `mic.device.GetNumber` instead of `mic.device.GetSetNumber`
+
+### mic.ui.axes.ZoomPanAxes
+
+- Now notifies `eZoom` event on zoom
+
+### mic.StateScan
+
+- Now passes `stValue` into `fhAcquire()`
+
 # 1.0.0-beta.6
 
 ### mic.StateScan

@@ -29,6 +29,7 @@ classdef Utils
     %% Static Methods
     methods (Static)
 
+        
         % @param {cell of struct 1xm} ce - data, i.e.,
         % ce{1}.car = 'ferrari'
         % ce{2}.car = 'tesla'

@@ -76,6 +76,7 @@ classdef Base < mic.Base
         % @param {x 1x1} device - the value to check
         % @return {logical 1x1} 
         function l = isDevice(this, device)
+            
             switch class(this)
                 case 'mic.ui.device.GetSetNumber'
                     if ~isa(device, 'mic.interface.device.GetSetNumber')
