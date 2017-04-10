@@ -25,7 +25,6 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         
         cHorizontalAlignment = 'left'
         lShowLabel = true;
-        hLabel
         cKeyPressLast = '';
         % {logical 1x1} - used to wrap all calls to notify to allow
         % temporary disabling of notify

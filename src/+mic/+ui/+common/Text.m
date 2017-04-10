@@ -16,11 +16,14 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
     
     
     properties (Access = private)
-        cVal = 'Fix me'
+        cLabel = 'cLabel'
+        cVal = 'cVal'
         cAlign = 'left'
         cFontWeight = 'normal'
         dFontSize = 10
         dColorBg = [.94 .94 .94]; % MATLAB default
+        
+        lShowLabel = false;
     end
     
     
@@ -46,7 +49,23 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
        end
        
        function build(this, hParent, dLeft, dTop, dWidth, dHeight) 
-                                  
+              
+            if this.lShowLabel
+                this.hLabel = uicontrol( ...
+                    'Parent', hParent, ...
+                    'Position', mic.Utils.lt2lb([dLeft dTop dWidth 20], hParent),...
+                    'Style', 'text', ...
+                    'String', this.cLabel, ...
+                    'FontWeight', 'Normal',...
+                    'BackgroundColor', this.dColorBg, ...
+                    'HorizontalAlignment', 'left' ...
+                );
+
+                %'BackgroundColor', [1 1 1] ...
+            
+                dTop = dTop + 13;
+            end
+            
             this.hUI = uicontrol( ...
                 'Parent', hParent, ...
                 'HorizontalAlignment', this.cAlign, ...

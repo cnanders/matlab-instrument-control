@@ -5,6 +5,20 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.8
+
+
+### mic.StateScan
+- Added documentation for the “contract” pattern that is useful in classes that utilize a `mic.StateScan`
+
+### mic.ui.common.Text
+- Now has an optional label.  Set `lShowLabel` to `true` to use the label.  The default value of `lShowLabel` is `false` 
+- Now extends `mic.ui.common.Base`
+
+### mic.ui.common.Base
+- added `hLabel` property
+- `disable()` and `enable()` now apply the style to the label in addition to the main UI element
+
 # 1.0.0-beta.7
 
 ### mic.ui.device.GetSetNumber
@@ -24,7 +38,7 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 ### mic.StateScan
 
 - Added function templates for all functions that this class evokes. They can be copy/pasted into any class that uses `mic.StateScan`
-- Now pass `stValue` into `fhAcquire()` and `fhIsAcquired()`
+- Now pass `stValue` into `fhIsAcquired()`
 
 ### mic.ui.device.GetSetNumber
 

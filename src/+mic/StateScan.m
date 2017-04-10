@@ -396,3 +396,100 @@ function onStateScanComplete(this, stUnit)
 end
 
 %}
+
+
+
+% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
+% RECOMMENDED PATTERN WITH ?CONTRACTS? FOR SET AND ACQUIRE
+% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------
+
+% The ?contract? pattern uses a structure to help programatically check
+% if the system has reached a particular state or executed the acquire task.
+%
+% The ?set contract? structure has a prop for each prop of the 
+% system that can be set during the set call. Each prop is a structure 
+% with two props: lRequired and lIssued, e.g.:
+%  
+% st.device_stage_x.lRequired = false
+% st.device_stage_x.lIssued = false
+% st.device_stage_y.lRequired = false
+% st.device_stage_y.lIssued = false
+% st.device_stage_z.lRequired = false
+% st.device_stage_z.lIssued = false
+%
+% The ?acquire contract? structure has a prop for each prop of the 
+% system that can be set or used during the acquire task.  Each prop is a
+% structure with two props: lRequired and lIssued, e.g.:
+%
+% st.device_volt_meter.lRequired = false
+% st.device_volt_meter.lIssued = false
+% st.device_camera.lRequired = false
+% st.device_camera.lIssued = false
+%
+% The ?set contract? structure is reset (all logical properties are set to
+% false) at the begging of each setState().  Then all properties of the
+% system that need to be modified in the set state() call have their
+% ?lRequired? property set to true.  As properties are set(), the ?lIssued?
+% property is set to true.
+% 
+% isAtState() uses the ?set contract? structure to determine if they system
+% reached the desired state
+
+%{
+
+
+
+function initScanSetContract(this)
+
+    ceFields = { ...
+        this.cNameDeviceGratingTiltX, ...
+        this.cNameDeviceShutter, ...
+        this.cNameDeviceExitSlit, ...
+        this.cNameDeviceUndulatorGap, ...
+        this.cNameDeviceD142StageY ...
+     };
+
+    for n = 1 : length(ceFields)
+        this.stScanSetContract.(ceFields{n}).lRequired = false;
+        this.stScanSetContract.(ceFields{n}).lIssued = false;
+    end
+
+end
+
+function initScanAcquireContract(this)
+
+    ceFields = {...
+        this.cNameDeviceMeasurPointD142
+    };
+
+    for n = 1 : length(ceFields)
+        this.stScanAcquireContract.(ceFields{n}).lRequired = false;
+        this.stScanAcquireContract.(ceFields{n}).lIssued = false;
+    end
+
+end
+
+function resetScanSetContract(this)
+
+    ceFields = fieldnames(this.stScanSetContract);
+    for n = 1 : length(ceFields)
+        this.stScanSetContract.(ceFields{n}).lRequired = false;
+        this.stScanSetContract.(ceFields{n}).lIssued = false;
+    end
+
+end
+
+function resetScanAcquireContract(this)
+
+    ceFields = fieldnames(this.stScanAcquireContract);
+    for n = 1 : length(ceFields)
+        this.stScanAcquireContract.(ceFields{n}).lRequired = false;
+        this.stScanAcquireContract.(ceFields{n}).lIssued = false;
+    end
+
+end
+
+
+%}

@@ -5,6 +5,7 @@ classdef Base < mic.Base
    
     properties (Access = protected)
         hUI
+        hLabel
         cTooltip = 'Tooltip: set me!';
     end
 
@@ -18,11 +19,19 @@ classdef Base < mic.Base
             if ishandle(this.hUI)
                 set(this.hUI, 'Visible', 'on');
             end
+            
+            if ishandle(this.hLabel)
+                set(this.hLabel, 'Visible', 'on');
+            end
         end
 
         function hide(this)
             if ishandle(this.hUI)
                 set(this.hUI, 'Visible', 'off');
+            end
+            
+            if ishandle(this.hLabel)
+                set(this.hLabel, 'Visible', 'off');
             end
         end
         
@@ -38,11 +47,19 @@ classdef Base < mic.Base
             if ishandle(this.hUI)
                 set(this.hUI, 'Enable', 'on');
             end
+            
+            if ishandle(this.hLabel)
+                set(this.hLabel, 'Enable', 'on');
+            end
         end
         
         function disable(this)
             if ishandle(this.hUI)
                 set(this.hUI, 'Enable', 'off');
+            end
+            
+            if ishandle(this.hLabel)
+                set(this.hLabel, 'Enable', 'off');
             end
             
         end
