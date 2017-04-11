@@ -5,6 +5,13 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+
+# 1.0.0-beta.9
+
+### mic.StateScan -> mic.Scan
+- New method `getStatus()` returns a `struct` with elapsed time, time remaining, etc that is useful for presenting scan information to the user
+- Renamed to Scan
+
 # 1.0.0-beta.8
 
 

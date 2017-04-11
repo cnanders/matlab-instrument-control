@@ -1,4 +1,4 @@
-classdef StateScan < mic.Base
+classdef Scan < mic.Base
     
     % Event-based class that scans a system through a list of states.  One
     % constraint is that the scan must use the the same units for every
@@ -57,7 +57,7 @@ classdef StateScan < mic.Base
     % this will be referred to as a "recipe" for the scan.  It defines the
     % unit structure and a list of state value structures
     %
-    % The parent that instantiantes this StateScan instance produces and
+    % The parent that instantiantes this Scan instance produces and
     % consumes the recipe, including the unit definition and each state definition.
     % recipe.unit and recipe.values[n] will be passed to each call
     % to setState() isAtState().
@@ -157,7 +157,9 @@ classdef StateScan < mic.Base
         % was stopped prematurely
         fhOnAbort
         
-       
+        ticId
+        ticIdStart
+        dDaysStart
     end
     
     
@@ -176,7 +178,7 @@ classdef StateScan < mic.Base
         
        % constructor
        
-        function this= StateScan( ....
+        function this= Scan( ....
                 clock, ...
                 stRecipe, ...
                 fhSetState, ...
@@ -208,6 +210,9 @@ classdef StateScan < mic.Base
        
         function start(this) 
         %START start the scan 
+        
+            this.ticIdStart = tic;
+            this.dDaysStart = now;
             this.u8Index = 1;
             this.go();
             
@@ -216,16 +221,16 @@ classdef StateScan < mic.Base
         function pause(this) 
         %PAUSE pause the scan
         
-            % If StateScan is paused while the system is settling to a new
+            % If Scan is paused while the system is settling to a new
             % state, the clock task that is asking the system if it has
             % settled is removed and u8Index remains the same.  If motors
             % need to be stopped, it is assumed that the parent class takes
-            % care of that.  When theS StateScan is unpaused, go() is
+            % care of that.  When theS Scan is unpaused, go() is
             % called which restarts the scan at the u8Index item of
             % ceValues
             % 
-            % If StateScan is paused while the system is in the middle of
-            % acquiring, StateScan waits for isAcquired to return true,
+            % If Scan is paused while the system is in the middle of
+            % acquiring, Scan waits for isAcquired to return true,
             % increments u8Index but then does not call go() to begin the
             % the set-wait-acquire process for the next state.
             
@@ -255,6 +260,67 @@ classdef StateScan < mic.Base
              % notify(this,'eScanComplete');
              this.fhOnAbort(this.stUnit);
 
+        end
+        
+        % @typedef {struct 1x1} Status
+        % @property {char 1xm} cTimeElapsed - HH:MM:SS of elapsed time
+        % since the scan started
+        % @property {char 1xm} cTimeComplete - HH:MM:SS local estimate of
+        % the time when the scan will be complete
+        % @property {char 1xm} cTimeRemaining - HH:MM:SS estimate of the
+        % time remaining for the scan to complete
+        % @property {double 1x1} dProgress - fractional progress bettween 0
+        % and 1
+        % @property {char 1xm} cStatus - ?Scanning 4.3%? text that shows if
+        % it is scanning or complete and also the percentage
+        % @return {Status 1x1}
+        function st = getStatus(this)
+                        
+            dProgress = this.u8Index / length(this.ceValues);
+                     
+            % Fractional days since the start of the scan.  Use this
+            % because this is MATLAB's "DateNum" format, which the datestr
+            % function can use.  toc returns the elapsed time in seconds
+            % since "tic" was called
+            
+            dDaysElapsed = toc(this.ticIdStart) / (3600 * 24);
+            
+            % Use elapsed days and progress to estimate the number of days
+            % for the entire scan to complete
+            
+            if dProgress == 0
+                dDaysScan = 0;
+            else
+                dDaysScan = dDaysElapsed / dProgress;
+            end
+            
+            dDaysRemaining = dDaysScan - dDaysElapsed;
+            
+            cTimeElapsed = datestr(dDaysElapsed, 'HH:MM:SS', 'local');
+            
+            % Add the estimated numbef of days for the full scan to the
+            % number of days since Jan 0, 0000 (obtained with "now") to get
+            % the estimated complete time.  
+            
+            try
+                cTimeComplete = datestr(this.dDaysStart + dDaysScan, 'HH:MM:SS', 'local');
+                cTimeRemaining = datestr(dDaysRemaining, 'HH:MM:SS', 'local');
+            catch me
+                cTimeComplete = '...';
+                cTimeRemaining = '...';
+            end
+            
+            st = struct();
+            if this.lPaused
+                st.cStatus = sprintf('Paused (%1.1f%%)', dProgress * 100);
+            else
+                st.cStatus = sprintf('Scanning (%1.1f%%)', dProgress * 100);
+            end
+            st.cTimeElapsed = cTimeElapsed;
+            st.cTimeRemaining = cTimeRemaining;
+            st.cTimeComplete = cTimeComplete;
+            st.dProgress = dProgress;
+            
         end
        
        
@@ -343,13 +409,15 @@ classdef StateScan < mic.Base
             
         end
         
+        
+        
     end
 
 end
 
 % -------------------------------------------------------------------------
 % -------------------------------------------------------------------------
-% COPY THESE PLACEHOLDERS INTO ANY CLASS THAT USES A mic.StateScan
+% COPY THESE PLACEHOLDERS INTO ANY CLASS THAT USES A mic.Scan
 % -------------------------------------------------------------------------
 % -------------------------------------------------------------------------
 
@@ -358,7 +426,7 @@ end
 
 % @param {struct} stUnit - the unit definition structure 
 % @param {struct} stState - the state
-function onStateScanSetState(this, stUnit, stValue)
+function onScanSetState(this, stUnit, stValue)
             
 end
 
@@ -366,7 +434,7 @@ end
 % @param {struct} stUnit - the unit definition structure 
 % @param {struct} stState - the state
 % @returns {logical} - true if the system is at the state
-function l = onStateScanIsAtState(this, stUnit, stValue)
+function l = onScanIsAtState(this, stUnit, stValue)
     l = true;
 end
 
@@ -374,24 +442,24 @@ end
 % @param {struct} stUnit - the unit definition structure 
 % @param {struct} stState - the state (possibly contains information about
 the task to execute during acquire)
-function onStateScanAcquire(this, stUnit, stValue)
+function onScanAcquire(this, stUnit, stValue)
 
 end
 
 % @param {struct} stUnit - the unit definition structure 
 % @param {struct} stState - the state
 % @returns {logical} - true if the acquisition task is complete
-function l = onStateScanIsAcquired(this, stUnit, stValue)
+function l = onScanIsAcquired(this, stUnit, stValue)
     l = true;
 end
 
 
-function onStateScanAbort(this, stUnit)
+function onScanAbort(this, stUnit)
 
 end
 
 
-function onStateScanComplete(this, stUnit)
+function onScanComplete(this, stUnit)
 
 end
 
@@ -406,7 +474,7 @@ end
 % -------------------------------------------------------------------------
 
 % The ?contract? pattern uses a structure to help programatically check
-% if the system has reached a particular state or executed the acquire task.
+% if the system has reached a particular state or executed an acquire task.
 %
 % The ?set contract? structure has a prop for each prop of the 
 % system that can be set during the set call. Each prop is a structure 
@@ -429,13 +497,11 @@ end
 % st.device_camera.lIssued = false
 %
 % The ?set contract? structure is reset (all logical properties are set to
-% false) at the begging of each setState().  Then all properties of the
-% system that need to be modified in the set state() call have their
-% ?lRequired? property set to true.  As properties are set(), the ?lIssued?
-% property is set to true.
-% 
-% isAtState() uses the ?set contract? structure to determine if they system
-% reached the desired state
+% false) at the begging of each setState().  All properties of the system
+% that need to be modified in the setState() call have their ?lRequired?
+% property set to true.  As properties are set(), the ?lIssued? property is
+% set to true. isAtState() uses the ?set contract? structure to determine
+% if they system reached the desired state.
 
 %{
 
@@ -492,4 +558,149 @@ function resetScanAcquireContract(this)
 end
 
 
+
+
+
+
+% @param {struct} stUnit - the unit definition structure 
+% @param {struct} stValue - the system state that needs to be reached
+% @returns {logical} - true if the system is at the state
+function lOut = onScanIsAtState(this, stUnit, stValue)
+
+    lOut = true;
+
+    stContract = this.stScanSetContract
+    ceFields= fieldnames(stContract);
+
+    for n = 1:length(ceFields)
+
+        cField = ceFields{n};
+
+        % special case, skip task
+        if strcmp(cField, 'task')
+            continue;
+        end
+
+
+        if stContract.(cField).lRequired
+   
+            if stContract.(cField).lIssued
+
+                % !!! PUT CODE HERE !!! 
+                % Check if the set operation on the current device is
+                % complete by calling isReady() on devices.  This will
+                % often be a switch on cField that does something like:
+                % this.uiDeviceStage.getDevice().isReady()
+
+                % Example:
+                %{
+                lReady = true;
+                
+                switch cField
+                    case 'reticleX'
+                       if ~this.uiReticle.uiCoarseStage.uiX.getDevice().isReady()
+                           lReady = false;
+                       end
+
+                    case 'reticleY'
+                       if ~this.uiReticle.uiCoarseStage.uiY.getDevice().isReady()
+                           lReady = false;
+                       end
+                    
+                    otherwise
+
+                        % UNSUPPORTED
+
+                end
+                %}
+
+                % !!! END REQUIRED CODE !!!
+
+                if lReady
+                    if this.lDebugScan
+                        this.msg(sprintf('onScanIsAtState() %s required, issued, complete', cField));
+                    end
+
+                else
+                    % still isn't there.
+                    if this.lDebugScan
+                        this.msg(sprintf('onScanIsAtState() %s required, issued, incomplete', cField));
+                    end
+                    lOut = false;
+                    return;
+                end
+            else
+                if this.lDebugScan
+                    this.msg(sprintf('onScanIsAtState() %s required, not issued.', cField));
+                end
+
+                lOut = false;
+                return;
+            end                    
+        else
+
+            if this.lDebugScan
+                this.msg(sprintf('onScanIsAtState() %s not required', cField));
+            end
+        end
+    end
+end
+
+
+
+% @param {struct} stUnit - the unit definition structure 
+% @param {struct} stState - the state
+% @returns {logical} - true if the acquisition task is complete
+function lOut = onScanIsAcquired(this, stUnit, stValue)
+
+    lOut = true;
+
+    stContract = this.stScanAcquireContract;
+    ceFields= fieldnames(stContract);
+
+    for n = 1:length(ceFields)
+
+        cField = ceFields{n};
+
+        if stContract.(cField).lRequired
+
+            if stContract.(cField).lIssued
+
+                % !!! PUT CODE HERE !!! 
+                % Check if the set operation on the current device is
+                % complete by calling isReady() on devices.  This will
+                % often be a switch on cField that does something like:
+                % this.uiDeviceStage.getDevice().isReady()
+
+                % !!! END REQUIRED CODE !!!
+
+                if lReady
+                    if this.lDebugScan
+                        this.msg(sprintf('onScanIsAcquired() %s required, issued, complete', cField));
+                    end
+
+                else
+                    if this.lDebugScan
+                        this.msg(sprintf('onScanIsAcquired() %s required, issued, incomplete', cField));
+                    end
+                    lOut = false;
+                    return;
+                end
+            else
+                if this.lDebugScan
+                    this.msg(sprintf('onScanIsAcquired() %s required, not issued.', cField));
+                end
+
+                lOut = false;
+                return;
+            end                    
+        else
+
+            if this.lDebugScan
+                this.msg(sprintf('onScanIsAcquired() %s not required', cField));
+            end
+        end
+    end
+
+end
 %}

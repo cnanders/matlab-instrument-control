@@ -549,7 +549,7 @@ classdef Clock < mic.Base
             
             % this.lRemove(strcmp(cName, this.ceTaskName)) = true; 
             
-            this.listTasks();
+            % this.listTasks();
                       
         end 
         
