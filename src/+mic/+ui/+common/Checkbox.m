@@ -11,7 +11,6 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
     
     
     properties (Access = private)
-        hLabel
         lChecked = false
         cLabel = 'Fix Me'
         lShowLabel = true

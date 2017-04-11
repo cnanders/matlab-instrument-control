@@ -5,6 +5,20 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.10
+
+### mic.ui.common.Checkbox
+- Removed hLabel property since it has been moved out to `mic.ui.common.Base`
+
+### mic.ui.Scan
+
+- New UI to control a `mic.Scan` and display the scan progress.
+- Contains start, pause/resume, and abort buttons.
+
+### mic.Scan
+
+- Refactored elapsed time so elapsed time is no longer incremented while paused and the time complete and time remaining predictions are correct when a scan is paused / resumed many times.
+
 
 # 1.0.0-beta.9
 
