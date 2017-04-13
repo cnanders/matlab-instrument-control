@@ -5,7 +5,14 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+
+# 1.0.0-beta.11
+ 
+### mic.ui.commmon.List 
+- Created properties for the label, width, and height of the move up, move down, delete, and refresh buttons that can be set with the `varargin` syntax
+
 # 1.0.0-beta.10
+
 
 ### mic.ui.common.Checkbox
 - Removed hLabel property since it has been moved out to `mic.ui.common.Base`

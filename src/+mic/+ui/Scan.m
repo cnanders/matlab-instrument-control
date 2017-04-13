@@ -2,8 +2,7 @@ classdef Scan < mic.Base
     
     properties (Constant)
         
-        dWidthButton = 60
-        dHeightButton = 24
+        
         
     end
     
@@ -11,6 +10,9 @@ classdef Scan < mic.Base
         
        dHeight = 95
        dWidth = 240
+       
+       dWidthButton = 60
+       dHeightButton = 24
        
        hPanel
        
@@ -31,12 +33,14 @@ classdef Scan < mic.Base
        
        dHeightPadPanel = 20
        dWidthPadPanel = 10 
-       dWidthPanelBorder = 1
+       dWidthBorderPanel = 1
        cTitle = 'Scan Control'
        
        uiTogglePause
        uiButtonAbort
        uiButtonStart
+       
+       lDisableNotify = false
 
     end
     
@@ -71,7 +75,7 @@ classdef Scan < mic.Base
                 'Parent', hParent,...
                 'Units', 'pixels',...
                 'Title', this.cTitle,...
-                'BorderWidth', this.dWidthPanelBorder, ...
+                'BorderWidth', this.dWidthBorderPanel, ...
                 'Clipping', 'on',...
                 'Position', mic.Utils.lt2lb([dLeft dTop this.dWidth this.dHeight], hParent) ...
             );
@@ -105,7 +109,7 @@ classdef Scan < mic.Base
                 this.dWidthButton, ...
                 this.dHeightButton ...
             );
-            dLeft = dLeft + this.dWidthButton + this.dWidthPadPanel;
+            dLeft = dLeft + this.dWidthButton + 10;
             
             this.uiTogglePause.hide();
             this.uiButtonAbort.hide();
@@ -233,19 +237,30 @@ classdef Scan < mic.Base
         
         function onUiButtonStart(this, src, evt)
             
-            this.msg('onUiButtonStart');
-            notify(this, 'eStart');
-            
-            this.uiTogglePause.set(false)
-            this.uiTogglePause.setTooltip('Pause the scan');
-            
             this.uiButtonStart.hide();
             this.uiTogglePause.show();
             this.uiButtonAbort.show();
             
+            this.msg('onUiButtonStart');
+            
+            % Make sure pause/resume not showing resume
+            if this.uiTogglePause.get()
+                this.lDisableNotify = true;
+                this.uiTogglePause.set(false)
+                this.lDisableNotify = false;
+            end
+            this.uiTogglePause.setTooltip('Pause the scan');
+            
+            notify(this, 'eStart');
+
+            
         end
         
         function onUiButtonPause(this, ~, ~)
+            if this.lDisableNotify
+                return
+            end
+            
             if (this.uiTogglePause.get()) % just changed to true, so was playing
                 notify(this, 'ePause');
                 this.uiTogglePause.setTooltip('Resume the scan');
