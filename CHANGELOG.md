@@ -5,6 +5,31 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.12
+
+### mic.ui.device.*
+
+- Moved common properties and methods to `mic.ui.device.Base`.  These include:
+  - properties (Protected)
+    - uitDevice
+    - uibInit
+    - uiilInitState
+    - cLabelDevice
+    - cLabelInit
+    - cLabelInitState
+    - lIsInitializing
+    - uitxLabelDevice
+    - uitxLabelInit
+    - uitxLabelInitState
+  - methods (Public)
+    - turnOn()
+    - turnOff()
+    - initialize()
+  - methods (Protected)
+    - onInitChange()
+    - onDeviceChange()
+- uitDevice is now disabled until setDevice() is called
+- turnOn() now shows a warning dialog and returns is setDevice() has not been called
 
 # 1.0.0-beta.11
  
