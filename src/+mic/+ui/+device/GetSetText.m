@@ -205,7 +205,9 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeight);
                 dLeft = dLeft + this.dWidthBtn; 
                 
-                 this.uitDevice.disable(); % re-enabled in setDevice()
+                 if ~this.lDeviceIsSet
+                    this.uitDevice.disable(); % re-enabled in setDevice()
+                end
             end
             
             % Init button

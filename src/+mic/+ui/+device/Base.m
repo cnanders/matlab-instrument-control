@@ -79,6 +79,13 @@ classdef Base < mic.Base
         
     end
     
+    
+    events
+        eTurnOn
+        eTurnOff
+        
+    end
+    
     methods 
         
         function this = Base()
@@ -216,12 +223,13 @@ classdef Base < mic.Base
             % Update destination values to match device values
             % this.setDestCalDisplay(this.getValCalDisplay());
             
-            % Kill the Devicev
+            % Kill the deviceVirtual 
+            %{
             if ~isempty(this.deviceVirtual) && ...
                 isvalid(this.deviceVirtual)
                 delete(this.deviceVirtual);
-                this.setDeviceVirtual([]); % This is calling the setter
             end
+            %}
             
             notify(this, 'eTurnOn');
             

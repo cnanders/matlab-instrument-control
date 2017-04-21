@@ -29,7 +29,12 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
     - onInitChange()
     - onDeviceChange()
 - uitDevice is now disabled until setDevice() is called
-- turnOn() now shows a warning dialog and returns is setDevice() has not been called
+- turnOn() now shows a warning dialog and returns if setDevice() has not been called
+- internal property lDeviceIsSet used to track if setDevice() has been called
+
+### mic.ui.device.Base
+
+- turnOn() no longer kills the deviceVirtual instance
 
 # 1.0.0-beta.11
  

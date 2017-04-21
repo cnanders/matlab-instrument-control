@@ -247,8 +247,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         eUnitChange
         eChange
-        eTurnOn
-        eTurnOff
+
     end
 
     
@@ -368,7 +367,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeightBtn);
                 dLeft = dLeft + this.dWidthBtn; 
                 
-                this.uitDevice.disable(); % re-enabled in setDevice()
+                if ~this.lDeviceIsSet
+                    this.uitDevice.disable(); % re-enabled in setDevice()
+                end
             end
 
 
