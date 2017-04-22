@@ -4,6 +4,13 @@
 Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
 
 -->
+# 1.0.0-beta.14
+
+### mic.ui.common.ButtonList
+
+- Now setting tooltip when cLayout === cLAYOUT_BLOCK 
+- Made all private properties protected so subclasses can access them
+
 
 # 1.0.0-beta.13
 

@@ -16,7 +16,7 @@ classdef ButtonList < mic.Base
     
     end
     
-    properties (Access = private)
+    properties (Access = protected)
          
         dWidthButton = 200
         dHeightButton = 24
@@ -39,8 +39,8 @@ classdef ButtonList < mic.Base
         
         hPanel
         
-        % {cell of mic.ui.common.Button 1xn}
-        ceUiButtons 
+        % {mic.ui.common.Button 1xn}
+        uiButtons = mic.ui.common.Button.empty
         
         % @typedef {struct 1x1} Button
         % @property {char 1xm} cLabel - label of the button
@@ -49,9 +49,9 @@ classdef ButtonList < mic.Base
         % action was successfull or not
         % %property {char 1xm} cTooltip - tooltip of the button
         
-        % {cell of Button 1xm} cestButtons - cell of button definition
+        % {struct 1xn} stButtonDefinitions - list of button definition
         % structures
-        cestButtons
+        stButtonDefinitions
 
     end
     
@@ -68,7 +68,7 @@ classdef ButtonList < mic.Base
         
         function this = ButtonList(varargin)
             
-            % default this.cestButtons
+            % default this.stButtonDefinitions
                         
             stButton1 = struct(...
                 'cLabel', 'Button 1', ...
@@ -82,7 +82,7 @@ classdef ButtonList < mic.Base
                 'cTooltip', 'Button 2 Tooltip' ...
             );
             
-            this.cestButtons = {stButton1, stButton2};
+            this.stButtonDefinitions = [stButton1 stButton2];
             
             % Default layout
             
@@ -103,7 +103,7 @@ classdef ButtonList < mic.Base
                 
         function build(this, hParent, dLeft, dTop)
              
-            u8Num = length(this.cestButtons);
+            u8Num = length(this.stButtonDefinitions);
             switch this.cLayout
                 case this.cLAYOUT_BLOCK
                     dHeight = this.dHeightPadTop + ...
@@ -134,7 +134,8 @@ classdef ButtonList < mic.Base
                     dLeft = this.dWidthPadLeft;
 
                     for n = 1 : u8Num
-                        this.ceUiButtons{n}.build(this.hPanel, dLeft, dTop, this.dWidthButton, this.dHeightButton);
+                        this.uiButtons(n).build(this.hPanel, dLeft, dTop, this.dWidthButton, this.dHeightButton);
+                        this.uiButtons(n).setTooltip(this.stButtonDefinitions(n).cTooltip);
                         dTop = dTop + this.dHeightButton + this.dHeightPad;
                     end
                 case this.cLAYOUT_INLINE
@@ -167,8 +168,8 @@ classdef ButtonList < mic.Base
                     dLeft = this.dWidthPadLeft;
 
                     for n = 1 : u8Num
-                        this.ceUiButtons{n}.build(this.hPanel, dLeft, dTop, this.dWidthButton, this.dHeightButton);
-                        this.ceUiButtons{n}.setTooltip(this.cestButtons{n}.cTooltip);
+                        this.uiButtons(n).build(this.hPanel, dLeft, dTop, this.dWidthButton, this.dHeightButton);
+                        this.uiButtons(n).setTooltip(this.stButtonDefinitions(n).cTooltip);
                         dLeft = dLeft + this.dWidthButton + this.dWidthPad;
                     end
                     
@@ -190,13 +191,15 @@ classdef ButtonList < mic.Base
         function onUiButtonClick(this, src, evt, n)
             cMsg = sprintf('onUiButtonClick(%1.0f)', n);
             this.msg(cMsg);
-            this.cestButtons{n}.fhOnClick();
+            
+            this.stButtonDefinitions(n)
+            this.stButtonDefinitions(n).fhOnClick();
         end
                 
         function init(this)
-            for n = 1 : length(this.cestButtons)
-                this.ceUiButtons{n} = mic.ui.common.Button('cText', this.cestButtons{n}.cLabel);
-                addlistener(this.ceUiButtons{n}, 'eChange', @(src, evt) this.onUiButtonClick(src, evt, n));
+            for n = 1 : length(this.stButtonDefinitions)
+                this.uiButtons(n) = mic.ui.common.Button('cText', this.stButtonDefinitions(n).cLabel);
+                addlistener(this.uiButtons(n), 'eChange', @(src, evt) this.onUiButtonClick(src, evt, n));
             end
         end
         
