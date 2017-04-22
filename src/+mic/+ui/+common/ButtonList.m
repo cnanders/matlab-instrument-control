@@ -182,17 +182,20 @@ classdef ButtonList < mic.Base
         
         function delete(this)
             this.msg('delete');
-        end         
+        end    
+        
+        
+        function setButtonColorBackground(this, n, dValue)
+            this.uiButtons(n).setColorBackground(dValue);
+        end
 
     end
     
-    methods (Access = private)
+    methods (Access = protected)
         
         function onUiButtonClick(this, src, evt, n)
             cMsg = sprintf('onUiButtonClick(%1.0f)', n);
             this.msg(cMsg);
-            
-            this.stButtonDefinitions(n)
             this.stButtonDefinitions(n).fhOnClick();
         end
                 

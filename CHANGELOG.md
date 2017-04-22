@@ -10,7 +10,13 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 - Now setting tooltip when cLayout === cLAYOUT_BLOCK 
 - Made all private properties protected so subclasses can access them
+- Added setButtonColorBackground
 
+
+### mic.ui.common.Button
+
+- Added setColorText method
+- Added setColorBackground method
 
 # 1.0.0-beta.13
 
