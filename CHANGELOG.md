@@ -5,6 +5,18 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.13
+
+### mic.ui.common.ButtonList
+
+- New UI Control that is a list of `mic.ui.common.Button`s in a panel.  Buttons can be displayed inline or block.  A `cell` of button definition `struct`s is passed in with the `varargin` syntax to configure the buttons.  Each “button definition“ has three properties, as shown below.
+
+```matlab
+% @typedef {struct 1x1} ButtonDefinition
+% @property {char 1xm} cLabel - label of the button
+% @property {function_handle 1x1} fhOnClick - function that is called when button is clicked.  Must return logical to indicate if the action was successfull or not
+% @property {char 1xm} cTooltip - tooltip of the button
+```
 # 1.0.0-beta.12
 
 ### mic.ui.device.*
