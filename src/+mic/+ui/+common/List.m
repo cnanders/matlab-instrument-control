@@ -14,7 +14,7 @@ classdef List < mic.Base
     end
     
     
-    properties (Access = private)
+    properties (Access = protected)
         
         dLeft
         dTop
@@ -94,7 +94,7 @@ classdef List < mic.Base
        function this= List(varargin)
            
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}));
                 if this.hasProp( varargin{k})
                     this.msg(sprintf('settting %s', varargin{k}), 3);
                     this.(varargin{k}) = varargin{k + 1};

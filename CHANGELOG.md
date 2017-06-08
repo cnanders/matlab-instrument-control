@@ -4,6 +4,15 @@
 Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
 
 -->
+
+# 1.0.0-beta.15
+
+### mic.ui.common.ListDir
+
+- Extendion of mic.ui.common.List that is designed to show the contents of a directory
+- Has an optional button that allows the user to change the directory that is being listed
+- `getDir()` method can be used to retrieve the directory the user is viewing
+
 # 1.0.0-beta.14
 
 ### mic.ui.common.ButtonList
