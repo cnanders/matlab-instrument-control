@@ -176,6 +176,10 @@ classdef ListDir < mic.ui.common.List
                 return
             end
             
+            if ~ishandle(this.uiTextDir)
+                return
+            end
+            
             this.uiTextDir.setTooltip(sprintf(...
                 'The directory where scan recipe/result files are saved: %s', ...
                 this.cDir ...
