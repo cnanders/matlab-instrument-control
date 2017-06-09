@@ -34,7 +34,8 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
     
     methods
         
-       % constructor cVal, cAlign, cFontWeight, dFontSize
+       % constructor 
+       % legacy args: cVal, cAlign, cFontWeight, dFontSize
        
        function this = Text(varargin)
                        

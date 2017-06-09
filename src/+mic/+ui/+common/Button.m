@@ -17,6 +17,10 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         lImg = false            % use image?
         lAsk = false
         cMsg = 'Are you sure you want to do that?'
+        
+        % {function_handle 1x1} is called any time eChange is emitted (if
+        % is not null)
+        fhOnClick
     end
 
 
@@ -30,7 +34,9 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         % authorizes
         % 2. If confirmation dialog approval is not required and the user
         % presses.
-        eChange  
+        eChange
+        
+        
     end
 
 
@@ -84,6 +90,10 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         cAns = questdlg(this.cMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
                         switch cAns
                             case 'Yes'
+                                
+                                if ~isempty(this.fhOnClick)
+                                    this.fhOnClick();
+                                end
                                 notify(this,'eChange');
 
                             otherwise
@@ -91,6 +101,10 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         end  
 
                     else
+                        
+                        if ~isempty(this.fhOnClick)
+                            this.fhOnClick();
+                        end
                         notify(this,'eChange');
                     end
            end

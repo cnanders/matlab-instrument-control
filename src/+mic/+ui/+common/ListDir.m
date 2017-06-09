@@ -29,7 +29,7 @@ classdef ListDir < mic.ui.common.List
         uiTextDir
         
         % {logical 1x1} - show the "choose dir" button
-        lShowChooseDir
+        lShowChooseDir = true
         
     end
     
@@ -111,8 +111,7 @@ classdef ListDir < mic.ui.common.List
             
             if this.lShowChooseDir
                 
-                dTop = dTop + 20;  
-                dLeft = 10;
+                dTop = dTop;  
                 dWidthButton = 100;
                 dHeightButton = 24;
                 
@@ -176,9 +175,11 @@ classdef ListDir < mic.ui.common.List
                 return
             end
             
-            if ~ishandle(this.uiTextDir)
+            
+            if isempty(this.uiTextDir)
                 return
             end
+            
             
             this.uiTextDir.setTooltip(sprintf(...
                 'The directory where scan recipe/result files are saved: %s', ...
