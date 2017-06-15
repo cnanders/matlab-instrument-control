@@ -4,6 +4,13 @@
 Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
 
 -->
+
+# 1.0.0-beta.18
+
+### mic.ui.common.ListDir
+
+- Implemented `save()` and `load()` method to persist the state across sessions
+
 # 1.0.0-beta.17
 
 ### mic.ui.common.Button
