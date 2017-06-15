@@ -54,7 +54,8 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
     methods
         
         %% constructor
-        % cLabel, cType, lShowLabel, cHorizontalAlignment
+        % Legacy arguments
+        % (cLabel, cType, lShowLabel, cHorizontalAlignment)
         function this = Edit(varargin)
 
             for k = 1 : 2: length(varargin)

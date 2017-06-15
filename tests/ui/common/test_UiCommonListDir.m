@@ -1,5 +1,4 @@
-purge
-
+% purge
 
 [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
 

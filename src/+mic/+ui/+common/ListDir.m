@@ -29,7 +29,7 @@ classdef ListDir < mic.ui.common.List
         uiTextDir
         
         % {logical 1x1} - show the "choose dir" button
-        lShowChooseDir
+        lShowChooseDir = true
         
     end
     
@@ -111,8 +111,7 @@ classdef ListDir < mic.ui.common.List
             
             if this.lShowChooseDir
                 
-                dTop = dTop + 20;  
-                dLeft = 10;
+                dTop = dTop;  
                 dWidthButton = 100;
                 dHeightButton = 24;
                 
@@ -165,6 +164,20 @@ classdef ListDir < mic.ui.common.List
        end
        
        
+       % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.cDir = this.getDir();
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            this.cDir = mic.Utils.path2canonical(st.cDir);
+            this.refresh(); 
+            this.updateUiTextDir();    
+        end
+       
+       
     end
     
     
@@ -180,7 +193,8 @@ classdef ListDir < mic.ui.common.List
                 return
             end
             
-            if ~ishandle(this.uiTextDir)
+            
+            if isempty(this.uiTextDir)
                 return
             end
             

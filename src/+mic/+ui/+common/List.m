@@ -46,8 +46,13 @@ classdef List < mic.Base
         % {char 1xm} the label
         cLabel = 'Fix Me'        
         
+        % {function_handle 1x1} function to call when the refresh button is
+        % pushed
+        fhRefresh       
         
-        fhRefresh       % function handle
+        % {function_handle 1x1} function to call when the list selection
+        % changes
+        fhOnChange 
         
         dWidthDelete    = 60;
         dWidthUp        = 60;
@@ -314,6 +319,10 @@ classdef List < mic.Base
                set(this.hUI, 'Value', this.u8Selected);
            end
            
+           if ~isempty(this.fhOnChange)
+               this.fhOnChange()
+           end
+           
            notify(this,'eChange');
                
        end
@@ -373,6 +382,11 @@ classdef List < mic.Base
 
        function onList(this, src, evt)
             this.u8Selected = uint8(get(src, 'Value'));
+            
+            if ~isempty(this.fhOnChange)
+               this.fhOnChange()
+            end
+           
             notify(this,'eChange');
        end
        

@@ -4,6 +4,11 @@
 Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
 
 -->
+# 1.0.0-beta.17
+
+### mic.ui.common.Button
+
+- Added `fhOnClick` property, a `function_handle` that is called whenever the button is clicked. If the button requires confirmation during click, `fhOnClick` is only clicked if there is a successful confirmation.
 
 # 1.0.0-beta.16
 
