@@ -172,6 +172,10 @@ classdef ListDir < mic.ui.common.List
         
         function updateUiTextDir(this)
             
+            if isempty(this.uiTextDir)
+                return
+            end
+            
             if ~this.lShowChooseDir
                 return
             end
@@ -180,10 +184,11 @@ classdef ListDir < mic.ui.common.List
                 return
             end
             
-            this.uiTextDir.setTooltip(sprintf(...
+            cTooltip = sprintf(...
                 'The directory where scan recipe/result files are saved: %s', ...
                 this.cDir ...
-            ));
+            );
+            this.uiTextDir.setTooltip(cTooltip);
             cVal = mic.Utils.truncate(this.cDir, 100, true);
             this.uiTextDir.set(cVal);
             

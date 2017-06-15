@@ -5,6 +5,12 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.16
+
+### mic.ui.common.ListDir
+
+- Fixed bug in `updateUiTextDir()`. It now properly returns if `uiTextDir` has not been defined
+
 # 1.0.0-beta.15
 
 ### mic.ui.common.ListDir
