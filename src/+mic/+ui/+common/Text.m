@@ -40,7 +40,7 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
        function this = Text(varargin)
                        
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
                     this.msg(sprintf('settting %s', varargin{k}), 6);
                     this.(varargin{k}) = varargin{k + 1};

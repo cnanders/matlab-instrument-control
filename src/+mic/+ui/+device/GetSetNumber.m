@@ -268,9 +268,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % Override properties with varargin
             
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 3);
+                    this.msg(sprintf('settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -710,7 +710,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % I think a good rule for delete should be that it only
             % deletes things that it adds
             
-            this.msg('delete', 5);
+            this.msg('delete', this.u8_MSG_TYPE_DELETE);
             this.lDeleted = true;
             this.save();
             
@@ -718,7 +718,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             if ~isempty(this.clock) && ...
                 isvalid(this.clock) && ...
                 this.clock.has(this.id())
-                this.msg('delete() removing clock task'); 
+                this.msg('delete() removing clock task', this.u8_MSG_TYPE_INFO); 
                 this.clock.remove(this.id());
             end
                 

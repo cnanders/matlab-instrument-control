@@ -5,6 +5,13 @@ Refactoring some of the time info / prediction from sslsr into the mic.StateScan
 
 -->
 
+# 1.0.0-beta.19
+
+### mic.Base
+
+- Improved the messaging system.  Messages are now flagged with a `uint8` type.  Available types are stored as constants in `mic.Base` (`u8_MSG_TYPE_*`).  `mic.Base` now has a property `u8MsgType` that is a list of types that should be logged.  The `msg` function now requires that the type of the provided message is in the list of allowed types in order to display the message.  To change the message / logging style for the project, set `u8MsgType` to one of the defined `u8_MSG_TYPE_*` constants in the `mic.Base` constructor.
+
+
 # 1.0.0-beta.18
 
 ### mic.ui.common.ListDir
