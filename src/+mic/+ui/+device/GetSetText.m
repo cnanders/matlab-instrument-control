@@ -14,7 +14,6 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         % {char 1xm} name MUST BE UNIQUE within entire application
         cName = 'CHANGE ME'
         
-          
 
     end
 

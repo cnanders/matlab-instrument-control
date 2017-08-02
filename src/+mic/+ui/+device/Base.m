@@ -111,9 +111,14 @@ classdef Base < mic.Base
         
         function setDevice(this, device)
             
+            if isempty(device)
+                this.uitDevice.disable();
+                this.lDeviceIsSet = false;
+                return;
+            end
+            
             if this.isDevice(device)
                 this.device = device;
-                
                 this.lDeviceIsSet = true;
                 this.uitDevice.enable();
             end

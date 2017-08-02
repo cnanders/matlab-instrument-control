@@ -61,6 +61,8 @@ classdef Base < handle
                 if nargin<3
                     u8verbosity_level = 0;
                 end
+                
+                
                 if u8verbosity_level<=this.u8verbosity
                     fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
                 end
@@ -69,48 +71,6 @@ classdef Base < handle
                 fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
         end
-        
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%HANDLE CLASS METHODS THAT SHOULD BE HIDDEN TO MAKE
-        %%AUTO-COMPLETION EASIER
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        %{
-        function lh = addlistener(varargin)
-            lh = addlistener@handle(varargin{:});
-        end
-        function notify(varargin)
-            notify@handle(varargin{:});
-        end
-        function delete(varargin)
-            delete@handle(varargin{:});
-        end
-        function Hmatch = findobj(varargin)
-            Hmatch = findobj@handle(varargin{:});
-        end
-        function p = findprop(varargin)
-            p = findprop@handle(varargin{:});
-        end
-        function TF = eq(varargin)
-            TF = eq@handle(varargin{:});
-        end
-        function TF = ne(varargin)
-            TF = ne@handle(varargin{:});
-        end
-        function TF = lt(varargin)
-            TF = lt@handle(varargin{:});
-        end
-        function TF = le(varargin)
-            TF = le@handle(varargin{:});
-        end
-        function TF = gt(varargin)
-            TF = gt@handle(varargin{:});
-        end
-        function TF = ge(varargin)
-            TF = ge@handle(varargin{:});
-        end
-        %}
         
 
         function cID = id(this)
@@ -136,6 +96,8 @@ classdef Base < handle
                 l = true;
             end
         end
+        
+        
         
         
         
