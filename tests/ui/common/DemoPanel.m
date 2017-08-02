@@ -121,7 +121,7 @@ classdef DemoPanel < HandlePlus
             % stData.  The structure has one property called ceOptions which
             % is a cell array
             
-            this.msg('handleListDelete');
+            this.msg('handleListDelete', this.u8_MSG_TYPE_DELETE);
             this.test = evt.stData.ceOptions;
         end
         

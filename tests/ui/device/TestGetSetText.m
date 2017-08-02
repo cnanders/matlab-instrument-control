@@ -58,7 +58,7 @@ classdef TestGetSetText < mic.Base
         end
         
         function delete(this)
-            this.msg('delete', 5);
+            this.msg('delete', this.u8_MSG_TYPE_DELETE);
             delete(this.ui);
             delete(this.clock);
         end
