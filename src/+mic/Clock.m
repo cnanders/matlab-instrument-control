@@ -748,7 +748,7 @@ classdef Clock < mic.Base
         %   Clock.delete()
         %
         % See also CLOCK, INIT, BUILD
-            this.msg('delete()', this.u8_MSG_TYPE_DELETE);         
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_INIT_DELETE);         
             try
                 if isvalid(this.t)
                 

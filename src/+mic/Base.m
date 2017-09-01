@@ -1,21 +1,7 @@
 classdef Base < handle
-%Base is an overloaded handle class that implements useful functions
-%   Among these functions are the ability to recursively save and load
-%   an instance of a child class.
 
-    % 2014.05.08 CNA
-    % I thought it would be a good idea to make cName a protected property,
-    % but I realized most of the classes don't have a cName property. It is
-    % realy only HardwareIO, HardwareO classes that need them.  We will
-    % make them public properties to the msg() method can access them
-    
-    %{
-    properties (Access = protected)
-        cName   = 'Unnamed';
-    end
-    %}
-    
     properties (Constant, Access = protected)
+
         
         u8_MSG_TYPE_INFO = 1
         u8_MSG_TYPE_ERROR = 2
@@ -76,7 +62,7 @@ classdef Base < handle
             if nargin == 2
                 u8Type = this.u8_MSG_TYPE_INFO;
             end
-            
+
             if any(ismember(this.u8MsgStyle, u8Type))
                  cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
                  fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);

@@ -183,7 +183,7 @@ classdef ButtonList < mic.Base
         %% Destructor
         
         function delete(this)
-            this.msg('delete', this.u8_MSG_TYPE_DELETE);
+            this.msg('delete', this.u8_MSG_TYPE_CLASS_INIT_DELETE);
         end    
         
         

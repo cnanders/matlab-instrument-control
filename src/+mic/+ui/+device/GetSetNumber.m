@@ -711,7 +711,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % I think a good rule for delete should be that it only
             % deletes things that it adds
             
-            this.msg('delete', this.u8_MSG_TYPE_DELETE);
+            this.msg('delete', this.u8_MSG_TYPE_CLASS_INIT_DELETE);
             this.lDeleted = true;
             this.save();
             

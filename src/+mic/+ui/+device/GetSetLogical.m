@@ -22,7 +22,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
     end
 
     properties (SetAccess = private)
-        cName   % name identifier
+        cName = 'CHANGE ME' % Must be unique in entire project / app  % name identifier
         cLabel = 'Fix me'
     end
 
