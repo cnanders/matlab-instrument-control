@@ -15,7 +15,7 @@ classdef Base < handle
     end
     %}
     
-    properties (Constant)
+    properties (Constant, Access = protected)
         
         u8_MSG_TYPE_INFO = 1
         u8_MSG_TYPE_ERROR = 2
@@ -29,8 +29,11 @@ classdef Base < handle
         u8_MSG_TYPE_VARARGIN_SET = 10
         u8_MSG_TYPE_VARARGIN_PROPERTY = 11
         u8_MSG_TYPE_FILE_IO = 12
+        u8_MSG_TYPE_DELETE = 13
+        u8_MSG_TYPE_CREATE_UI_COMMON = 14
+        u8_MSG_TYPE_CREATE_UI_DEVICE = 15
         
-        u8_MSG_STYLE_ALL = [1 : 12]
+        u8_MSG_STYLE_ALL = [1 : 13]
         u8_MSG_STYLE_CLOCK = [6]
         u8_MSG_STYLE_JAVA = [5]
         u8_MSG_STYLE_EVENTS_AND_JAVA = [3, 4, 5, 6]
@@ -38,6 +41,8 @@ classdef Base < handle
         u8_MSG_STYLE_VARARGIN_SET = [10] 
         u8_MSG_STYLE_VARARGIN_ALL = [10, 11]
         u8_MSG_STYLE_NONE = []
+        u8_MSG_STYLE_CREATE_UI_DEVICE = [15]
+        u8_MSG_STYLE_CREATE = [14, 15] 
         
     end
     
@@ -49,7 +54,7 @@ classdef Base < handle
     methods
         
         function this = Base()
-            this.u8MsgStyle = this.u8_MSG_STYLE_NONE; %this.u8_MSG_STYLE_NONE;
+            this.u8MsgStyle = this.u8_MSG_STYLE_CREATE_UI_DEVICE; %this.u8_MSG_STYLE_NONE;
         end
 
 

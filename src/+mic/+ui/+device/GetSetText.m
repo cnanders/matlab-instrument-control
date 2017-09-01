@@ -127,7 +127,9 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         % See HardwareIOPlus documentation
         
         function this = GetSetText(varargin)  
-                    
+                  
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
+            
             % Default properties
             this.fhValidateDest = this.validateDest;
             this.config = mic.config.GetSetText();
