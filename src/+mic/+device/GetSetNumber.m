@@ -104,7 +104,7 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
        
         function delete(this)
 
-            this.msg('delete()', this.u8_MSG_TYPE_DELETE);
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_INIT_DELETE);
 
             % Clean up clock tasks
             if isvalid(this.clock) && ...

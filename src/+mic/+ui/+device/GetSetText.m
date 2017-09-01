@@ -316,7 +316,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         %
         % See also HARDWAREIO, INIT, BUILD
 
-            this.msg('delete', this.u8_MSG_TYPE_DELETE);
+            this.msg('delete', this.u8_MSG_TYPE_CLASS_INIT_DELETE);
             this.save();
             
            % Clean up clock tasks
