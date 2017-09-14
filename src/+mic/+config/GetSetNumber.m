@@ -187,7 +187,7 @@ classdef GetSetNumber < mic.Base
 
             
             msgID = 'UNIT:NotSupported';
-            msg = sprintf('The unit %s is not supported', cName);
+            msg = sprintf('+mic/+config/+GetSetNumber The unit %s is not supported', cName);
             exception = MException(msgID,msg);
             throw(exception);
             

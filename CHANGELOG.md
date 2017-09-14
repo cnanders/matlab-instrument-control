@@ -1,9 +1,13 @@
-<!--
-# TO DO
+# 1.0.0-beta.22
 
-Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
+### mic.Base
 
--->
+Now msg always shows `u8_MSG_TYPE_ERROR` messages types
+
+### mic.Clock
+
+No longer re-throws errors when it tries to execute one of the function handles in its queue.  By not re-throwing, MATLAB displays the error and call stack in the console during runtime.  Rethrowing doesn't do this; it assumes you catch somewhere higher in the call stack.
+
 # 1.0.0-beta.21
 
 Fixed but with `ui.common.PopupStruct`, `ui.common.Text` and `ui.common.Toggle` that were sending hard-coded values through `msg()` instead of the new constants defined in `mic.Base`

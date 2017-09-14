@@ -20,7 +20,7 @@ classdef Base < handle
         u8_MSG_TYPE_CREATE_UI_DEVICE = 15
         
         u8_MSG_STYLE_ALL = [1 : 13]
-        u8_MSG_STYLE_CLOCK = [6]
+        u8_MSG_STYLE_CLOCK = [7]
         u8_MSG_STYLE_JAVA = [5]
         u8_MSG_STYLE_EVENTS_AND_JAVA = [3, 4, 5, 6]
         u8_MSG_STYLE_CLOCK_AND_EVENTS = [3, 4, 5, 7]
@@ -40,7 +40,7 @@ classdef Base < handle
     methods
         
         function this = Base()
-            this.u8MsgStyle = this.u8_MSG_STYLE_CLOCK; %this.u8_MSG_STYLE_NONE;
+            this.u8MsgStyle = this.u8_MSG_STYLE_NONE; %this.u8_MSG_STYLE_NONE;
         end
 
 
@@ -62,8 +62,11 @@ classdef Base < handle
             if nargin == 2
                 u8Type = this.u8_MSG_TYPE_INFO;
             end
+            
+            % Always show error types
+            u8MsgStyle = [this.u8MsgStyle this.u8_MSG_TYPE_ERROR];
 
-            if any(ismember(this.u8MsgStyle, u8Type))
+            if any(ismember(u8MsgStyle, u8Type))
                  cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
                  fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
