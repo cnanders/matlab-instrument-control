@@ -16,6 +16,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         u8Img = []          % image cdata
         lImg = false            % use image?
         lAsk = false
+        hDirectCallback = @(src)[];
         cMsg = 'Are you sure you want to do that?'
     end
 
@@ -73,6 +74,13 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             end
             set(this.hUI, 'String', cText);
         end
+        
+        function setColor(this, dColor)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'BackgroundColor', dColor);
+        end
 
         %% Event handlers
         function cb(this, src, evt)
@@ -84,6 +92,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         cAns = questdlg(this.cMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
                         switch cAns
                             case 'Yes'
+                                this.hDirectCallback(this);
                                 notify(this,'eChange');
 
                             otherwise
@@ -91,6 +100,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         end  
 
                     else
+                        this.hDirectCallback(this);
                         notify(this,'eChange');
                     end
            end

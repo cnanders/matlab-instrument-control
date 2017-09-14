@@ -369,8 +369,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
 
             % set(this.hImage, 'CData', imread(fullfile(mic.Utils.pathImg(), 'HardwareIO.png')));
 
-            axis('image');
-            axis('off');
+          
 
             y_rel = -1;
 
