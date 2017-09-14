@@ -4,6 +4,9 @@
 Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
 
 -->
+# 1.0.0-beta.21
+
+Fixed but with `ui.common.PopupStruct`, `ui.common.Text` and `ui.common.Toggle` that were sending hard-coded values through `msg()` instead of the new constants defined in `mic.Base`
 
 # 1.0.0-beta.20
 

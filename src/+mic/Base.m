@@ -34,7 +34,7 @@ classdef Base < handle
     methods
         
         function this = Base()
-            this.u8MsgStyle = this.u8_MSG_STYLE_NONE; %this.u8_MSG_STYLE_NONE;
+            this.u8MsgStyle = this.u8_MSG_STYLE_CLOCK; %this.u8_MSG_STYLE_NONE;
         end
 
 
