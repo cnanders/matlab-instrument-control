@@ -257,7 +257,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %HARDWAREIO Class constructor
         
         function this = GetSetNumber(varargin)  
-                    
+                 
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
             % Default properties
             
             this.fhValidateDest = this.validateDest;  

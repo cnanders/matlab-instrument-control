@@ -69,6 +69,8 @@ classdef ButtonList < mic.Base
         function this = ButtonList(varargin)
             
             % default this.stButtonDefinitions
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+
                         
             stButton1 = struct(...
                 'cLabel', 'Button 1', ...

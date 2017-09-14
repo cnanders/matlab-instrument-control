@@ -26,6 +26,8 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         
         function this= ImageLogical(varargin)
 
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+            
             % Defaults
             this.u8ImgTrue = imread(fullfile(mic.Utils.pathImg(), 'image-logical-true-1.png'));
             this.u8ImgFalse = imread(fullfile(mic.Utils.pathImg(), 'image-logical-false-1.png'));

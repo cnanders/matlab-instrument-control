@@ -53,6 +53,7 @@ classdef ListDir < mic.ui.common.List
        
        function this = ListDir(varargin)
            
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             
             % Add additional varargin arguments
             varargin{length(varargin) + 1} = 'lShowMove';

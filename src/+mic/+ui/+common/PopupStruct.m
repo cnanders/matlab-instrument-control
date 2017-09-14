@@ -66,6 +66,8 @@ classdef PopupStruct < mic.Base
                        
        function this= PopupStruct(varargin)
        
+           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+           
             % Default ceOptions
        
             stOption1 = struct();

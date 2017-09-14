@@ -133,6 +133,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function this = GetSetLogical(varargin)
     
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
             this.config = mic.config.GetSetLogical();
 
             % Override properties with varargin
