@@ -14,7 +14,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
     % Hungarian: hio
 
     properties (Constant)
-                
+        
     end
 
     properties      
@@ -157,8 +157,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   the Config instance that the other Hardware IO is using
         config
         
-        % @param {function_handle 1x1} [fhValidateDest =
-        %   this.validateDest()] - a function that returns a
+        % @param {function_handle 1x1} a function that returns a
         %   locical that validates if the requested move is allowed.
         %   It is called within moveToDest() and if it returns false, a
         %   message is displayed sayint the current move is not
@@ -205,6 +204,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         lShowStores = true
         
         
+        
         % {logical 1x1} - show allowed range (config.min - config.max)
         lShowRange = false
         
@@ -212,7 +212,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % play, dest, stores)
         lDisableSet = false
         
-        
+        % {logical 1x1} - enable to have config file set valid destinations
+        lValidateByConfigRange = false
                 
         uitxLabelName
         uitxLabelVal
@@ -261,7 +262,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
             % Default properties
             
-            this.fhValidateDest = this.validateDest;  
+            % By default, fhValidateDest returns true.
+            this.fhValidateDest = this.validateDest;
+            
             
             this.msg('constructor() default config = mic.config.GetSetNumber()');
             this.config = mic.config.GetSetNumber();
@@ -270,13 +273,16 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
-                if this.hasProp( varargin{k})
+                if this.hasProp(varargin{k})
                     this.msg(sprintf('settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
             
-            
+            if (this.lValidateByConfigRange)
+                this.fhValidateDest = @this.validateByConfigRange; 
+            end
+                
             this.cDirSave = fullfile( ...
                 mic.Utils.pathSave(), ...
                 'ui', ...
@@ -573,6 +579,18 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uieDest.set(dDestCal);
             this.moveToDest();           
         end
+        
+        function syncDestination(this)
+        % SETDESTCALABS Set the destination mic.ui.common.Edit value to
+        % read what the actual calibrated value is.  This is useful when
+        % manually setting the destnation value independent of the Edit UI
+            dPosCal = str2double(sprintf(...
+                        '%.*f', ...
+                        this.getUnit().precision, ...
+                        this.getValCalDisplay() ...
+                    ));
+            this.uieDest.set(dPosCal);
+        end
        
         function setDestCal(this, dCalAbs, cUnit)
         % SETDESTCALABS Update the destination inside the mic.ui.common.Edit based on
@@ -654,7 +672,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %
         %   See also SETDESTCAL, SETDESTRAW, MOVE
         
-            if this.fhValidateDest() ~= true
+            this.lReady = false;         
+            dRaw = this.cal2raw(this.uieDest.get(), this.getUnit().name, this.uitRel.get());
+            
+            if ~this.fhValidateDest()
                 return;
             end
             
@@ -674,8 +695,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % property is accessed before onClock() has a chance to
             % update its value from the device Device.
             
-            this.lReady = false;         
-            dRaw = this.cal2raw(this.uieDest.get(), this.getUnit().name, this.uitRel.get());
+           
             this.getDevice().set(dRaw);
                        
         end
@@ -1381,7 +1401,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 
             end
             
-            this.uitxRange.set(cVal); 
+            this.uitxRange.set(cVal);
             
         end
         
@@ -1627,6 +1647,32 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         function lOut = validateDest(this)
             lOut = true;
+        end
+        
+        function lOut = validateByConfigRange(this)
+            % By default this will check to see if goal is in between the
+            % specified range.
+            stUnit = this.getUnit();
+            dCalMin = this.raw2cal(this.config.dMin, stUnit.name, this.uitRel.get());
+            dCalMax = this.raw2cal(this.config.dMax, stUnit.name, this.uitRel.get()); 
+            
+            % depending on units we need to make sure that the "min" is
+            % really the lower value.  If not then swap:
+            if (dCalMax < dCalMin)
+                dTemp = dCalMin;
+                dCalMin = dCalMax;
+                dCalMax = dTemp;
+            end
+            dDest = this.uieDest.get();
+            
+            lOut = (dDest >= dCalMin && dDest <= dCalMax);
+            
+            if ~lOut
+                msgbox('Position not allowed', 'Position out of bounds', 'warn');
+                this.syncDestination();
+            end
+                
+
         end
         
         function updateZeroTooltip(this)
