@@ -83,9 +83,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         dPad2 = 0;
         dWidthStatus = 5;
         
-        cLabelDevice = 'Api'
-        cLabelInit = 'Init'
-        cLabelInitState = 'Init'
+        
         cLabelName = 'Name';
         cLabelValue = 'Val';
         cLabelDest = 'Goal'
@@ -96,9 +94,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         cLabelJogL = '';
         cLabelJog = 'Step';
         cLabelJogR = '';
-        cTooltipDeviceOff = 'Connect to the real Device / hardware';
-        cTooltipDeviceOn = 'Disconnect the real Device / hardware (go into virtual mode)';
-        cTooltipInitButton = 'Send the initialize command to this device';
         
         
         
@@ -113,17 +108,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         uieDest     % textbox to input the desired position
         uieStep     % textbox to input the desired step in disp units
         uitxVal     % label to display the current value
-        uitDevice      % toggle for real / virtual Device
-        
-        % {mic.ui.common.Button 1x1} clicking it calls device.initialize()
-        % Its logical state is updated on clock cycle by calling device.isInitialized()  
-        % see lShowInitButon
-        uibInit  
-        
-        %{ mic.ui.common.ImageLogical 1x1} image logical whose state is set
-        % on every clock cycle by the value of device.isInitialized() it is
-        % redundant if already showing uibInit.  See lShowInitState
-        uiilInitState % image logical to show isInitialized state
         
 
         uibtPlay     % 2014.11.19 - Using a button instead of a toggle
@@ -228,12 +212,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % play, dest, stores)
         lDisableSet = false
         
-        % {logical 1x1} - ask the user if they are sure when clicking API
-        % button/toggle
-        lAskOnDeviceClick = true
-        % {logical 1x1} - ask the user if they are sure when clicking the
-        % Init button
-        lAskOnInitClick = true
+        
                 
         uitxLabelName
         uitxLabelVal
@@ -244,9 +223,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         uitxLabelJogR
         uitxLabelStores
         uitxLabelPlay
-        uitxLabelDevice
-        uitxLabelInit
-        uitxLabelInitState
+        
         uitxLabelRange
         
         uitxRange
@@ -261,11 +238,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % now, I'm going to cast all values as double
         % cTypeDest = 'd'
         
-        
-        % {logical 1x1} true in moments after calling device.initialize()
-        % and before device.isInitialized() returns true. false otherwise
-        lIsInitializing = false
-        
         dValDeviceDefault = 0
         
     end
@@ -275,8 +247,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         eUnitChange
         eChange
-        eTurnOn
-        eTurnOff
+
     end
 
     
@@ -286,7 +257,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %HARDWAREIO Class constructor
         
         function this = GetSetNumber(varargin)  
-                    
+                 
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
             % Default properties
             
             this.fhValidateDest = this.validateDest;  
@@ -297,9 +269,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % Override properties with varargin
             
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 3);
+                    this.msg(sprintf('settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -394,6 +366,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 end
                 this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeightBtn);
                 dLeft = dLeft + this.dWidthBtn; 
+                
+                if ~this.lDeviceIsSet
+                    this.uitDevice.disable(); % re-enabled in setDevice()
+                end
             end
 
 
@@ -721,51 +697,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
         
         
-        function turnOn(this)
-        
-            % Channel device  
-        % See also TURNOFF
-
-            this.lActive = true;
-            
-            this.uitDevice.set(true);
-            this.uitDevice.setTooltip(this.cTooltipDeviceOn);
-            % set(this.hPanel, 'BackgroundColor', this.dColorOn);
-            % set(this.hImage, 'Visible', 'off');
-                        
-            % Update destination values to match device values
-            % this.setDestCalDisplay(this.getValCalDisplay());
-            
-            % Kill the Devicev
-            if ~isempty(this.deviceVirtual) && ...
-                isvalid(this.deviceVirtual)
-                delete(this.deviceVirtual);
-                this.setDeviceVirtual([]); % This is calling the setter
-            end
-            
-            notify(this, 'eTurnOn');
-            
-        end
-        
-        
-        function turnOff(this)
-        
-            % CA 2014.04.14: Make sure Devicev is available
-            
-            if isempty(this.deviceVirtual)
-                this.setDeviceVirtual(this.newDeviceVirtual());
-            end
-            
-            this.lActive = false;
-            this.uitDevice.set(false);
-            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
-            
-            % this.setDestCalDisplay(this.getValCalDisplay());
-            % set(this.hImage, 'Visible', 'on');
-            % set(this.hPanel, 'BackgroundColor', this.dColorOff);
-            
-            notify(this, 'eTurnOff');
-        end
         
         
         
@@ -779,7 +710,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % I think a good rule for delete should be that it only
             % deletes things that it adds
             
-            this.msg('delete', 5);
+            this.msg('delete', this.u8_MSG_TYPE_CLASS_INIT_DELETE);
             this.lDeleted = true;
             this.save();
             
@@ -787,7 +718,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             if ~isempty(this.clock) && ...
                 isvalid(this.clock) && ...
                 this.clock.has(this.id())
-                this.msg('delete() removing clock task'); 
+                this.msg('delete() removing clock task', this.u8_MSG_TYPE_INFO); 
                 this.clock.remove(this.id());
             end
                 
@@ -1010,12 +941,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
         end
         
-        function initialize(this)
-           
-            this.lIsInitializing = true;
-            this.getDevice().initialize();
-            
-        end
+        
         
         function st = save(this)
             st = struct();
@@ -1112,54 +1038,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % See also HARDWAREIO, INIT, BUILD
         
         
+           init@mic.ui.device.Base(this);                        
+
             % Load in the config file (Need to figure out how this will
             % work with classes that extend this class
-              
-            
-            
-            
-            
-            %activity ribbon on the right
-            
-            st1 = struct();
-            st1.lAsk        = this.lAskOnDeviceClick;
-            st1.cTitle      = 'Switch?';
-            st1.cQuestion   = 'Do you want to change from the virtual Device to the real Device?';
-            st1.cAnswer1    = 'Yes of course!';
-            st1.cAnswer2    = 'No not yet.';
-            st1.cDefault    = st1.cAnswer2;
-
-
-            st2 = struct();
-            st2.lAsk        = this.lAskOnDeviceClick;
-            st2.cTitle      = 'Switch?';
-            st2.cQuestion   = 'Do you want to change from the real Device to the virtual Device?';
-            st2.cAnswer1    = 'Yes of course!';
-            st2.cAnswer2    = 'No not yet.';
-            st2.cDefault    = st2.cAnswer2;
-
-            this.uitDevice = mic.ui.common.Toggle( ...
-                'cTextFalse', 'enable', ...   
-                'cTextTrue', 'disable', ...  
-                'lImg', true, ...
-                'u8ImgOff', this.u8ToggleOff, ...
-                'u8ImgOn', this.u8ToggleOn, ...
-                'stF2TOptions', st1, ...
-                'stT2FOptions', st2 ...
-            );
-        
-            this.uibInit = mic.ui.common.Button( ...
-                'cText', 'Init', ...
-                'lImg', true, ...
-                'u8Img', this.u8InitFalse, ...
-                'lAsk', true, ...
-                'cMsg', 'Are you sure you want to initialize this device?  It may take a couple minutes.' ...
-            );
-            this.uibInit.setTooltip(this.cTooltipInitButton);
-            addlistener(this.uibInit,   'eChange', @this.onInitChange);
-            
-            this.uiilInitState = mic.ui.common.ImageLogical();
-                        
             
             
             %GoTo button
@@ -1276,18 +1158,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uitxLabelPlay = mic.ui.common.Text( ...
                 'cVal', this.cLabelPlay ...
             );
-            this.uitxLabelDevice = mic.ui.common.Text(...
-                'cVal', this.cLabelDevice, ...
-                'cAlign', 'center'...
-            );
-            this.uitxLabelInit = mic.ui.common.Text(...
-                'cVal', this.cLabelInit, ...
-                'cAlign', 'center' ...
-            );
-            this.uitxLabelInitState = mic.ui.common.Text(...
-                'cVal', this.cLabelInitState, ...
-                'cAligh', 'center' ...
-            );
+            
+        
             this.uitxLabelJogL = mic.ui.common.Text(...
                 'cVal', this.cLabelJogL, ...
                 'cAlign', 'center' ...
@@ -1314,8 +1186,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             % addlistener(this.uitPlay,   'eChange', @this.handleUI);
             
+            % this.uitDevice.disable(); % enable after setDevice() is called
+            
             addlistener(this.uieDest, 'eEnter', @this.onDestEnter);
-            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
             addlistener(this.uibtPlay,   'eChange', @this.onPlayChange);
             addlistener(this.uitRel,   'eChange', @this.onRelChange);
             addlistener(this.uipUnit,   'eChange', @this.onUnitChange);
@@ -1350,13 +1223,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
         end
         
-        function onDeviceChange(this, src, evt)
-            if src.get()
-                this.turnOn();
-            else
-                this.turnOff();
-            end
-        end
+        
         
         
         function onStoresChange(this, src, evt)
@@ -1388,12 +1255,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         
-        function onInitChange(this, src, evt)
-            
-            this.msg('onInitChange()');
-            this.initialize();
-            
-        end
+        
         
         function onPlayChange(this, src, evt)
             % Ready means it isn't moving

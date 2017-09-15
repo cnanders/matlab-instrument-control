@@ -158,18 +158,23 @@ classdef Scan < mic.Base
         fhOnAbort
         
         ticId
-        ticIdStart
-        dDaysStart
+        dSecondsElapsed
     end
     
     
     events
+      %{
       eNewStateStart
       eNewStateCheck
       eNewStateEnd
       eAcquireStart
       eAcquireEnd
-      eScanComplete
+      
+      eComplete
+      eAbort
+      ePause
+      eResume
+      %}
       
     end
     
@@ -211,9 +216,12 @@ classdef Scan < mic.Base
         function start(this) 
         %START start the scan 
         
-            this.ticIdStart = tic;
-            this.dDaysStart = now;
             this.u8Index = 1;
+            
+            % Reset elapsed time and tic
+            this.dSecondsElapsed = 0;
+            this.ticId = tic;
+            
             this.go();
             
         end
@@ -246,10 +254,16 @@ classdef Scan < mic.Base
         %PAUSE resume the scan
             if (this.lPaused)
                 this.lPaused = false;
+                
+                % Reset tic
+                this.ticId = tic;
+                
                 this.go();
             else
                this.msg('Was not paused.'); 
             end
+            
+            %notify(this,'eResume');
         end
 
         function stop(this)
@@ -257,7 +271,7 @@ classdef Scan < mic.Base
              this.removeClockTask();
              this.u8Index = 1;
              
-             % notify(this,'eScanComplete');
+             %notify(this,'eAbort');
              this.fhOnAbort(this.stUnit);
 
         end
@@ -278,12 +292,10 @@ classdef Scan < mic.Base
                         
             dProgress = this.u8Index / length(this.ceValues);
                      
-            % Fractional days since the start of the scan.  Use this
-            % because this is MATLAB's "DateNum" format, which the datestr
-            % function can use.  toc returns the elapsed time in seconds
-            % since "tic" was called
+            % Fractional days since of scan time that have elapsed.  Pause
+            % time is excluded from this number.  See updateElapsedTime()
             
-            dDaysElapsed = toc(this.ticIdStart) / (3600 * 24);
+            dDaysElapsed = this.dSecondsElapsed / (3600 * 24);
             
             % Use elapsed days and progress to estimate the number of days
             % for the entire scan to complete
@@ -303,7 +315,7 @@ classdef Scan < mic.Base
             % the estimated complete time.  
             
             try
-                cTimeComplete = datestr(this.dDaysStart + dDaysScan, 'HH:MM:SS', 'local');
+                cTimeComplete = datestr(now + dDaysRemaining, 'HH:MM:SS', 'local');
                 cTimeRemaining = datestr(dDaysRemaining, 'HH:MM:SS', 'local');
             catch me
                 cTimeComplete = '...';
@@ -314,7 +326,11 @@ classdef Scan < mic.Base
             if this.lPaused
                 st.cStatus = sprintf('Paused (%1.1f%%)', dProgress * 100);
             else
-                st.cStatus = sprintf('Scanning (%1.1f%%)', dProgress * 100);
+                if dProgress == 1
+                    st.cStatus = sprintf('Complete (%1.1f%%)', dProgress * 100);
+                else
+                    st.cStatus = sprintf('Scanning (%1.1f%%)', dProgress * 100);
+                end
             end
             st.cTimeElapsed = cTimeElapsed;
             st.cTimeRemaining = cTimeRemaining;
@@ -362,6 +378,8 @@ classdef Scan < mic.Base
                                 
             end
             
+            this.updateElapsedTime()
+            
         end
         
         
@@ -392,6 +410,8 @@ classdef Scan < mic.Base
                                 
             end
             
+            this.updateElapsedTime()
+            
         end
         
         function removeClockTask(this)
@@ -407,6 +427,15 @@ classdef Scan < mic.Base
             
             this.removeClockTask();
             
+        end
+        
+        % this.ticId stores a reference to the last time tic was called
+        % which is inside start() and resume().  dSecondsElapsed is 
+        % reset to zero in one place: start()
+        function updateElapsedTime(this)
+            % Add the seconds sinced the last tic to the elapsed time
+            this.dSecondsElapsed = this.dSecondsElapsed + toc(this.ticId);
+            this.ticId = tic;
         end
         
         

@@ -103,7 +103,7 @@ classdef TestGetSetNumber < mic.Base
         end
         
         function delete(this)
-            this.msg('delete()');
+            this.msg('delete()', this.u8_MSG_TYPE_DELETE);
             
             delete(this.ui);
             delete(this.clock);

@@ -458,7 +458,7 @@ classdef Clock < mic.Base
                     this.ceTaskName{dIndex} ...
                 );
 
-                this.msg(cMsg);
+                this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);
             end
             
             this.lBusy = false;
@@ -511,7 +511,7 @@ classdef Clock < mic.Base
                 first block of code below tooka long time to execute, which
                 is why we now use the flat method
                 
-                this.msg('this.ceTaskFcn(lItems) = []');
+                this.msg('this.ceTaskFcn(lItems) = []', this.u8_MSG_TYPE_CLOCK);
                 tic
                 this.ceTaskFcn(lItems)      = [];
                 toc
@@ -613,7 +613,7 @@ classdef Clock < mic.Base
             
             if this.lBusy
                 if this.lEcho
-                    this.msg('Clock.timerFcn() busy');
+                    this.msg('Clock.timerFcn() busy', this.u8_MSG_TYPE_CLOCK);
                 end
                 return
             end
@@ -649,7 +649,7 @@ classdef Clock < mic.Base
                         'Clock.timerFcn() purging: %s() ', ...
                         this.ceTaskName{lItems} ...
                     );
-                    this.msg(cMsg);
+                    this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);
                 end
             end
             %}
@@ -671,7 +671,7 @@ classdef Clock < mic.Base
                     sum(this.lTaskActive), ...
                     sum(lItems) ...
                 );
-                this.msg(cMsg);
+                this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);
             end
             
             for n = 1:length(ceTaskFcnToDo)
@@ -682,22 +682,27 @@ classdef Clock < mic.Base
                 % Execute
                 try
                     
-                    % if this.lEcho
-                        cMsg = sprintf(...
-                            'Clock.timerFcn() executing %1.0f of %1.0f: %s() ', ...
-                            n, ...
-                            sum(lItems), ...
-                            ceTaskNameToDo{n} ...
-                        );
-                        this.msg(cMsg, 6);
-                    % end
-                    
+                    cMsg = sprintf(...
+                        'Clock.timerFcn() executing %1.0f of %1.0f: %s() ', ...
+                        n, ...
+                        sum(lItems), ...
+                        ceTaskNameToDo{n} ...
+                    );
+                    this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);                    
                     
                     ceTaskFcnToDo{n}();                     
 
                 catch err
-                    this.msg(getReport(err), 1);
-                    rethrow(err);
+                    
+                    cMsg = sprintf(...
+                        'Clock.timerFcn() ERROR executing %1.0f of %1.0f: %s() ', ...
+                        n, ...
+                        sum(lItems), ...
+                        ceTaskNameToDo{n} ...
+                    );
+                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
+                    this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+                    % rethrow(err);
                 end
             end
             
@@ -748,7 +753,7 @@ classdef Clock < mic.Base
         %   Clock.delete()
         %
         % See also CLOCK, INIT, BUILD
-            this.msg('delete()', 8);         
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_INIT_DELETE);         
             try
                 if isvalid(this.t)
                 
@@ -756,14 +761,14 @@ classdef Clock < mic.Base
                         stop(this.t);
                     end
                     
-                    this.msg('delete() deleting timer');
+                    this.msg('delete() deleting timer', this.u8_MSG_TYPE_INFO);
 
                     set(this.t, 'TimerFcn', '');
                     delete(this.t);
                 end
                 
             catch err
-                this.msg(getReport(err));
+                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
             end
                 
             

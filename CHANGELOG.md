@@ -1,9 +1,130 @@
-<!--
-# TO DO
+# 1.0.0-beta.22
 
-Refactoring some of the time info / prediction from sslsr into the mic.StateScan class since it is useful any time there is a scan.  
+### mic.Base
 
--->
+Now msg always shows `u8_MSG_TYPE_ERROR` messages types
+
+### mic.Clock
+
+No longer re-throws errors when it tries to execute one of the function handles in its queue.  By not re-throwing, MATLAB displays the error and call stack in the console during runtime.  Rethrowing doesn't do this; it assumes you catch somewhere higher in the call stack.
+
+# 1.0.0-beta.21
+
+Fixed but with `ui.common.PopupStruct`, `ui.common.Text` and `ui.common.Toggle` that were sending hard-coded values through `msg()` instead of the new constants defined in `mic.Base`
+
+# 1.0.0-beta.20
+
+Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that should have been `u8_MSG_TYPE_CLASS_INIT_DELETE`
+
+# 1.0.0-beta.19
+
+### mic.Base
+
+- Improved the messaging system.  Messages are now flagged with a `uint8` type.  Available types are stored as constants in `mic.Base` (`u8_MSG_TYPE_*`).  `mic.Base` now has a property `u8MsgType` that is a list of types that should be logged.  The `msg` function now requires that the type of the provided message is in the list of allowed types in order to display the message.  To change the message / logging style for the project, set `u8MsgType` to one of the defined `u8_MSG_TYPE_*` constants in the `mic.Base` constructor.
+
+
+# 1.0.0-beta.18
+
+### mic.ui.common.ListDir
+
+- Implemented `save()` and `load()` method to persist the state across sessions
+
+# 1.0.0-beta.17
+
+### mic.ui.common.Button
+
+- Added `fhOnClick` property, a `function_handle` that is called whenever the button is clicked. If the button requires confirmation during click, `fhOnClick` is only clicked if there is a successful confirmation.
+
+# 1.0.0-beta.16
+
+### mic.ui.common.ListDir
+
+- Fixed bug in `updateUiTextDir()`. It now properly returns if `uiTextDir` has not been defined
+
+# 1.0.0-beta.15
+
+### mic.ui.common.ListDir
+
+- Extendion of mic.ui.common.List that is designed to show the contents of a directory
+- Has an optional button that allows the user to change the directory that is being listed
+- `getDir()` method can be used to retrieve the directory the user is viewing
+
+# 1.0.0-beta.14
+
+### mic.ui.common.ButtonList
+
+- Now setting tooltip when cLayout === cLAYOUT_BLOCK 
+- Made all private properties protected so subclasses can access them
+- Added setButtonColorBackground
+
+
+### mic.ui.common.Button
+
+- Added setColorText method
+- Added setColorBackground method
+
+# 1.0.0-beta.13
+
+### mic.ui.common.ButtonList
+
+- New UI Control that is a list of `mic.ui.common.Button`s in a panel.  Buttons can be displayed inline or block.  A `cell` of button definition `struct`s is passed in with the `varargin` syntax to configure the buttons.  Each “button definition“ has three properties, as shown below.
+
+```matlab
+% @typedef {struct 1x1} ButtonDefinition
+% @property {char 1xm} cLabel - label of the button
+% @property {function_handle 1x1} fhOnClick - function that is called when button is clicked.  Must return logical to indicate if the action was successfull or not
+% @property {char 1xm} cTooltip - tooltip of the button
+```
+# 1.0.0-beta.12
+
+### mic.ui.device.*
+
+- Moved common properties and methods to `mic.ui.device.Base`.  These include:
+  - properties (Protected)
+    - uitDevice
+    - uibInit
+    - uiilInitState
+    - cLabelDevice
+    - cLabelInit
+    - cLabelInitState
+    - lIsInitializing
+    - uitxLabelDevice
+    - uitxLabelInit
+    - uitxLabelInitState
+  - methods (Public)
+    - turnOn()
+    - turnOff()
+    - initialize()
+  - methods (Protected)
+    - onInitChange()
+    - onDeviceChange()
+- uitDevice is now disabled until setDevice() is called
+- turnOn() now shows a warning dialog and returns if setDevice() has not been called
+- internal property lDeviceIsSet used to track if setDevice() has been called
+
+### mic.ui.device.Base
+
+- turnOn() no longer kills the deviceVirtual instance
+
+# 1.0.0-beta.11
+ 
+### mic.ui.commmon.List 
+- Created properties for the label, width, and height of the move up, move down, delete, and refresh buttons that can be set with the `varargin` syntax
+
+# 1.0.0-beta.10
+
+
+### mic.ui.common.Checkbox
+- Removed hLabel property since it has been moved out to `mic.ui.common.Base`
+
+### mic.ui.Scan
+
+- New UI to control a `mic.Scan` and display the scan progress.
+- Contains start, pause/resume, and abort buttons.
+
+### mic.Scan
+
+- Refactored elapsed time so elapsed time is no longer incremented while paused and the time complete and time remaining predictions are correct when a scan is paused / resumed many times.
 
 
 # 1.0.0-beta.9

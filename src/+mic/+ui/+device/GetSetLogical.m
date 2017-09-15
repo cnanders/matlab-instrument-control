@@ -14,9 +14,6 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         dHeight = 24;   % height of the UIElement
         dWidthBtn = 24;
         
-        cTooltipDeviceOff = 'Connect to the real API';
-        cTooltipDeviceOn = 'Disconnect the real API (go into virtual mode)';
-        cTooltipInitButton = 'Send the initialize command to this device';
         
     end
 
@@ -25,7 +22,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
     end
 
     properties (SetAccess = private)
-        cName   % name identifier
+        cName = 'CHANGE ME' % Must be unique in entire project / app  % name identifier
         cLabel = 'Fix me'
     end
 
@@ -41,16 +38,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         config
         
         
-        cLabelDevice = 'Api'
-        cLabelInit = 'Init'
+        
         cLabelName = 'Name'
         cLabelValue = 'Val'
         cLabelCommand = 'Command'
         
         uitxLabelName
         uitxLabelVal
-        uitxLabelDevice
-        uitxLabelInit
         uitxLabelCommand
         
         
@@ -76,10 +70,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         % {logical 1x1} show the command toggle
         lShowCommand = true
         
-        % {mic.ui.common.Button 1x1} clicking it calls device.initialize()
-        % Its logical state is updated on clock cycle by calling device.isInitialized()  
-        % see lShowInitButon
-        uibInit
+        
         
         dHeightLabel = 16
         dHeightText = 16
@@ -122,17 +113,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         % {mic.ui.common.Text 1x1} for the label
         uitxName
         
-        % {mic.ui.common.Toggle 1x1} toggle for the API
-        uitDevice
+
            
         % {mic.ui.commin.ImageLogical 1x1} visual state
         uiilValue
         
-        
-        % {logical 1x1} true in moments after calling device.initialize()
-        % and before device.isInitialized() returns true. false otherwise
-        lIsInitializing = false
-               
+       
                         
     end
     
@@ -147,14 +133,15 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function this = GetSetLogical(varargin)
     
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
             this.config = mic.config.GetSetLogical();
 
             % Override properties with varargin
             
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf(' settting %s', varargin{k}), 3);
+                    this.msg(sprintf(' settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -220,6 +207,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 end
                 this.uitDevice.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeight);            
                 dLeft = dLeft + this.dWidthBtn;
+                
+                if ~this.lDeviceIsSet
+                    this.uitDevice.disable(); % re-enabled in setDevice()
+                end
             end
             
             % Init button
@@ -290,45 +281,9 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
            
         
         
-        function turnOn(this)
-        %TURNON Turns the motor on, actually using the API to control the 
-        %   HardwareIO.turnOn()
-        %
-        % See also TURNOFF
 
-            this.lActive = true;
-            
-            this.uitDevice.set(true);
-            this.uitDevice.setTooltip(this.cTooltipDeviceOn);
-            
-            
-            % Kill the APIV
-            if ~isempty(this.deviceVirtual) && ...
-                isvalid(this.deviceVirtual)
-                delete(this.deviceVirtual);
-                this.deviceVirtual = []; % This is calling the setter
-            end
-            
-        end
         
-        
-        function turnOff(this)
-        %TURNOFF Turns the motor off
-        %   HardwareIO.turnOn()
-        %
-        % See also TURNON
-        
-            % CA 2014.04.14: Make sure APIV is available
-            
-            if isempty(this.deviceVirtual)
-                this.deviceVirtual = this.newDeviceVirtual();
-            end
-            
-            this.lActive = false;
-            this.uitDevice.set(false);
-            this.uitDevice.setTooltip(this.cTooltipDeviceOff);
-            
-        end
+
         
 
         function delete(this)
@@ -372,12 +327,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             l = this.getDevice().get();
         end
         
-        function initialize(this)
-           
-            this.lIsInitializing = true;
-            this.getDevice().initialize();
-            
-        end
+       
         
         
     end %methods
@@ -420,12 +370,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function init(this)
             
-            
+            init@mic.ui.device.Base(this);                        
+
+                       
             this.uitxName = mic.ui.common.Text('cVal', this.cLabel);
                         
             this.initCommandToggle();
-            this.initDeviceToggle();
-            this.initInitializeToggle();
             this.initValueImageLogical();
             this.initLabels();
                                        
@@ -437,14 +387,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function initLabels(this)
             
-            this.uitxLabelDevice = mic.ui.common.Text(...
-                'cVal', this.cLabelDevice, ...
-                'cAlign', 'center' ...
-            );    
-            this.uitxLabelInit = mic.ui.common.Text(...
-                'cVal', this.cLabelInit, ...
-                'cAlign', 'center' ...
-            );
+           
             this.uitxLabelCommand = mic.ui.common.Text(...
                 'cVal', this.cLabelCommand, ...
                 'cAlign', 'center' ...
@@ -455,19 +398,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         end
         
         
-        function initInitializeToggle(this)
-            
-            this.uibInit = mic.ui.common.Button( ...
-                'cText', 'Init', ...
-                'lImg', true, ...
-                'u8Img', this.u8InitFalse, ...
-                'lAsk', true, ...
-                'cMsg', 'Are you sure you want to initialize this device?  It may take a couple minutes.' ...
-            );
-            this.uibInit.setTooltip(this.cTooltipInitButton);
-            addlistener(this.uibInit, 'eChange', @this.onInitChange);
-            
-        end
+        
         
         function initValueImageLogical(this)
             
@@ -488,39 +419,6 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             
         end
         
-        
-        % API toggle on the left
-        function initDeviceToggle(this)
-            
-            st1 = struct();
-            st1.lAsk        = true;
-            st1.cTitle      = 'Switch?';
-            st1.cQuestion   = 'Do you want to change from the virtual API to the real API?';
-            st1.cAnswer1    = 'Yes of course!';
-            st1.cAnswer2    = 'No not yet.';
-            st1.cDefault    = st1.cAnswer2;
-
-            st2 = struct();
-            st2.lAsk        = true;
-            st2.cTitle      = 'Switch?';
-            st2.cQuestion   = 'Do you want to change from the real API to the virtual API?';
-            st2.cAnswer1    = 'Yes of course!';
-            st2.cAnswer2    = 'No not yet.';
-            st2.cDefault    = st2.cAnswer2;
-
-            this.uitDevice = mic.ui.common.Toggle( ...
-                'lImg', true, ...
-                'u8ImgOff', this.u8ToggleOff, ...
-                'u8ImgOn', this.u8ToggleOn, ...
-                'stF2TOptions', st1, ...
-                'stT2FOptions', st2 ...
-            );
-            addlistener(this.uitDevice,   'eChange', @this.onDeviceChange);
-            
-            
-        end
-        
-      
         
         function onClock(this) 
            
@@ -571,20 +469,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                         
         end
         
-        function onDeviceChange(this, src, evt)
-            if src.get()
-                this.turnOn();
-            else
-                this.turnOff();
-            end
-        end
         
-        function onInitChange(this, src, evt)
-            
-            this.msg('onInitChange()');
-            this.initialize();
-            
-        end
         
         
         function updateInitializedButton(this)

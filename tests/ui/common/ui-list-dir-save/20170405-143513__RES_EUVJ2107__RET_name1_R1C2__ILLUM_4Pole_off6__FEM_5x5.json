@@ -1,0 +1,377 @@
+{
+	"process": {
+		"cUser": "Chris",
+		"cBase": "",
+		"cUnderlayer1Name": "",
+		"dUnderlayer1Thick": 0,
+		"dUnderlayer1PabTemp": 0,
+		"dUnderlayer1PabTime": 0,
+		"cUnderlayer2Name": "",
+		"dUnderlayer2Thick": 0,
+		"dUnderlayer2PabTemp": 0,
+		"dUnderlayer2PabTime": 0,
+		"cResistName": "EUVJ2107",
+		"dResistThick": 35,
+		"dResistPabTemp": 130,
+		"dResistPabTime": 60,
+		"dResistPebTemp": 110,
+		"dResistPebTime": 60,
+		"cDevName": "MF26A",
+		"dDevTime": 30,
+		"cRinseName": "DIH20",
+		"dRinseTime": 30
+	},
+	"fem": {
+		"dPositionStartX": 0.7,
+		"dPositionStepX": 0.5,
+		"dPositionStartY": 0.4,
+		"dPositionStepY": -0.2,
+		"u8DoseNum": 5,
+		"dDoseCenter": 15,
+		"dDoseStep": 5,
+		"u8DoseStepType": 1,
+		"u8FocusNum": 5,
+		"dFocusCenter": 0,
+		"dFocusStep": 10
+	},
+	"unit": {
+		"waferX": "mm",
+		"waferY": "mm",
+		"waferZ": "nm",
+		"reticleX": "mm",
+		"reticleY": "mm",
+		"pupilFill": "n\/a"
+	},
+	"values": [
+		{
+			"reticleX": 0.02,
+			"reticleY": -0.0225,
+			"pupilFill": "4Pole_off60_rot0_min20_max30_num2_dwell2_xoff0_yoff0_per100_filthz400_dt24.mat"
+		},
+		{
+			"waferX": -0.7,
+			"waferY": -0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 5,
+				"femCol": 1,
+				"femRows": 5,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.7,
+			"waferY": -0.2,
+			"waferZ": -10,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 5,
+				"femCol": 1,
+				"femRows": 5,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.7,
+			"waferY": -0,
+			"waferZ": 0,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 5,
+				"femCol": 1,
+				"femRows": 5,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.7,
+			"waferY": 0.2,
+			"waferZ": 10,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 5,
+				"femCol": 1,
+				"femRows": 5,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.7,
+			"waferY": 0.4,
+			"waferZ": 20,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 5,
+				"femCol": 1,
+				"femRows": 5,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.2,
+			"waferY": -0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 5,
+				"femCol": 2,
+				"femRows": 5,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.2,
+			"waferY": -0.2,
+			"waferZ": -10,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 5,
+				"femCol": 2,
+				"femRows": 5,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.2,
+			"waferY": -0,
+			"waferZ": 0,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 5,
+				"femCol": 2,
+				"femRows": 5,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.2,
+			"waferY": 0.2,
+			"waferZ": 10,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 5,
+				"femCol": 2,
+				"femRows": 5,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.2,
+			"waferY": 0.4,
+			"waferZ": 20,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 5,
+				"femCol": 2,
+				"femRows": 5,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.7,
+			"waferY": -0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 15,
+				"femCols": 5,
+				"femCol": 3,
+				"femRows": 5,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.7,
+			"waferY": -0.2,
+			"waferZ": -10,
+			"task": {
+				"dose": 15,
+				"femCols": 5,
+				"femCol": 3,
+				"femRows": 5,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.7,
+			"waferY": -0,
+			"waferZ": 0,
+			"task": {
+				"dose": 15,
+				"femCols": 5,
+				"femCol": 3,
+				"femRows": 5,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.7,
+			"waferY": 0.2,
+			"waferZ": 10,
+			"task": {
+				"dose": 15,
+				"femCols": 5,
+				"femCol": 3,
+				"femRows": 5,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.7,
+			"waferY": 0.4,
+			"waferZ": 20,
+			"task": {
+				"dose": 15,
+				"femCols": 5,
+				"femCol": 3,
+				"femRows": 5,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.2,
+			"waferY": -0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 15.75,
+				"femCols": 5,
+				"femCol": 4,
+				"femRows": 5,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.2,
+			"waferY": -0.2,
+			"waferZ": -10,
+			"task": {
+				"dose": 15.75,
+				"femCols": 5,
+				"femCol": 4,
+				"femRows": 5,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.2,
+			"waferY": -0,
+			"waferZ": 0,
+			"task": {
+				"dose": 15.75,
+				"femCols": 5,
+				"femCol": 4,
+				"femRows": 5,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.2,
+			"waferY": 0.2,
+			"waferZ": 10,
+			"task": {
+				"dose": 15.75,
+				"femCols": 5,
+				"femCol": 4,
+				"femRows": 5,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.2,
+			"waferY": 0.4,
+			"waferZ": 20,
+			"task": {
+				"dose": 15.75,
+				"femCols": 5,
+				"femCol": 4,
+				"femRows": 5,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.7,
+			"waferY": -0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 5,
+				"femCol": 5,
+				"femRows": 5,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.7,
+			"waferY": -0.2,
+			"waferZ": -10,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 5,
+				"femCol": 5,
+				"femRows": 5,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.7,
+			"waferY": -0,
+			"waferZ": 0,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 5,
+				"femCol": 5,
+				"femRows": 5,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.7,
+			"waferY": 0.2,
+			"waferZ": 10,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 5,
+				"femCol": 5,
+				"femRows": 5,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.7,
+			"waferY": 0.4,
+			"waferZ": 20,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 5,
+				"femCol": 5,
+				"femRows": 5,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		}
+	]
+}
