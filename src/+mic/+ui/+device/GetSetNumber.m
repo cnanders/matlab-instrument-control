@@ -164,7 +164,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   allowed.  Is expected that the higher-level class that
         %   implements this (which may access more than one HardwareIO
         %   instance) implements this function
-        fhValidateDest
+        fhValidateDest = {}
         
         
         uipStores % UIPopupStruct
@@ -262,15 +262,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_DEVICE);
             % Default properties
             
-            % By default, fhValidateDest returns true.
-            this.fhValidateDest = this.validateDest;
+            
             
             
             this.msg('constructor() default config = mic.config.GetSetNumber()');
             this.config = mic.config.GetSetNumber();
                        
             % Override properties with varargin
-            
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp(varargin{k})
@@ -279,8 +277,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 end
             end
             
-            if (this.lValidateByConfigRange)
-                this.fhValidateDest = @this.validateByConfigRange; 
+            if isempty(this.fhValidateDest)
+                if (this.lValidateByConfigRange)
+                    this.fhValidateDest = @this.validateByConfigRange; 
+                else 
+                    % By default, fhValidateDest returns true.
+                    this.fhValidateDest = this.validateDest;
+                end
             end
                 
             this.cDirSave = fullfile( ...
