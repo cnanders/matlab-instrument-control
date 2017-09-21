@@ -82,7 +82,7 @@ classdef SaveLoadList < mic.ui.common.Base
         end
 
         % Build
-        function build(this, hParent, dLeft, dTop)
+        function build(this, hParent, dLeft, dTop, dWidth, dHeight)
 
             % build panel:
             this.hPanel = uipanel(...
@@ -91,15 +91,15 @@ classdef SaveLoadList < mic.ui.common.Base
                 'Title', '',...
                 'FontWeight', 'Bold',...
                 'Clipping', 'on',...
-                'Position', [dLeft, dTop, 500, 270] ...
+                'Position', [dLeft, dTop, dWidth, dHeight] ...
                 );
             
-            this.uiList.build(this.hPanel, 10, 20, 280, 200);
-            this.uibLoad.build(this.hPanel, 320, 30, 80, 20);
-            this.uibSave.build(this.hPanel, 320, 110, 80, 20);
-            this.uibSync.build(this.hPanel, 320, 150, 80, 20);
+            this.uiList.build(this.hPanel, 10, 20, dWidth/2 + 25, dHeight - 70);
+            this.uibLoad.build(this.hPanel,  dWidth/2 + 50, 30, 80, 20);
+            this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 80, 20);
+            this.uibSync.build(this.hPanel,  dWidth/2 + 50, 150, 80, 20);
             
-            this.uiePosName.build(this.hPanel, 320, 70, 150, 20);
+            this.uiePosName.build(this.hPanel,  dWidth/2 + 50, 70, 110, 20);
             this.uiePosName.set('New position');
         end
 
