@@ -29,6 +29,8 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         % {logical 1x1} - used to wrap all calls to notify to allow
         % temporary disabling of notify
         lNotify = true;
+        
+        fhDirectCallback = @()[];
     end
 
 
@@ -120,6 +122,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             
             if uint8(this.cKeyPressLast) == 13
                 if (this.lNotify)
+                    this.fhDirectCallback;
                     notify(this, 'eEnter');
                 end
             end
@@ -420,6 +423,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
          function onKeyRelease(this, src, evt)
              if uint8(evt.Character') == 13
                  if this.lNotify
+                    this.fhDirectCallback;
                     notify(this, 'eEnter');
                  end
              end
@@ -635,6 +639,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             end
 
             if this.lNotify
+                this.fhDirectCallback;
                 notify(this,'eChange');
             end
 

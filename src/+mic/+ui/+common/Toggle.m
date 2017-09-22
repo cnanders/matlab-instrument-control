@@ -254,7 +254,7 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
            
            
 
-           this.msg('set.lVal', 6);
+           this.msg('set.lVal', this.u8_MSG_TYPE_INFO);
             % 2014.11.19 CNA
             % If you want to mute the broadcast (notification) when
             % manually setting the value of the toggle, set lInit property
@@ -314,14 +314,14 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
                if this.lInit
                    if lNotify
                         notify(this, 'eChange');
-                        this.msg('set.lVal notify eChange', 6);
+                        this.msg('set.lVal notify eChange', this.u8_MSG_TYPE_INFO);
                    end
                else
                     this.lInit = true;
                end               
 
            else
-               this.msg('Toggle.lVal input not type == logical', 2);
+               this.msg('Toggle.lVal input not type == logical', this.u8_MSG_TYPE_ERROR);
            end
        end
        

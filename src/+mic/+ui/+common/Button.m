@@ -50,9 +50,11 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
-                if this.hasProp( varargin{k})
+                if this.hasProp(varargin{k})
                     this.msg(sprintf('settting %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
+                elseif strcmp(varargin{k}, 'fhDirectCallback')
+                    this.fhOnClick = varargin{k + 1};
                 end
             end
 
@@ -82,6 +84,13 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             end
             set(this.hUI, 'String', cText);
         end
+        
+        function setColor(this, dColor)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'BackgroundColor', dColor);
+        end
 
         %% Event handlers
         function cb(this, src, evt)
@@ -93,7 +102,6 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         cAns = questdlg(this.cMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
                         switch cAns
                             case 'Yes'
-                                
                                 if ~isempty(this.fhOnClick)
                                     this.fhOnClick();
                                 end

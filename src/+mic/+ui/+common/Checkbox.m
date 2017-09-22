@@ -14,6 +14,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
         lChecked = false
         cLabel = 'Fix Me'
         lShowLabel = true
+        fhDirectCallback
     end
     
     
@@ -77,6 +78,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
            end
            
            notify(this,'eChange');
+           this.fhDirectCallback();
                
        end
 
