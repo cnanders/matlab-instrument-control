@@ -29,7 +29,7 @@ Added `save()` and `load()` methods and `saveStateToDisk()` and `loadStateFromDi
 - Added `get()`, `getOptions()`, `getSelectedIndexes()`, `setOptions()` and `setSelectedIndexes()` methods
 - Fixed bug with `onMoveDown()` method when more than one item was selected while performing the action
 
-### mic.ui.common.Popup/Select
+### mic.ui.common.Popup*
 
 - Got rid of setters
 - Added  `get()`, `getOptions()`, `getSelectedIndex()`, `setOptions()` and `setSelectedIndex()` methods
