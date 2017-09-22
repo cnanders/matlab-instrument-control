@@ -54,6 +54,9 @@ classdef List < mic.Base
         % changes
         fhOnChange 
         
+        % {function_handle 1x1} callback when user presses up, down, or X
+        fhDirectCallback = @()[];
+        
         dWidthDelete    = 60;
         dWidthUp        = 60;
         dWidthDn        = 60;
@@ -414,7 +417,9 @@ classdef List < mic.Base
                this.u8Selected = this.u8Selected + 1;
 
                this.setOptions(this.ceOptions);
-
+                
+               % perform callback
+               this.fhDirectCallback();
            end
        end
 
@@ -430,6 +435,9 @@ classdef List < mic.Base
                
                this.u8Selected = this.u8Selected - 1;
                this.setOptions(this.ceOptions);
+               
+               % perform callback
+               this.fhDirectCallback();
            end
 
            
@@ -455,6 +463,9 @@ classdef List < mic.Base
            this.ceOptions(this.u8Selected) = [];
 
            this.setOptions(this.ceOptions);
+           
+           % perform callback
+           this.fhDirectCallback();
        end
        
        

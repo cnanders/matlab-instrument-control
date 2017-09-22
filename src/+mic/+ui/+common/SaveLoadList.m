@@ -6,21 +6,23 @@ classdef SaveLoadList < mic.ui.common.Base
         hSetCallback
         cConfigPath = ''
         
-        
-        % val is not a property because it can be several different types.
-        % We use get() and set() methods that force the correct type
     end
 
 
     properties (Access = private)
     
+        % Array of structures that stores key-value pairs [{key: ...,
+        % value: ...}, {key, ... ]
         
-        cePositions
-  
+        cName = '' % Need a name for this to keep JSON unique
+        
+        stPositionsArray = struct([])
+        
+        cJsonPath
+        
         uiList
         uibSave
         uibLoad
-        uibSync
         
         uiePosName
         
@@ -42,26 +44,37 @@ classdef SaveLoadList < mic.ui.common.Base
     methods
         
         % constructor
-        % cLabel, cType, lShowLabel, cHorizontalAlignment
         function this = SaveLoadList(varargin)
             for k = 1:2:length(varargin)
                 this.(varargin{k}) = varargin{k+1};
             end
             
+            if isempty(this.cConfigPath)
+                error('SaveLoadList: Must specify a configuration path: cConfigPath');
+            end
+            if isempty(this.cName)
+                error('Must specify a unique name for storing JSON');
+            end
+            
            
-            this.uiList = mic.ui.common.List('cLabel', 'Saved Locations', 'lShowRefresh', false);
+            this.uiList = mic.ui.common.List('cLabel', 'Saved Locations', 'lShowRefresh', false, ...
+                        'fhDirectCallback', @this.syncAndSave);
             
-            % load options:
-            load([this.cConfigPath, '/saveLoad.mat']);
-            if exist('options', 'var') ~= 1
-                options = {};
+            % Try loading corresponding JSON
+
+            this.cJsonPath = fullfile(this.cConfigPath, [this.cName '.json']);
+            fid = fopen(this.cJsonPath, 'r');
+            if (fid ~= -1)
+                cTxt = fread(fid, inf, 'uint8=>char');
+                this.stPositionsArray = jsondecode(cTxt);
+                fclose(fid);
             end
             
-            if length(options(:)) > 0
-                this.uiList.setOptions(options(:,1));
+            
+            if ~isempty(this.stPositionsArray)
+                this.uiList.setOptions(this.makeOptionsfromPositions());
             end
             
-            this.cePositions = options;
             
             this.uibSave = mic.ui.common.Button(...
                 'cText', 'Save position', 'fhDirectCallback', @this.savePosition ...
@@ -70,12 +83,7 @@ classdef SaveLoadList < mic.ui.common.Base
                 'cText', 'Load position', 'fhDirectCallback', @this.loadPosition ...
             );
         
-            this.uibSync = mic.ui.common.Button(...
-                'cText', 'Sync', 'fhDirectCallback', @this.syncPositionLists ...
-            );
-        
-        
-        
+
             this.uiePosName = mic.ui.common.Edit('cLabel', 'Positon label', 'cType', 'c');
 
         
@@ -97,32 +105,37 @@ classdef SaveLoadList < mic.ui.common.Base
             this.uiList.build(this.hPanel, 10, 20, dWidth/2 + 25, dHeight - 70);
             this.uibLoad.build(this.hPanel,  dWidth/2 + 50, 30, 80, 20);
             this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 80, 20);
-            this.uibSync.build(this.hPanel,  dWidth/2 + 50, 150, 80, 20);
             
             this.uiePosName.build(this.hPanel,  dWidth/2 + 50, 70, 110, 20);
-            this.uiePosName.set('New position');
+            this.uiePosName.set('New_position');
         end
 
-
-        function syncPositionLists(this, src)
-            listOptions = this.uiList.getOptions();
+        function syncAndSave(this)
+            ceListOptions = this.uiList.getOptions();
             
-            % Create new list:
-            newPositions = {};
-            for k = 1:length(listOptions)
-                newPositions{k,1} = listOptions{k};
-                for m = 1:length(this.cePositions(:,1));
-                    if strcmp(newPositions{k,1}, this.cePositions{m,1})
-                        newPositions{k,2} = this.cePositions{m,2};
+            for k = 1:length(ceListOptions)
+                stNewOptionsArray(k) = struct('key', ceListOptions{k}); %#ok<AGROW>
+            end
+            
+            % For each new option, loop through old options and transfer
+           
+            for k = 1:length(stNewOptionsArray)
+                cKey = stNewOptionsArray(k).key;
+                
+                for m = 1:length(this.stPositionsArray)
+                    if strcmp(cKey, this.stPositionsArray(m).key) % then transfer value
+                        stNewOptionsArray(k).value = this.stPositionsArray(m).value; %#ok<AGROW>
                     end
                 end
             end
-            
-            this.cePositions = newPositions;
+
+            this.stPositionsArray = stNewOptionsArray;
             
             % save back to file:
-            options = this.cePositions;
-            save([this.cConfigPath, '/saveLoad.mat'], 'options');
+            cJsonEncodedOptions = jsonencode(this.stPositionsArray);
+            fid = fopen(this.cJsonPath, 'w+');
+            fprintf(fid, cJsonEncodedOptions);
+            fclose(fid);
             
         end
         
@@ -133,11 +146,6 @@ classdef SaveLoadList < mic.ui.common.Base
             listOptions = this.uiList.getOptions();
             
             % check if this name already exists:
-            for k = 1:size(this.cePositions, 1)
-                if strcmpi(cPosName, this.cePositions{k,1})
-                    error('Already a position with this name');
-                end
-            end
             for k = 1:length(listOptions)
                 if strcmpi(cPosName, listOptions{k})
                     error('Already a position with this name');
@@ -147,12 +155,16 @@ classdef SaveLoadList < mic.ui.common.Base
             
             listOptions{end+1} = cPosName;
             this.uiList.setOptions(listOptions);
+                        
+            if (isempty(this.stPositionsArray))
+                 this.stPositionsArray = ...
+                    struct('key', cPosName, 'value', this.hGetCallback());
+            else
+                this.stPositionsArray(end + 1) = ...
+                    struct('key', cPosName, 'value', this.hGetCallback());
+            end
             
-            idx = size(this.cePositions, 1) + 1;
-            this.cePositions{idx, 1} = cPosName;
-            this.cePositions{idx, 2} = this.hGetCallback();
-            
-            this.syncPositionLists();
+            this.syncAndSave();
         end
         
         function loadPosition(this, src)
@@ -161,9 +173,9 @@ classdef SaveLoadList < mic.ui.common.Base
             
             % find this entry in our options list:
             val = [];
-            for k = 1:size(this.cePositions, 1)
-                if strcmpi(this.cePositions{k,1}, cSelectedVal)
-                    val = this.cePositions{k,2};
+            for k = 1:length(this.stPositionsArray)
+                if strcmpi(this.stPositionsArray(k).key, cSelectedVal)
+                    val = this.stPositionsArray(k).value;
                     break;
                 end
             end
@@ -187,7 +199,12 @@ classdef SaveLoadList < mic.ui.common.Base
 
     methods (Access = protected)
 
-
+        function ceOptions = makeOptionsfromPositions(this)
+            ceOptions = {};
+            for k = 1:length(this.stPositionsArray)
+                ceOptions{k} = this.stPositionsArray(k).key;
+            end
+        end
         
 
 
