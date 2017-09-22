@@ -1,4 +1,4 @@
-classdef SaveLoadList < mic.ui.common.Base
+classdef PositionRecaller < mic.ui.common.Base
 
     properties
 
@@ -44,16 +44,16 @@ classdef SaveLoadList < mic.ui.common.Base
     methods
         
         % constructor
-        function this = SaveLoadList(varargin)
+        function this = PositionRecaller(varargin)
             for k = 1:2:length(varargin)
                 this.(varargin{k}) = varargin{k+1};
             end
             
             if isempty(this.cConfigPath)
-                error('SaveLoadList: Must specify a configuration path: cConfigPath');
+                error('PositionRecaller: Must specify a configuration path: cConfigPath');
             end
             if isempty(this.cName)
-                error('Must specify a unique name for storing JSON');
+                error('PositionRecaller: Must specify a unique name for storing JSON');
             end
             
            
