@@ -57,12 +57,12 @@ classdef PositionRecaller < mic.ui.common.Base
             end
             
            
-            this.uiList = mic.ui.common.List('cLabel', 'Saved Locations', 'lShowRefresh', false, ...
+            this.uiList = mic.ui.common.List('cLabel', [this.cName ' Saved Locations'], 'lShowRefresh', false, ...
                         'fhDirectCallback', @this.syncAndSave);
             
             % Try loading corresponding JSON
 
-            this.cJsonPath = fullfile(this.cConfigPath, [this.cName '.json']);
+            this.cJsonPath = fullfile(this.cConfigPath, [this.cName '-recall.json']);
             fid = fopen(this.cJsonPath, 'r');
             if (fid ~= -1)
                 cTxt = fread(fid, inf, 'uint8=>char');
@@ -103,8 +103,8 @@ classdef PositionRecaller < mic.ui.common.Base
                 );
             
             this.uiList.build(this.hPanel, 10, 20, dWidth/2 + 25, dHeight - 70);
-            this.uibLoad.build(this.hPanel,  dWidth/2 + 50, 30, 80, 20);
-            this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 80, 20);
+            this.uibLoad.build(this.hPanel,  dWidth/2 + 50, 40, 110, 20);
+            this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 110, 20);
             
             this.uiePosName.build(this.hPanel,  dWidth/2 + 50, 70, 110, 20);
             this.uiePosName.set('New_position');
