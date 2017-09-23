@@ -1,3 +1,6 @@
+% A UI class desgined for saving and loading coupled-axis states to JSON.
+% Will build test class soon
+
 classdef PositionRecaller < mic.ui.common.Base
 
     properties

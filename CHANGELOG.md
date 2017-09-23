@@ -1,4 +1,8 @@
-﻿# 1.0.0-beta.23
+﻿# 1.0.0-beta.24
+
+- Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
+
+# 1.0.0-beta.23
 
 - Adding property `fhDirectCallback` to ui classes `ui.common.Edit`, `ui.common.Button`, `ui.common.Checkbox`, which allows a callback to be passed in directly to object instance. Existing callback framework was not modified to preserve backward-compatibility.
 
