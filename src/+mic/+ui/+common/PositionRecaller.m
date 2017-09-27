@@ -116,12 +116,16 @@ classdef PositionRecaller < mic.ui.common.Base
         function syncAndSave(this)
             ceListOptions = this.uiList.getOptions();
             
-            for k = 1:length(ceListOptions)
-                stNewOptionsArray(k) = struct('key', ceListOptions{k}); %#ok<AGROW>
+            if (~isempty(ceListOptions))
+                for k = 1:length(ceListOptions)
+                    stNewOptionsArray(k) = struct('key', ceListOptions{k}); %#ok<AGROW>
+                end
+            else
+                stNewOptionsArray = struct([]);
             end
             
             % For each new option, loop through old options and transfer
-           
+            
             for k = 1:length(stNewOptionsArray)
                 cKey = stNewOptionsArray(k).key;
                 

@@ -1,5 +1,7 @@
 ﻿# 1.0.0-beta.24
 
+- Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
+
 - Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
 
 # 1.0.0-beta.23
