@@ -96,6 +96,7 @@ classdef ProgressBar < mic.interface.ui.common.ProgressBar & mic.ui.common.Base
            
        end
        
+       
        function d = get(this)
            d = this.dVal;
        end
@@ -128,6 +129,11 @@ classdef ProgressBar < mic.interface.ui.common.ProgressBar & mic.ui.common.Base
                 set(this.hText, 'String', sprintf('%1.1f%%', this.dVal * 100));
            end
            
+       end
+       
+       function setColor(this, dColor)
+            this.dColorFill = dColor;
+            this.hPanelFill.BackgroundColor = dColor;
        end
               
        

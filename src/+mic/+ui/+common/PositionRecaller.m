@@ -60,7 +60,7 @@ classdef PositionRecaller < mic.ui.common.Base
             end
             
            
-            this.uiList = mic.ui.common.List('cLabel', [this.cName ' Saved Locations'], 'lShowRefresh', false, ...
+            this.uiList = mic.ui.common.List('cLabel', this.cName, 'lShowRefresh', false, ...
                         'fhDirectCallback', @this.syncAndSave);
             
             % Try loading corresponding JSON
@@ -105,7 +105,7 @@ classdef PositionRecaller < mic.ui.common.Base
                 'Position', [dLeft, dTop, dWidth, dHeight] ...
                 );
             
-            this.uiList.build(this.hPanel, 10, 20, dWidth/2 + 25, dHeight - 70);
+            this.uiList.build(this.hPanel, 10, 7, dWidth/2 + 25, dHeight - 57);
             this.uibLoad.build(this.hPanel,  dWidth/2 + 50, 40, 110, 20);
             this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 110, 20);
             
@@ -162,13 +162,17 @@ classdef PositionRecaller < mic.ui.common.Base
             
             listOptions{end+1} = cPosName;
             this.uiList.setOptions(listOptions);
+            
+            % make structure:
+            st = struct();
+            st.key = cPosName;
+            st.value = this.hGetCallback();
                         
+            % need to do this to avoid subscript dimension mismatches:
             if (isempty(this.stPositionsArray))
-                 this.stPositionsArray = ...
-                    struct('key', cPosName, 'value', this.hGetCallback());
+                 this.stPositionsArray = st;
             else
-                this.stPositionsArray(end + 1) = ...
-                    struct('key', cPosName, 'value', this.hGetCallback());
+                this.stPositionsArray(end + 1) = st;
             end
             
             this.syncAndSave();

@@ -113,7 +113,9 @@ classdef Popup < mic.Base
            u8 = uint8(this.u8Selected);
        end
        
-             
+       function c = getSelectedValue(this)
+           c = this.ceOptions{this.u8Selected};
+       end
       
        
        function setOptions(this, ceVal)
@@ -185,6 +187,14 @@ classdef Popup < mic.Base
            
            notify(this,'eChange');
                
+       end
+       
+       function setSelectedValue(this, cValue)
+           ce = this.ceOptions;
+           u8Val = uint8(find(strcmp(cValue, ce)));
+           if u8Val > 0
+                this.setSelectedIndex(u8Val);
+           end
        end
        
        

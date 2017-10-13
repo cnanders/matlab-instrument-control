@@ -25,6 +25,8 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         
         cHorizontalAlignment = 'left'
         lShowLabel = true;
+        
+
         cKeyPressLast = '';
         % {logical 1x1} - used to wrap all calls to notify to allow
         % temporary disabling of notify
@@ -521,6 +523,8 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
 
         %%%%%%% Validating data
         function set.cData(this, cInputData)
+            
+            
             % properties
             if this.cType == 'c' %general case #implement parsing ?
                 this.cData = cInputData;
@@ -566,6 +570,9 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
                     % text value could not be cast as a numeric type
 
                     % Restore the last good value and show a warning
+ 
+                        
+                        
                     this.cData = this.cData;
 
 

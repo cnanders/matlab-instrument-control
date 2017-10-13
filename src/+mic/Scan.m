@@ -17,7 +17,7 @@ classdef Scan < mic.Base
     %               "value": 1,
     %               "unit": "mm"
     %           }
-    %       },
+    %       },xzds1
     %       {
     %           "x": {
     %               "value": 2,

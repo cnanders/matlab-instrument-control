@@ -1,4 +1,4 @@
-classdef ScalableAxes < mic.ui.common.Base
+classdef ScalableAxes < mic.Base
 
    
     properties (Constant, Access = private)
@@ -86,25 +86,25 @@ classdef ScalableAxes < mic.ui.common.Base
             
 
             this.uiButton5_95 = mic.ui.common.Button(...
-                'cText', '5%/95%', 'hDirectCallback', @this.changeState ...
+                'cText', '5%/95%', 'fhDirectCallback', @this.changeState ...
             );
             this.uiButton0_100 = mic.ui.common.Button(...
-                'cText', '0%/100%', 'hDirectCallback', @this.changeState ...
+                'cText', '0%/100%', 'fhDirectCallback', @this.changeState ...
             );
             this.uiButtonFft = mic.ui.common.Button(...
-                'cText', 'FFT', 'hDirectCallback', @this.changeState ...
+                'cText', 'FFT', 'fhDirectCallback', @this.changeState ...
             );
             this.uiButtonLog = mic.ui.common.Button(...
-                'cText', 'LOG', 'hDirectCallback',@this.changeState ...
+                'cText', 'LOG', 'fhDirectCallback',@this.changeState ...
             );
             this.uiButtonZoomToggle = mic.ui.common.Button(...
-                'cText', 'Zoom', 'hDirectCallback', @this.changeState ...
+                'cText', 'Zoom', 'fhDirectCallback', @this.changeState ...
             );
             this.uiButtonColormapToggle = mic.ui.common.Button(...
-                'cText', 'C/BW', 'hDirectCallback', @this.changeState ...
+                'cText', 'C/BW', 'fhDirectCallback', @this.changeState ...
             );
             this.uiButtonMed= mic.ui.common.Button(...
-                'cText', '|MED - 2s|', 'hDirectCallback', @this.changeState ...
+                'cText', '|MED - 2s|', 'fhDirectCallback', @this.changeState ...
             );
         
         
@@ -112,9 +112,20 @@ classdef ScalableAxes < mic.ui.common.Base
 
         %% Build
         function build(this, hParent, dLeft, dTop, dWidth, dHeight)
+            
+            if isa(hParent, 'matlab.ui.Figure')
+                this.hZoomState = zoom(hParent);
+            else
+                try
+                    this.hZoomState = zoom(hParent.hParent);
+                catch me
+                    fprintf('scalableAxes: no parent available for zoom');
+                end
+            end
+               
 
             % Set zoom handle:
-            this.hZoomState = zoom(hParent);
+            
             
             % build panel:
             this.hPanel = uipanel(...
@@ -187,11 +198,10 @@ classdef ScalableAxes < mic.ui.common.Base
   
         % Need to build plot tools
         function plot(this, varargin)
-            
             this.cPlotType = 'plot';
             this.replot();
-            
         end
+        
         function imagesc(this, varargin)
             this.cPlotType = 'image';
 
