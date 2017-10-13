@@ -1,4 +1,17 @@
-﻿# 1.0.0-beta.24
+﻿
+# 1.0.0-beta.25
+
+- Adding getter for `mic.ui.common.Popup` to access selected value of list item.
+
+- Added options for changin colors in `mic.ui.common.ProgressBar`.
+
+- General robustness and bug fixes in `PositionRecaller`
+
+- Adding new classes `mic.ui.ScanAxisSetup` and `mic.ui.ScanSetup` as UI elements for setting up nested scan states of up to 3 dimensions.  
+
+- Adding the UI element `mic.ui.common.Tabgroup` to expose MATLAB's tabgroup ui element to mic.  This allows for tabs to be created in groups to optimize the usable space in UIs.
+
+# 1.0.0-beta.24
 
 - Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
 
