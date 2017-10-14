@@ -1,6 +1,8 @@
 ﻿
 # 1.0.0-beta.25
 
+- Generalizing scan axis and scan setup inputs
+
 - Adding getter for `mic.ui.common.Popup` to access selected value of list item.
 
 - Added options for changin colors in `mic.ui.common.ProgressBar`.

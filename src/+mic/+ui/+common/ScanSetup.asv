@@ -142,7 +142,7 @@ classdef ScanSetup < mic.Base
             % We could try to do a clever nesting, but let's just brute
             % force, assuming we only support 3 nested scans
             isodd = @(x) mod(x, 2) == 1;
-            iseven = @(x) mod(x, 2) == 0;
+            iseven = @(x) moc(
             switch this.dScanAxes
                 case 1
                     for k = 1:length(ceScanRanges{1})
@@ -189,12 +189,11 @@ classdef ScanSetup < mic.Base
                         end
                     end
             end % Switch
-            
-            % Pass out scan axes and output for validation
+                  
             u8OutputIdx = this.uipOutput.getSelectedIndex();
             
             if ~isempty(ceScanStates)
-                this.fhOnScanButtonPress(ceScanStates, u8ScanAxisIdx, u8OutputIdx);
+                this.fhOnScanButtonPress(ceScanStates, u8OutputIdx);
             else
                 msgbox('No states to scan, check scan parameters');
             end

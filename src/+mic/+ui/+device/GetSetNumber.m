@@ -608,7 +608,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %       change), dCalAbs should be 6 and cUnit should be "mm".  
         %       See also SETDESTCAL, SETDESTRAW
         
-            if nargin == 1
+            if nargin == 2
                 cUnit = this.getUnit().name;
             end
             

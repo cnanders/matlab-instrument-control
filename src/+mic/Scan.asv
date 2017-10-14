@@ -212,9 +212,9 @@ classdef Scan < mic.Base
             this.fhOnComplete = fhOnComplete;
             this.fhOnAbort = fhOnAbort;
             
-            if nargin > 8
-                this.dDelay = dDelay;
-            end
+            if nargin > 9
+                this.
+            this.dDelay = dDelay;
             
         end
        
