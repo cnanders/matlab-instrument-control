@@ -53,7 +53,7 @@ classdef DeferredActionScheduler < mic.Base
               this.clock.add(@this.scheduleLambda, this.cName, this.dDelay);
          end
         
-         function abort(this)
+         function abort()
               this.clock.remove(this.cName);
          end
         

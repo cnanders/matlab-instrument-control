@@ -107,6 +107,10 @@ classdef Scan < mic.Base
         % {logical 1x1} - true when paused
         lPaused = false;
         
+        % {logical 1x1} - true when stop command is called, set to false
+        % when start() is called
+        lStopped = true;
+        
         
         % @param {function_handle} fhSetState(stUnit, stState) - function to update the
         % N-dimensional (N-motor / N-degree-of-freedom) destination 
@@ -212,9 +216,9 @@ classdef Scan < mic.Base
             this.fhOnComplete = fhOnComplete;
             this.fhOnAbort = fhOnAbort;
             
-            if nargin > 9
-                this.
-            this.dDelay = dDelay;
+            if nargin > 8
+                this.dDelay = dDelay;
+            end
             
         end
        
@@ -226,6 +230,8 @@ classdef Scan < mic.Base
             % Reset elapsed time and tic
             this.dSecondsElapsed = 0;
             this.ticId = tic;
+            
+            this.lStopped = false;
             
             this.go();
             

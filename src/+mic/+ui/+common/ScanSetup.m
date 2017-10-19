@@ -18,12 +18,17 @@ classdef ScanSetup < mic.Base
         saScanAxisSetups
         
         % Callback
-        fhOnScanButtonPress
+        fhOnScan
+        fhOnStopScan
+        
+        % 
         
         % UI
         hParent
         hPanel
         uibStartScan
+        uibStopScan
+        
         uipOutput
         uicbRaster
         dLeft
@@ -96,7 +101,11 @@ classdef ScanSetup < mic.Base
             this.uibStartScan = mic.ui.common.Button(...
                     'cText', 'Scan', ...
                     'fhDirectCallback', @this.routeScanInfoToCallback);
-            
+                
+            this.uibStopScan = mic.ui.common.Button(...
+                    'cText', 'Stop', ...
+                    'fhDirectCallback', @()this.onStopScan);
+                
             this.uiSLScanSetup = mic.ui.common.PositionRecaller(...
                 'cConfigPath', this.cConfigPath, ...
                 'cName', this.cName, ...
@@ -108,6 +117,12 @@ classdef ScanSetup < mic.Base
                     'cLabel', 'Raster', ...
                     'dColor', this.dColorBg...
                     );
+                
+        end
+        
+        % Called when the stop button is pressed
+        function onStopScan(this)
+            this.fhOnStopScan();
         end
         
         
@@ -151,40 +166,41 @@ classdef ScanSetup < mic.Base
                 case 2
                     for k = 1:length(ceScanRanges{1})
                         for m = 1:length(ceScanRanges{2})
-                            if this.uicbRaster.get() && isodd(m)
-                                ceScanStates{end + 1} = struct('axes', u8ScanAxisIdx, 'values',...
-                                    [ceScanRanges{1}(k), ...
-                                    ceScanRanges{2}(m)]);
+                            if ~this.uicbRaster.get() || isodd(k)
+                                kidx = k;
+                                midx = m;
+                                
                             else % raster direction
-                                ceScanStates{end + 1} = struct('axes', u8ScanAxisIdx, 'values',...
-                                    [ceScanRanges{1}(k), ...
-                                    ceScanRanges{2}(length(ceScanRanges{2}) - m + 1)]);
+                                kidx = k;
+                                midx = length(ceScanRanges{2}) - m + 1;
                             end
+                            ceScanStates{end + 1} = struct('indices', [kidx, midx], 'axes', u8ScanAxisIdx, 'values',...
+                                    [ceScanRanges{1}(kidx), ceScanRanges{2}(midx)]);
                         end
                     end
                 case 3
                     for k = 1:length(ceScanRanges{1})
                         for m = 1:length(ceScanRanges{2})
                             for p = 1:length(ceScanRanges{3})
-                                if ~this.uicbRaster.get() || (this.uicbRaster.get() && isodd(m) && isodd(p))
-                                    ceScanStates{end + 1} = struct('axes', u8ScanAxisIdx, 'values',...
-                                        [ceScanRanges{1}(k), ceScanRanges{2}(m), ceScanRanges{3}(p)]);
-                                elseif this.uicbRaster.get() && iseven(m) && isodd(p) % raster m
-                                    ceScanStates{end + 1} = struct('axes', u8ScanAxisIdx, 'values',...
-                                        [ceScanRanges{1}(k), ...
-                                        ceScanRanges{2}(length(ceScanRanges{2}) - m + 1), ...
-                                        ceScanRanges{3}(p)]);
-                                elseif this.uicbRaster.get() && isodd(m) && iseven(p) % raster p
-                                    ceScanStates{end + 1} = struct('axes', u8ScanAxisIdx, 'values',...
-                                        [ceScanRanges{1}(k), ...
-                                        ceScanRanges{2}(m), ...
-                                        ceScanRanges{3}(length(ceScanRanges{3}) - p + 1)]);
-                                elseif this.uicbRaster.get() && iseven(m) && iseven(p) % raster m and p
-                                    ceScanStates{end + 1} = struct('axes', u8ScanAxisIdx, 'values',...
-                                        [ceScanRanges{1}(k), ...
-                                        ceScanRanges{2}(length(ceScanRanges{2}) - m + 1), ...
-                                        ceScanRanges{3}(length(ceScanRanges{3}) - p + 1)]);
+                                if ~this.uicbRaster.get() || (this.uicbRaster.get() && isodd(k) && isodd(m))
+                                    kidx = k;
+                                    midx = m;
+                                    pidx = p;
+                                elseif this.uicbRaster.get() && iseven(k) && isodd(m) % raster m
+                                    kidx = k;
+                                    midx = length(ceScanRanges{2}) - m + 1;
+                                    pidx = p;
+                                elseif this.uicbRaster.get() && isodd(k) && iseven(m) % raster p
+                                    kidx = k;
+                                    midx = m;
+                                    pidx = length(ceScanRanges{3}) - p + 1;
+                                elseif this.uicbRaster.get() && iseven(k) && iseven(m) % raster m and p
+                                    kidx = k;
+                                    midx = length(ceScanRanges{2}) - m + 1;
+                                    pidx = length(ceScanRanges{3}) - p + 1;
                                 end
+                                ceScanStates{end + 1} = struct('indices', [kidx, midx, pidx], 'axes', u8ScanAxisIdx, 'values',...
+                                        [ceScanRanges{1}(kidx), ceScanRanges{2}(midx), ceScanRanges{3}(pidx)]);
                             end
                         end
                     end
@@ -194,7 +210,7 @@ classdef ScanSetup < mic.Base
             u8OutputIdx = this.uipOutput.getSelectedIndex();
             
             if ~isempty(ceScanStates)
-                this.fhOnScanButtonPress(ceScanStates, u8ScanAxisIdx, u8OutputIdx);
+                this.fhOnScan(ceScanStates, u8ScanAxisIdx, u8OutputIdx);
             else
                 msgbox('No states to scan, check scan parameters');
             end
@@ -252,8 +268,7 @@ classdef ScanSetup < mic.Base
             this.uicbRaster.set(logical(ceParams{k+2}));
         end
         
-       
-        
+
         
         % Builds the UI elements
         function build(this,  hParent,  dLeft,  dTop,  dWidth,  dHeight)
@@ -285,16 +300,21 @@ classdef ScanSetup < mic.Base
              
             % Build only if there is more than one axis
             if (this.dScanAxes > 1)
-                this.uicbRaster.build(this.hPanel, 190, dTop + 2, 70, 25);
+                this.uicbRaster.build(this.hPanel, 250, dTop + 2, 70, 25);
                 this.uibStartScan.build(this.hPanel, 140, dTop, 45, 30);
-                this.uipOutput.build(this.hPanel, 10, dTop - 10, 130, 40);
+                this.uibStopScan.build(this.hPanel, 195, dTop, 45, 30);
+                
+                this.uipOutput.build(this.hPanel, 10, dTop - 10, 120, 40);
             else
                 this.uibStartScan.build(this.hPanel, 140, dTop, 45, 30);
-                this.uipOutput.build(this.hPanel, 10, dTop - 10, 130, 40);
+                this.uipOutput.build(this.hPanel, 10, dTop - 10, 120, 40);
+                this.uibStopScan.build(this.hPanel, 195, dTop, 45, 30);
             end
             
             this.uiSLScanSetup.build(this.hPanel, 487, 10, 340, dHeight - 20);
             
+            this.uibStartScan.setColor([.7, .9, .7]);
+            this.uibStopScan.setColor([.9, .7, .7]);
             
         end
         
