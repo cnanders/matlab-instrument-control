@@ -289,6 +289,11 @@ classdef Scan < mic.Base
 
         end
         
+        % Accessor for the current state index
+        function u8Idx = getCurrentStateIndex(this)
+            u8Idx = this.u8Index;
+        end
+        
         % @typedef {struct 1x1} Status
         % @property {char 1xm} cTimeElapsed - HH:MM:SS of elapsed time
         % since the scan started

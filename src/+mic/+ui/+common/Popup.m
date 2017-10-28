@@ -37,6 +37,8 @@ classdef Popup < mic.Base
         
         % {cell 1xm} - list of options.  Usually a cell of char
         ceOptions = {'one' 'two' 'three'}
+        
+        fhDirectCallback = @(u8SelectedIndex, cSelectedValue)[];
     end
     
     
@@ -102,7 +104,9 @@ classdef Popup < mic.Base
        function onPopup(this, src, evt)
             this.u8Selected = uint8(get(src, 'Value'));
             notify(this,'eChange');
-
+            
+            
+            this.fhDirectCallback(this.u8Selected, this.getSelectedValue);
        end
        
        function ce = getOptions(this)

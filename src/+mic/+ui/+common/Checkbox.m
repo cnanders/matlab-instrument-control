@@ -59,6 +59,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
        % Callback
        function onCheckbox(this, src, evt)
            this.lChecked = logical(get(src, 'Value'));
+           this.fhDirectCallback();
        end
        
        function l = get(this)
@@ -80,7 +81,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
            end
            
            notify(this,'eChange');
-           this.fhDirectCallback();
+           
                
        end
 

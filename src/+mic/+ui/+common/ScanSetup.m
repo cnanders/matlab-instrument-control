@@ -21,7 +21,8 @@ classdef ScanSetup < mic.Base
         fhOnScan
         fhOnStopScan
         
-        % 
+        fhOnScanChangeParams = @(ceScanStates, u8ScanAxisIdx, lUseDeltas)[]
+        
         
         % UI
         hParent
@@ -86,7 +87,8 @@ classdef ScanSetup < mic.Base
             
             for k = 1:this.dScanAxes
                 this.saScanAxisSetups{k} = mic.ui.common.ScanAxisSetup('cScanLabel', sprintf('Scan axis %d', k), ...
-                                                                        'ceScanOptions', this.ceScanAxisLabels);
+                                                                        'ceScanOptions', this.ceScanAxisLabels, ...
+                                                                        'fhDirectCallback', @()this.paramChangeCallback);
                 
                 % Set default values for popup:
                 this.saScanAxisSetups{k}.uipSelectInput.setSelectedIndex(this.u8selectedDefaults(k));
@@ -120,20 +122,31 @@ classdef ScanSetup < mic.Base
                 
         end
         
+        function paramChangeCallback(this)
+            % For testing just echo somethign:
+            disp('param change callback');
+            
+            % Get current scan parameters and route to param change
+            % callback:
+            [ceScanStates, u8ScanAxisIdx, lUseDeltas] = this.buildScanStateArray();
+            cAxisNames = this.ceScanAxisLabels(u8ScanAxisIdx);
+            this.fhOnScanChangeParams(ceScanStates, u8ScanAxisIdx, lUseDeltas, cAxisNames);
+        end
+        
         % Called when the stop button is pressed
         function onStopScan(this)
             this.fhOnStopScan();
         end
         
-        
-        function routeScanInfoToCallback(this)
-            % Get index of scan axes:
-            u8ScanAxisIdx = [];
+        function [ceScanStates, u8ScanAxisIdx, lUseDeltas] = buildScanStateArray(this)
             
+            % Save the scan idx of each axis and whether to use deltas
+            u8ScanAxisIdx = [];
+            lUseDeltas = [];
             for k = 1:this.dScanAxes
                 u8ScanAxisIdx(k) = this.saScanAxisSetups{k}.getScanAxisIndex();
+                lUseDeltas(k) = this.saScanAxisSetups{k}.useDelta();
             end
-
             
             % Create a cell array of the scan ranges for each
             % scanAxisSetup:
@@ -145,9 +158,6 @@ classdef ScanSetup < mic.Base
             
             % Now need to build a list of states corresponding to the scan
             % ranges:
-            
-            
-            
             dNumScanStates = 1;
             for k = 1:this.dScanAxes
                 dNumScanStates = dNumScanStates * length(ceScanRanges{k});
@@ -205,12 +215,19 @@ classdef ScanSetup < mic.Base
                         end
                     end
             end % Switch
+        end
             
+        
+        % Builds scan states and passes them to the fhOnScan callback
+        function routeScanInfoToCallback(this)
+            
+            [ceScanStates, u8ScanAxisIdx, lUseDeltas]  = this.buildScanStateArray();
             % Pass out scan axes and output for validation
             u8OutputIdx = this.uipOutput.getSelectedIndex();
             
+            cAxisNames = this.ceScanAxisLabels(u8ScanAxisIdx);
             if ~isempty(ceScanStates)
-                this.fhOnScan(ceScanStates, u8ScanAxisIdx, u8OutputIdx);
+                this.fhOnScan(ceScanStates, u8ScanAxisIdx, lUseDeltas, u8OutputIdx, cAxisNames);
             else
                 msgbox('No states to scan, check scan parameters');
             end
@@ -266,6 +283,9 @@ classdef ScanSetup < mic.Base
             
             this.uipOutput.setSelectedValue(ceParams{k+1});
             this.uicbRaster.set(logical(ceParams{k+2}));
+            
+            % After loading parameters, call calback:
+            this.paramChangeCallback();
         end
         
 
