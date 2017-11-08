@@ -1,5 +1,7 @@
 ﻿
 # 1.0.0-beta.25
+- Updating `mic.ui.axes.ScalableAxes.m` for bug fixes and customizable
+  scaling
 
 - Fixed a bug in `mic.scan` causing it to fail to stop when stop() is called during a state change or an acquisition. Also fixing a bug causing raster scanning to fail in `mic.ui.common.ScanSetup`
 
