@@ -425,7 +425,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
          function onKeyRelease(this, src, evt)
              if uint8(evt.Character') == 13
                  if this.lNotify
-                    this.fhDirectCallback;
+                    this.fhDirectCallback();
                     notify(this, 'eEnter');
                  end
              end
@@ -646,7 +646,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             end
 
             if this.lNotify
-                %this.fhDirectCallback();
+                this.fhDirectCallback();
                 notify(this,'eChange');
             end
 
