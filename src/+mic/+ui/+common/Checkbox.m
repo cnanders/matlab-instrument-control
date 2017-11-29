@@ -14,7 +14,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
         lChecked = false
         cLabel = 'Fix Me'
         lShowLabel = true
-        fhDirectCallback
+        fhDirectCallback = @(src, evt)[];
         
         dColor = 'white'
     end
@@ -59,7 +59,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
        % Callback
        function onCheckbox(this, src, evt)
            this.lChecked = logical(get(src, 'Value'));
-           this.fhDirectCallback();
+           this.fhDirectCallback(this, evt);
        end
        
        function l = get(this)

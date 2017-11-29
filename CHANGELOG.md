@@ -1,4 +1,10 @@
-﻿# 1.0.0-beta.26
+﻿# 1.0.0-beta.27
+
+### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
+
+Updated `fhDirectCallback` to have two args: `(src, evt)` to match standard callback pattern in MATLAB.  
+
+# 1.0.0-beta.26
 
 ### mic.ui.common.Edit
 
