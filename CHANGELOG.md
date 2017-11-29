@@ -1,4 +1,10 @@
-﻿
+﻿# 1.0.0-beta.26
+
+### mic.ui.common.Edit
+
+Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `notify()`
+
+
 # 1.0.0-beta.25
 - Updating `mic.ui.axes.ScalableAxes.m` for bug fixes and customizable
   scaling
