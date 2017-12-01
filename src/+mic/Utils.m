@@ -28,6 +28,78 @@ classdef Utils
 
     %% Static Methods
     methods (Static)
+        
+        
+        function ceReturn = dir2cell(cPath, cSortBy, cSortMode, cFilter)
+            
+            % cPath         char    dir path without trailing slash
+            % cSortBy       char    date, name
+            % cSortMode     char    descend, ascend
+            % cFilter       char    '*.mat', '*', etc
+                        
+            if exist('cSortBy', 'var') ~= 1
+                cSortBy = 'date';
+            end
+            
+            if exist('cSortMode', 'var') ~= 1
+                cSortBy = 'descend';
+            end
+            
+            if exist('cFilter', 'var') ~= 1
+                cFilter = '*';
+            end
+            
+                                        
+            % Get a structure (size n x 1) for each .mat file.  Each structure
+            % contains: name, date, bytes, isdir, datenum
+            
+            stFiles = dir(sprintf('%s/%s', cPath, cFilter));
+            
+                    
+            % [stFiles.datenum] generates a 1 x m double of Unix
+            % timestamps
+            %
+            % {stFiles.name} generates a 1 x m cell of char of each
+            % filename
+            
+            % When you want to sort by name, you have to do sort on the
+            % cell of strings.  Unfortunately,  when you use sort on a cell
+            % array of strings, the 'mode' parameter (ascending,
+            % descending) does not work.  It will default to ascending and
+            % you have to flip afterward if you want descending
+            %
+            % If you want to sort by date, we can use the datenum property
+            % of the structure and can directly use the mode property of
+            % the sort function
+                                   
+            switch (cSortBy)
+                
+                case 'date'    
+            
+                    [ceDate, dIndex] = sort([stFiles.datenum], cSortMode);
+                    
+                case 'name'
+                    
+                    [ceDate, dIndex] = sort({stFiles.name});
+
+                    switch cSortMode
+                        case 'ascend'
+                        
+                        case 'descend'
+                            dIndex = fliplr(dIndex);     
+                    end
+            end
+              
+            
+            stSortedFiles = stFiles(dIndex);
+            ceReturn = {stSortedFiles.name};
+                    
+            if(isempty(ceReturn))
+                ceReturn = cell(1, 0);
+            end
+            
+        end
+
 
         function cTruncated = truncate(cText, dLength, lFront)
         %ABBREVIATE truncate a string to the number of specified characters
