@@ -8,7 +8,7 @@ classdef GetNumber < mic.interface.device.GetNumber
         clock
         
         % {double 1x1} clock period (s)
-        dPeriod = 0.1 
+        dPeriod = 0.5
         
         % {double 1x1} mean value
         dMean = 0 
@@ -37,9 +37,9 @@ classdef GetNumber < mic.interface.device.GetNumber
         function this = GetNumber(varargin)
         
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf(' settting %s', varargin{k}), 3);
+                    this.msg(sprintf(' settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end

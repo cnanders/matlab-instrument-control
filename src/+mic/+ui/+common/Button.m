@@ -17,6 +17,14 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         lImg = false            % use image?
         lAsk = false
         cMsg = 'Are you sure you want to do that?'
+        
+        % {function_handle 1x1} is called any time eChange is emitted (if
+        % is not null)
+        fhOnClick
+        
+        % {function_handle 1x1} is called any time eChange is emitted 
+        % need to deprecate fhOnClick
+        fhDirectCallback = @(src, evt)[];
     end
 
 
@@ -30,7 +38,9 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         % authorizes
         % 2. If confirmation dialog approval is not required and the user
         % presses.
-        eChange  
+        eChange
+        
+        
     end
 
 
@@ -39,12 +49,20 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         %% constructor 
         % LEGACY cText, lImg, u8Img, lAsk, cMsg
         function this = Button(varargin)
+            
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+            
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
-                if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 3);
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
+                if this.hasProp(varargin{k})
+                    this.msg(sprintf('settting %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
+                %{
+                elseif strcmp(varargin{k}, 'fhDirectCallback')
+                    this.fhOnClick = varargin{k + 1};
+                end
+                %}
             end
 
         end
@@ -73,6 +91,13 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             end
             set(this.hUI, 'String', cText);
         end
+        
+        function setColor(this, dColor)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'BackgroundColor', dColor);
+        end
 
         %% Event handlers
         function cb(this, src, evt)
@@ -84,6 +109,10 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         cAns = questdlg(this.cMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
                         switch cAns
                             case 'Yes'
+                                if ~isempty(this.fhOnClick)
+                                    this.fhOnClick();
+                                end
+                                this.fhDirectCallback(this, evt)
                                 notify(this,'eChange');
 
                             otherwise
@@ -91,6 +120,11 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         end  
 
                     else
+                        
+                        if ~isempty(this.fhOnClick)
+                            this.fhOnClick();
+                        end
+                        this.fhDirectCallback(this, evt)
                         notify(this,'eChange');
                     end
            end
@@ -123,6 +157,32 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             end
         end
         
+        % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
+        % 0]
+        function setColorBackground(this, dValue)
+            
+            if ~ishandle(this.hUI)
+                return
+            end
+            
+            set(this.hUI, 'BackgroundColor', dValue) 
+            
+        end
+        
+        % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
+        % 0]
+        function setColorText(this, dValue)
+            
+            if ~ishandle(this.hUI)
+                return
+            end
+            
+            set(this.hUI, 'ForegroundColor', dValue)
+            
+            
+        end
+        
+       
         
 
     end

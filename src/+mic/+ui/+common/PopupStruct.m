@@ -54,6 +54,8 @@ classdef PopupStruct < mic.Base
        
         hLabel
         hUI
+        
+        fhDirectCallback = @(src, evt)[];
     end
     
     
@@ -66,6 +68,8 @@ classdef PopupStruct < mic.Base
                        
        function this= PopupStruct(varargin)
        
+           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+           
             % Default ceOptions
        
             stOption1 = struct();
@@ -88,9 +92,9 @@ classdef PopupStruct < mic.Base
             this.setOptions({stOption1, stOption2});
             
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 6);
+                    this.msg(sprintf('settting %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -133,6 +137,7 @@ classdef PopupStruct < mic.Base
        function onPopup(this, src, evt)
            this.u8Selected = uint8(get(src, 'Value'));
            notify(this,'eChange');
+           this.fhDirectCallback(this, evt);
        end
        
        
@@ -180,6 +185,7 @@ classdef PopupStruct < mic.Base
            end
            
            notify(this,'eChange');
+           this.fhDirectCallback(this, 'setOptions')
            
        end
        
@@ -194,6 +200,12 @@ classdef PopupStruct < mic.Base
                    this.u8Selected = u8Val;
                    % this.cSelected = this.ceOptions{this.u8Selected};
                end
+           else
+               
+               cMsg = sprintf('mic.ui.common.PopupStruct setSelectedIndex() The index you provided is not {uint8} type.  Please cast as uint8 and try again.');
+               cTitle = 'uint8 index type required';
+               msgbox(cMsg, cTitle, 'warn')
+               
            end
            
            % ui
@@ -202,6 +214,7 @@ classdef PopupStruct < mic.Base
            end
            
            notify(this,'eChange');
+           this.fhDirectCallback(this, 'setSelectedIndex')
                
        end
        
@@ -269,7 +282,7 @@ classdef PopupStruct < mic.Base
          end
          
          function u8 = getSelectedIndex(this)
-             u8 = this.u8Selected;
+             u8 = uint8(this.u8Selected);
          end
         
 

@@ -16,6 +16,10 @@ classdef Utils
         dColorActive        = [0.9 0.9 0.9];
         dColorPost          = [0.07 0.38 0.07];
                 
+        
+        dColorEditBgDefault    = [0.94 0.94 0.94];
+        dColorTextBgDefault    = [0.94 0.94 0.94];
+        
         dColorEditBgVerified    = [0.07 0.38 0.07];
         dColorTextBgVerified    = [0.07 0.38 0.07];
          
@@ -25,6 +29,7 @@ classdef Utils
     %% Static Methods
     methods (Static)
 
+        
         % @param {cell of struct 1xm} ce - data, i.e.,
         % ce{1}.car = 'ferrari'
         % ce{2}.car = 'tesla'
@@ -73,11 +78,11 @@ classdef Utils
         %       false if you want end cut
         %   @return {char 1xm} - truncated text string
         
-            if nargin < 3
+            if nargin < 2
                 dLength = 30;
             end
             
-            if nargin < 4
+            if nargin < 3
                 lFront = false;
             end
             
@@ -774,7 +779,7 @@ classdef Utils
             end
             
             if exist('cFilter', 'var') ~= 1
-                cFilter = '*.mat';
+                cFilter = '*';
             end
             
                                         

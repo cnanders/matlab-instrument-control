@@ -1,0 +1,1105 @@
+{
+	"process": {
+		"cUser": "Development",
+		"cBase": "",
+		"cUnderlayer1Name": "NCX011",
+		"dUnderlayer1Thick": 20,
+		"dUnderlayer1PabTemp": 200,
+		"dUnderlayer1PabTime": 90,
+		"cUnderlayer2Name": "",
+		"dUnderlayer2Thick": 0,
+		"dUnderlayer2PabTemp": 0,
+		"dUnderlayer2PabTime": 0,
+		"cResistName": "Fuji-1201E",
+		"dResistThick": 35,
+		"dResistPabTemp": 110,
+		"dResistPabTime": 60,
+		"dResistPebTemp": 100,
+		"dResistPebTime": 60,
+		"cDevName": "MF26A",
+		"dDevTime": 30,
+		"cRinseName": "DIH20",
+		"dRinseTime": 30
+	},
+	"fem": {
+		"dPositionStartX": 0,
+		"dPositionStepX": 0.5,
+		"dPositionStartY": 0,
+		"dPositionStepY": -0.2,
+		"u8DoseNum": 9,
+		"dDoseCenter": 15,
+		"dDoseStep": 5,
+		"u8DoseStepType": 1,
+		"u8FocusNum": 9,
+		"dFocusCenter": 0,
+		"dFocusStep": 10
+	},
+	"unit": {
+		"waferX": "mm",
+		"waferY": "mm",
+		"waferZ": "nm",
+		"reticleX": "mm",
+		"reticleY": "mm",
+		"pupilFill": "n\/a"
+	},
+	"values": [
+		{
+			"reticleX": 0.02,
+			"reticleY": -0.0225,
+			"pupilFill": "4Pole_off60_rot0_min20_max30_num2_dwell2_xoff0_yoff0_per100_filthz400_dt24.mat"
+		},
+		{
+			"waferX": -0,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 12.34053712,
+				"femCols": 9,
+				"femCol": 1,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -0.5,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 12.95756398,
+				"femCols": 9,
+				"femCol": 2,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 13.60544218,
+				"femCols": 9,
+				"femCol": 3,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -1.5,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 14.28571429,
+				"femCols": 9,
+				"femCol": 4,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 15,
+				"femCols": 9,
+				"femCol": 5,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -2.5,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 15.75,
+				"femCols": 9,
+				"femCol": 6,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 16.5375,
+				"femCols": 9,
+				"femCol": 7,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -3.5,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 17.364375,
+				"femCols": 9,
+				"femCol": 8,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": -0,
+			"waferZ": -40,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 1,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 0.2,
+			"waferZ": -30,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 2,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 0.4,
+			"waferZ": -20,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 3,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 0.6,
+			"waferZ": -10,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 4,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 0.8,
+			"waferZ": 0,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 5,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 1,
+			"waferZ": 10,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 6,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 1.2,
+			"waferZ": 20,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 7,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 1.4,
+			"waferZ": 30,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 8,
+				"pausePreExpose": 1
+			}
+		},
+		{
+			"waferX": -4,
+			"waferY": 1.6,
+			"waferZ": 40,
+			"task": {
+				"dose": 18.23259375,
+				"femCols": 9,
+				"femCol": 9,
+				"femRows": 9,
+				"femRow": 9,
+				"pausePreExpose": 1
+			}
+		}
+	]
+}

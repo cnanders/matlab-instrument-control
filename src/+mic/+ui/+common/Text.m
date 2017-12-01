@@ -16,11 +16,14 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
     
     
     properties (Access = private)
-        cVal = 'Fix me'
+        cLabel = 'cLabel'
+        cVal = 'cVal'
         cAlign = 'left'
         cFontWeight = 'normal'
         dFontSize = 10
         dColorBg = [.94 .94 .94]; % MATLAB default
+        
+        lShowLabel = false;
     end
     
     
@@ -31,14 +34,16 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
     
     methods
         
-       % constructor cVal, cAlign, cFontWeight, dFontSize
+       % constructor 
+       % legacy args: cVal, cAlign, cFontWeight, dFontSize
        
        function this = Text(varargin)
-                       
+               
+           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 6);
+                    this.msg(sprintf('settting %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -46,7 +51,23 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
        end
        
        function build(this, hParent, dLeft, dTop, dWidth, dHeight) 
-                                  
+              
+            if this.lShowLabel
+                this.hLabel = uicontrol( ...
+                    'Parent', hParent, ...
+                    'Position', mic.Utils.lt2lb([dLeft dTop dWidth 20], hParent),...
+                    'Style', 'text', ...
+                    'String', this.cLabel, ...
+                    'FontWeight', 'Normal',...
+                    'BackgroundColor', this.dColorBg, ...
+                    'HorizontalAlignment', 'left' ...
+                );
+
+                %'BackgroundColor', [1 1 1] ...
+            
+                dTop = dTop + 13;
+            end
+            
             this.hUI = uicontrol( ...
                 'Parent', hParent, ...
                 'HorizontalAlignment', this.cAlign, ...

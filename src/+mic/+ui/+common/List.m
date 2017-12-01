@@ -14,7 +14,7 @@ classdef List < mic.Base
     end
     
     
-    properties (Access = private)
+    properties (Access = protected)
         
         dLeft
         dTop
@@ -46,29 +46,40 @@ classdef List < mic.Base
         % {char 1xm} the label
         cLabel = 'Fix Me'        
         
+        % {function_handle 1x1} function to call when the refresh button is
+        % pushed
+        fhRefresh       
         
-        fhRefresh       % function handle
+        % {function_handle 1x1} function to call when the list selection
+        % changes
+        fhOnChange 
         
-        dWidthDelete    = 20;
-        dWidthUp        = 20;
-        dWidthDn        = 20;
+        % {function_handle 1x1} callback when user presses up, down, or X
+        fhDirectCallback = @()[];
+        
+        dWidthDelete    = 60;
+        dWidthUp        = 60;
+        dWidthDn        = 60;
         dWidthRefresh   = 60;
-        dPad            = 10;
-
+        dPad            = 5;
+        dHeightButton = 24
+        cLabelDelete = 'Delete'
+        cLabelMoveUp = 'Up'
+        cLabelMoveDown = 'Down'
+        cLabelRefresh = 'Refresh'
 
         % {cell 1xn} list of options
         ceOptions              
 
         % {uint8 1xm} list of selected indexes
         u8Selected 
-           
-        % {cell 1xm} list of selected values
-        ceSelected   
-        
+                   
     end
     
     
     events
+        
+        % {event} whenever the selected index(es) changes
         eChange
         eDelete
     end
@@ -90,10 +101,11 @@ classdef List < mic.Base
        
        function this= List(varargin)
            
+           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 3);
+                    this.msg(sprintf('settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -144,10 +156,10 @@ classdef List < mic.Base
                     dRight - this.dWidthDelete ...
                     dTop + dHeight + 5 ...
                     this.dWidthDelete ...
-                    20], hParent),...
+                    this.dHeightButton], hParent),...
                 'HorizontalAlignment', 'Center',...
                 'Style', 'pushbutton', ...
-                'String', 'X',...
+                'String', this.cLabelDelete,...
                 'Callback', @this.onDelete ...
                 );
             
@@ -164,10 +176,10 @@ classdef List < mic.Base
                         dRight - this.dWidthUp ...
                         dTop + dHeight + 5 ...
                         this.dWidthUp ...
-                        20], hParent),...
+                        this.dHeightButton], hParent),...
                     'HorizontalAlignment', 'Center',...
                     'Style', 'pushbutton', ...
-                    'String', 'Up',...
+                    'String', this.cLabelMoveUp,...
                     'Callback', @this.onMoveUp ...
                 );
             
@@ -178,11 +190,11 @@ classdef List < mic.Base
                     'Position', mic.Utils.lt2lb([ ...
                         dRight - this.dWidthDn ...
                         dTop + dHeight + 5 ...
-                        20 ...
-                        20], hParent),...
+                        this.dWidthUp ...
+                        this.dHeightButton], hParent),...
                     'HorizontalAlignment', 'Center',...
                     'Style', 'pushbutton', ...
-                    'String', 'Dn',...
+                    'String', this.cLabelMoveDown,...
                     'Callback', @this.onMoveDown ...
                );
             
@@ -199,10 +211,10 @@ classdef List < mic.Base
                     dRight - this.dWidthRefresh ...
                     dTop + dHeight + 5 ...
                     this.dWidthRefresh ...
-                    20], hParent),...
+                    this.dHeightButton], hParent),...
                 'HorizontalAlignment', 'Center', ...
                 'Style', 'pushbutton', ...
-                'String', 'Refresh', ...
+                'String', this.cLabelRefresh, ...
                 'Callback', @this.onRefresh ...
                 ); 
                
@@ -219,7 +231,7 @@ classdef List < mic.Base
        
         % @return % {cell 1xm} list of selected values
        function ce = get(this)
-            ce = this.ceSelected;
+            ce = this.ceOptions(this.u8Selected);
        end
 
 
@@ -282,7 +294,7 @@ classdef List < mic.Base
                 set(this.hUI, 'String', this.ceOptions);               
            end
            
-           % notify(this,'eChange');
+           
            
        end
        
@@ -298,13 +310,21 @@ classdef List < mic.Base
                    this.u8Selected = u8Val; 
                end
                
-               % this.ceSelected = this.ceOptions(1,this.u8Selected); % will be cell [1x0] when u8Selected = uint8 [0x0]
-               this.ceSelected = this.ceOptions(this.u8Selected);
+               
+           else
+                cMsg = sprintf('The indexes you provided are not {uint8} type.  Please cast as uint8 and try again.');
+                cTitle = 'uint8 index type required';
+                msgbox(cMsg, cTitle, 'warn') 
+               
            end
            
            % ui
            if ~isempty(this.hUI) && ishandle(this.hUI)
                set(this.hUI, 'Value', this.u8Selected);
+           end
+           
+           if ~isempty(this.fhOnChange)
+               this.fhOnChange()
            end
            
            notify(this,'eChange');
@@ -355,26 +375,29 @@ classdef List < mic.Base
             this.setSelectedIndexes(st.u8Selected);
         end
 
+        function refresh(this)
+            this.setOptions(this.fhRefresh());
+        end
        
-
-
-       
-       
-       
-       
-             
+            
     end
 
     methods (Access = protected)
 
-        function onList(this, src, evt)
+       function onList(this, src, evt)
             this.u8Selected = uint8(get(src, 'Value'));
+            
+            if ~isempty(this.fhOnChange)
+               this.fhOnChange()
+            end
+           
+            notify(this,'eChange');
        end
        
        
        function onRefresh(this, src, evt)
            this.msg('onRefresh');
-           this.setOptions(this.fhRefresh());
+           this.refresh()
        end
 
         function onMoveDown(this, src, evt)
@@ -394,7 +417,9 @@ classdef List < mic.Base
                this.u8Selected = this.u8Selected + 1;
 
                this.setOptions(this.ceOptions);
-
+                
+               % perform callback
+               this.fhDirectCallback();
            end
        end
 
@@ -410,6 +435,9 @@ classdef List < mic.Base
                
                this.u8Selected = this.u8Selected - 1;
                this.setOptions(this.ceOptions);
+               
+               % perform callback
+               this.fhDirectCallback();
            end
 
            
@@ -435,6 +463,9 @@ classdef List < mic.Base
            this.ceOptions(this.u8Selected) = [];
 
            this.setOptions(this.ceOptions);
+           
+           % perform callback
+           this.fhDirectCallback();
        end
        
        

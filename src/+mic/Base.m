@@ -1,26 +1,47 @@
 classdef Base < handle
-%Base is an overloaded handle class that implements useful functions
-%   Among these functions are the ability to recursively save and load
-%   an instance of a child class.
 
-    % 2014.05.08 CNA
-    % I thought it would be a good idea to make cName a protected property,
-    % but I realized most of the classes don't have a cName property. It is
-    % realy only HardwareIO, HardwareO classes that need them.  We will
-    % make them public properties to the msg() method can access them
-    
-    %{
-    properties (Access = protected)
-        cName   = 'Unnamed';
+    properties (Constant, Access = protected)
+
+        
+        u8_MSG_TYPE_INFO = 1
+        u8_MSG_TYPE_ERROR = 2
+        u8_MSG_TYPE_EVENT_SENT = 3
+        u8_MSG_TYPE_EVENT_RECEIVED = 4
+        u8_MSG_TYPE_EVENT_LISTENER_ADDED = 5
+        u8_MSG_TYPE_JAVA = 6
+        u8_MSG_TYPE_CLOCK = 7
+        u8_MSG_TYPE_LOAD_SAVE = 8
+        u8_MSG_TYPE_CLASS_INIT_DELETE = 9
+        u8_MSG_TYPE_VARARGIN_SET = 10
+        u8_MSG_TYPE_VARARGIN_PROPERTY = 11
+        u8_MSG_TYPE_FILE_IO = 12
+        u8_MSG_TYPE_DELETE = 13
+        u8_MSG_TYPE_CREATE_UI_COMMON = 14
+        u8_MSG_TYPE_CREATE_UI_DEVICE = 15
+        
+        u8_MSG_STYLE_ALL = [1 : 13]
+        u8_MSG_STYLE_CLOCK = [7]
+        u8_MSG_STYLE_JAVA = [5]
+        u8_MSG_STYLE_EVENTS_AND_JAVA = [3, 4, 5, 6]
+        u8_MSG_STYLE_CLOCK_AND_EVENTS = [3, 4, 5, 7]
+        u8_MSG_STYLE_VARARGIN_SET = [10] 
+        u8_MSG_STYLE_VARARGIN_ALL = [10, 11]
+        u8_MSG_STYLE_NONE = []
+        u8_MSG_STYLE_CREATE_UI_DEVICE = [15]
+        u8_MSG_STYLE_CREATE = [14, 15] 
+        
     end
-    %}
     
     properties (Access = protected)
-        u8verbosity = 5;
+        u8MsgStyle
     end
     
     
     methods
+        
+        function this = Base()
+            this.u8MsgStyle = this.u8_MSG_STYLE_NONE; %this.u8_MSG_STYLE_NONE;
+        end
 
 
     end 
@@ -32,86 +53,24 @@ classdef Base < handle
     methods(Hidden)
         
         
-        function msg(this, cMsg, u8verbosity_level)
-        % Outputs a message in the command window
-        %   Base.msg('Hello World')
-        %     similar to disp() except that channeling every fprintf or
-        %     disp through this method lets us easily eliminate all print
-        %     or only show certain ones.  I've found it really helpful in
-        %     other projects to do something like this.  Especially
-        %     event-based projects.  Also, if you make the message prefixed
-        %     with the class name, you can put logic in here to only echo
+        % Prints a message to the command window if provided message type
+        % is included in this.u8MsgStyle list of allowed message types
+        % @param {char 1xm} cMsg - the message
+        % @param {uint8 1x1} u8Type - see this.u8_MSG_TYPE_*
+        function msg(this, cMsg, u8Type)
         
-        % 0 : always shows
-        % 1 : show by default
-        % 2 : show errors
-        % 3 : something is sent
-        % 4 : something is received
-        % 5 : something is activated/deactivated
-        % 6 : event addition or clock
-        % 7 : something loaded/saved (parameters)
-        % 8 : something is instantiated/deleted
-        % 9 : show everything
+            if nargin == 2
+                u8Type = this.u8_MSG_TYPE_INFO;
+            end
             
-            % April 2016 (AW) addition of verbosity parameteres
-            
-            cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
-            
-            try
-                if nargin<3
-                    u8verbosity_level = 0;
-                end
-                if u8verbosity_level<=this.u8verbosity
-                    fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
-                end
-                
-            catch
-                fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
+            % Always show error types
+            u8MsgStyle = [this.u8MsgStyle this.u8_MSG_TYPE_ERROR];
+
+            if any(ismember(u8MsgStyle, u8Type))
+                 cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
+                 fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
         end
-        
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%HANDLE CLASS METHODS THAT SHOULD BE HIDDEN TO MAKE
-        %%AUTO-COMPLETION EASIER
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        %{
-        function lh = addlistener(varargin)
-            lh = addlistener@handle(varargin{:});
-        end
-        function notify(varargin)
-            notify@handle(varargin{:});
-        end
-        function delete(varargin)
-            delete@handle(varargin{:});
-        end
-        function Hmatch = findobj(varargin)
-            Hmatch = findobj@handle(varargin{:});
-        end
-        function p = findprop(varargin)
-            p = findprop@handle(varargin{:});
-        end
-        function TF = eq(varargin)
-            TF = eq@handle(varargin{:});
-        end
-        function TF = ne(varargin)
-            TF = ne@handle(varargin{:});
-        end
-        function TF = lt(varargin)
-            TF = lt@handle(varargin{:});
-        end
-        function TF = le(varargin)
-            TF = le@handle(varargin{:});
-        end
-        function TF = gt(varargin)
-            TF = gt@handle(varargin{:});
-        end
-        function TF = ge(varargin)
-            TF = ge@handle(varargin{:});
-        end
-        %}
-        
 
         function cID = id(this)
         %ID Gives the Class of which this object is an instance
@@ -136,10 +95,6 @@ classdef Base < handle
                 l = true;
             end
         end
-        
-        
-        
-        
         
         
     end

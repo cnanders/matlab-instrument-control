@@ -45,10 +45,11 @@ classdef ProgressBar < mic.interface.ui.common.ProgressBar & mic.ui.common.Base
        
        function this = ProgressBar(varargin)
        
+           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf(' settting %s', varargin{k}), 3);
+                    this.msg(sprintf(' settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -95,6 +96,7 @@ classdef ProgressBar < mic.interface.ui.common.ProgressBar & mic.ui.common.Base
            
        end
        
+       
        function d = get(this)
            d = this.dVal;
        end
@@ -127,6 +129,11 @@ classdef ProgressBar < mic.interface.ui.common.ProgressBar & mic.ui.common.Base
                 set(this.hText, 'String', sprintf('%1.1f%%', this.dVal * 100));
            end
            
+       end
+       
+       function setColor(this, dColor)
+            this.dColorFill = dColor;
+            this.hPanelFill.BackgroundColor = dColor;
        end
               
        

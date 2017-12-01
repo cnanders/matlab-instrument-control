@@ -18,15 +18,18 @@ cPathImg = fullfile(mic.Utils.pathImg(), 'loading-24px.gif');
 imshow(X,map)
 %}
 
+fhDirect = @(src, evt) disp('cb Direct\n');
+
 uiButton = mic.ui.common.Button( ...
     'cText', 'Zero', ...
     'lImg', true, ...
-    'u8Img', u8Zero ...
+    'u8Img', u8Zero, ...
+    'fhDirectCallback', fhDirect ...
 );
 
 h = figure;
 uiButton.build(h, 10, 10, 24, 24);
 
-cb = @(src, evt) (fprintf('mic.ui.common.Button press'));
+cb = @(src, evt) (fprintf('mic.ui.common.Button press\n'));
 addlistener(uiButton, 'ePress', cb);
 

@@ -1,8 +1,237 @@
-<!--
-# TO DO
+﻿# 1.0.0-beta.27
 
-Need to make contracts inside of setApi to check to see if the device is an instance of mic.interface.device.*
--->
+### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
+
+Updated `fhDirectCallback` to have two args: `(src, evt)` to match standard callback pattern in MATLAB.  
+
+# 1.0.0-beta.26
+
+### mic.ui.common.Edit
+
+Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `notify()`
+
+
+# 1.0.0-beta.25
+- Updating `mic.ui.axes.ScalableAxes.m` for bug fixes and customizable
+  scaling
+
+- Fixed a bug in `mic.scan` causing it to fail to stop when stop() is called during a state change or an acquisition. Also fixing a bug causing raster scanning to fail in `mic.ui.common.ScanSetup`
+
+- Generalizing scan axis and scan setup inputs
+
+- Adding getter for `mic.ui.common.Popup` to access selected value of list item.
+
+- Added options for changin colors in `mic.ui.common.ProgressBar`.
+
+- General robustness and bug fixes in `PositionRecaller`
+
+- Adding new classes `mic.ui.ScanAxisSetup` and `mic.ui.ScanSetup` as UI elements for setting up nested scan states of up to 3 dimensions.  
+
+- Adding the UI element `mic.ui.common.Tabgroup` to expose MATLAB's tabgroup ui element to mic.  This allows for tabs to be created in groups to optimize the usable space in UIs.
+
+# 1.0.0-beta.24
+
+- Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
+
+- Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
+
+# 1.0.0-beta.23
+
+- Adding property `fhDirectCallback` to ui classes `ui.common.Edit`, `ui.common.Button`, `ui.common.Checkbox`, which allows a callback to be passed in directly to object instance. Existing callback framework was not modified to preserve backward-compatibility.
+
+- Added utility classes `scalableAxis` for viewing images with various image processing modes, and `SaveLoadList` for providing a means for off-lining data associated with listboxes.
+
+- Added a method `validateByConfigRange` to `ui.device.GetSetNumber` which will validate the input according to the corresponding config file boundaries.  A corresponding boolean `lValidateByConfigRange` can be passed in to use this validator.  By default, there is no destination validator.  Validation can be enabled by one of the following operations in order: 1) passing in `fhValidateDest`, 2) setting `lValidateByConfigRange` to true, or 3) overloading `validateDest` in an implementation instance.
+
+- Reformatting `SaveLoadList`
+
+# 1.0.0-beta.22
+
+### mic.Base
+
+Now msg always shows `u8_MSG_TYPE_ERROR` messages types
+
+### mic.Clock
+
+No longer re-throws errors when it tries to execute one of the function handles in its queue.  By not re-throwing, MATLAB displays the error and call stack in the console during runtime.  Rethrowing doesn't do this; it assumes you catch somewhere higher in the call stack.
+
+# 1.0.0-beta.21
+
+Fixed but with `ui.common.PopupStruct`, `ui.common.Text` and `ui.common.Toggle` that were sending hard-coded values through `msg()` instead of the new constants defined in `mic.Base`
+
+# 1.0.0-beta.20
+
+Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that should have been `u8_MSG_TYPE_CLASS_INIT_DELETE`
+
+# 1.0.0-beta.19
+
+### mic.Base
+
+- Improved the messaging system.  Messages are now flagged with a `uint8` type.  Available types are stored as constants in `mic.Base` (`u8_MSG_TYPE_*`).  `mic.Base` now has a property `u8MsgType` that is a list of types that should be logged.  The `msg` function now requires that the type of the provided message is in the list of allowed types in order to display the message.  To change the message / logging style for the project, set `u8MsgType` to one of the defined `u8_MSG_TYPE_*` constants in the `mic.Base` constructor.
+
+
+# 1.0.0-beta.18
+
+### mic.ui.common.ListDir
+
+- Implemented `save()` and `load()` method to persist the state across sessions
+
+# 1.0.0-beta.17
+
+### mic.ui.common.Button
+
+- Added `fhOnClick` property, a `function_handle` that is called whenever the button is clicked. If the button requires confirmation during click, `fhOnClick` is only clicked if there is a successful confirmation.
+
+# 1.0.0-beta.16
+
+### mic.ui.common.ListDir
+
+- Fixed bug in `updateUiTextDir()`. It now properly returns if `uiTextDir` has not been defined
+
+# 1.0.0-beta.15
+
+### mic.ui.common.ListDir
+
+- Extendion of mic.ui.common.List that is designed to show the contents of a directory
+- Has an optional button that allows the user to change the directory that is being listed
+- `getDir()` method can be used to retrieve the directory the user is viewing
+
+# 1.0.0-beta.14
+
+### mic.ui.common.ButtonList
+
+- Now setting tooltip when cLayout === cLAYOUT_BLOCK 
+- Made all private properties protected so subclasses can access them
+- Added setButtonColorBackground
+
+
+### mic.ui.common.Button
+
+- Added setColorText method
+- Added setColorBackground method
+
+# 1.0.0-beta.13
+
+### mic.ui.common.ButtonList
+
+- New UI Control that is a list of `mic.ui.common.Button`s in a panel.  Buttons can be displayed inline or block.  A `cell` of button definition `struct`s is passed in with the `varargin` syntax to configure the buttons.  Each “button definition“ has three properties, as shown below.
+
+```matlab
+% @typedef {struct 1x1} ButtonDefinition
+% @property {char 1xm} cLabel - label of the button
+% @property {function_handle 1x1} fhOnClick - function that is called when button is clicked.  Must return logical to indicate if the action was successfull or not
+% @property {char 1xm} cTooltip - tooltip of the button
+```
+# 1.0.0-beta.12
+
+### mic.ui.device.*
+
+- Moved common properties and methods to `mic.ui.device.Base`.  These include:
+  - properties (Protected)
+    - uitDevice
+    - uibInit
+    - uiilInitState
+    - cLabelDevice
+    - cLabelInit
+    - cLabelInitState
+    - lIsInitializing
+    - uitxLabelDevice
+    - uitxLabelInit
+    - uitxLabelInitState
+  - methods (Public)
+    - turnOn()
+    - turnOff()
+    - initialize()
+  - methods (Protected)
+    - onInitChange()
+    - onDeviceChange()
+- uitDevice is now disabled until setDevice() is called
+- turnOn() now shows a warning dialog and returns if setDevice() has not been called
+- internal property lDeviceIsSet used to track if setDevice() has been called
+
+### mic.ui.device.Base
+
+- turnOn() no longer kills the deviceVirtual instance
+
+# 1.0.0-beta.11
+ 
+### mic.ui.commmon.List 
+- Created properties for the label, width, and height of the move up, move down, delete, and refresh buttons that can be set with the `varargin` syntax
+
+# 1.0.0-beta.10
+
+
+### mic.ui.common.Checkbox
+- Removed hLabel property since it has been moved out to `mic.ui.common.Base`
+
+### mic.ui.Scan
+
+- New UI to control a `mic.Scan` and display the scan progress.
+- Contains start, pause/resume, and abort buttons.
+
+### mic.Scan
+
+- Refactored elapsed time so elapsed time is no longer incremented while paused and the time complete and time remaining predictions are correct when a scan is paused / resumed many times.
+
+
+# 1.0.0-beta.9
+
+### mic.StateScan -> mic.Scan
+- New method `getStatus()` returns a `struct` with elapsed time, time remaining, etc that is useful for presenting scan information to the user
+- Renamed to Scan
+
+# 1.0.0-beta.8
+
+
+### mic.StateScan
+- Added documentation for the “contract” pattern that is useful in classes that utilize a `mic.StateScan`
+
+### mic.ui.common.Text
+- Now has an optional label.  Set `lShowLabel` to `true` to use the label.  The default value of `lShowLabel` is `false` 
+- Now extends `mic.ui.common.Base`
+
+### mic.ui.common.Base
+- added `hLabel` property
+- `disable()` and `enable()` now apply the style to the label in addition to the main UI element
+
+# 1.0.0-beta.7
+
+### mic.ui.device.GetSetNumber
+
+- When `lDisableSet` is true, default virtual device is now an instance of `mic.device.GetNumber` instead of `mic.device.GetSetNumber`
+
+### mic.ui.axes.ZoomPanAxes
+
+- Now notifies `eZoom` event on zoom
+
+### mic.StateScan
+
+- Now passes `stValue` into `fhAcquire()`
+
+# 1.0.0-beta.6
+
+### mic.StateScan
+
+- Added function templates for all functions that this class evokes. They can be copy/pasted into any class that uses `mic.StateScan`
+- Now pass `stValue` into `fhIsAcquired()`
+
+### mic.ui.device.GetSetNumber
+
+- `u8UnitIndex` is now properly cast as `uint8`
+
+### mic.ui.device.Base
+
+- `setDevice()` now checks that the passed `device` extends the correct `mic.interface.device.*` device interface
+- added `isActive()` method to programatically check if the UI is routing `device` calls to the “virtual” `device`
+
+### mic.ui.common.List
+
+- Added `refresh()` method that was accidentally removed in 1.0.0-beta.5
+- `setSelectedIndexes()` now shows a warning message if the provided index(es) are not cast as `uint8`
+
+### mic.ui.common.Popup*
+- `setSelectedIndex()` now shows a warning message if the provided index is not cast as `uint8`
+
 
 # 1.0.0-beta.5
 
@@ -18,10 +247,16 @@ Implemented `save()` and `load()` methods for classes with a state that can pers
 - mic.ui.device.GetSetNumber
 - mic.ui.device.GetSetText
 
-Deleted most of mic.Base since it no longer has `loadClassInstance` and `saveClassInstance` methods which were the bulk of this class.
+Deleted most of mic.Base since it no longer has `loadClassInstance` and `saveClassInstance` methods which were the bulk of this class.  
+
+- The `save()` method returns a structure with the UI state that should be saved.  
+- The `load()` method receives a structure and sets the UI elements to match. 
+- _Neither of these methods write to disk or load from disk_.  
+- Each UI component in the application should implement its own `save()` and `load()` methods with identical interfaces.  
+- To persist UI state across sessions, the highest-level UI component should implement `saveToDisk()` and `loadFromDisk()` methods that save (to disk) the structure returned by `save()` and load it and then pass it to `load()`.
 
 ### examples/app/src/+app/App.m
-Added `save()` and `load()` methods and `saveStateToDisk()` and `loadStateFromDisk()` methods that persist UI state across sessions
+Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` methods that persist UI state across sessions
 
 ### mic.ui.common.List
 

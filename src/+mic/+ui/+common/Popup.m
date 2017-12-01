@@ -37,6 +37,8 @@ classdef Popup < mic.Base
         
         % {cell 1xm} - list of options.  Usually a cell of char
         ceOptions = {'one' 'two' 'three'}
+        
+        fhDirectCallback = @(src, evt)[];
     end
     
     
@@ -50,11 +52,13 @@ classdef Popup < mic.Base
        % constructor
        % LEGACY ORDER ceOptions,cLabel, lShowLabel ...
        function this = Popup(varargin)
-                        
+                
+           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+           
             for k = 1 : 2: length(varargin)
-                % this.msg(sprintf('passed in %s', varargin{k}));
+                this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
-                    this.msg(sprintf('settting %s', varargin{k}), 3);
+                    this.msg(sprintf('settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
@@ -100,7 +104,9 @@ classdef Popup < mic.Base
        function onPopup(this, src, evt)
             this.u8Selected = uint8(get(src, 'Value'));
             notify(this,'eChange');
-
+            
+            
+            this.fhDirectCallback(this, evt);
        end
        
        function ce = getOptions(this)
@@ -108,10 +114,12 @@ classdef Popup < mic.Base
        end
        
        function u8 = getSelectedIndex(this)
-           u8 = this.u8Selected;
+           u8 = uint8(this.u8Selected);
        end
        
-             
+       function c = getSelectedValue(this)
+           c = this.ceOptions{this.u8Selected};
+       end
       
        
        function setOptions(this, ceVal)
@@ -169,6 +177,11 @@ classdef Popup < mic.Base
                    this.u8Selected = u8Val;
                    % this.cSelected = this.ceOptions{this.u8Selected};
                end
+           else
+               
+               cMsg = sprintf('mic.ui.common.Popup setSelectedIndex() The index you provided is not {uint8} type.  Please cast as uint8 and try again.');
+               cTitle = 'uint8 index type required';
+               msgbox(cMsg, cTitle, 'warn') 
            end
            
            % ui
@@ -178,6 +191,14 @@ classdef Popup < mic.Base
            
            notify(this,'eChange');
                
+       end
+       
+       function setSelectedValue(this, cValue)
+           ce = this.ceOptions;
+           u8Val = uint8(find(strcmp(cValue, ce)));
+           if u8Val > 0
+                this.setSelectedIndex(u8Val);
+           end
        end
        
        

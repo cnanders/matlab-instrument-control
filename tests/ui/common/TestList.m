@@ -70,7 +70,7 @@ classdef TestList < handle
         end
         
         function build(this, hParent, dLeft, dTop)
-            this.uiList.build(hParent, dLeft, dTop, 180, 100);
+            this.uiList.build(hParent, dLeft, dTop, 300, 100);
             
         end
             
