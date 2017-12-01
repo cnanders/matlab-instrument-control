@@ -185,7 +185,7 @@ classdef PopupStruct < mic.Base
            end
            
            notify(this,'eChange');
-           this.fhDirectCallback(this, 'setOptions')
+           this.fhDirectCallback(this, 'setOptions');
            
        end
        
@@ -214,7 +214,7 @@ classdef PopupStruct < mic.Base
            end
            
            notify(this,'eChange');
-           this.fhDirectCallback(this, 'setSelectedIndex')
+           this.fhDirectCallback(this, 'setSelectedIndex');
                
        end
        

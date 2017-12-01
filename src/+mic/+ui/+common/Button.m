@@ -112,7 +112,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                                 if ~isempty(this.fhOnClick)
                                     this.fhOnClick();
                                 end
-                                this.fhDirectCallback(this, evt)
+                                this.fhDirectCallback(this, evt);
                                 notify(this,'eChange');
 
                             otherwise
@@ -124,7 +124,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         if ~isempty(this.fhOnClick)
                             this.fhOnClick();
                         end
-                        this.fhDirectCallback(this, evt)
+                        this.fhDirectCallback(this, evt);
                         notify(this,'eChange');
                     end
            end

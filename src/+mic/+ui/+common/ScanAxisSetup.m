@@ -216,7 +216,7 @@ classdef ScanAxisSetup < mic.Base
                 this.uieEnd.set(dEnd);
                 
             end
-            this.fhDirectCallback()
+            this.fhDirectCallback();
         end
         
         function center0(this)
@@ -233,7 +233,7 @@ classdef ScanAxisSetup < mic.Base
             
             this.uieStart.set(dStart);
             this.uieEnd.set(dEnd);
-            this.fhDirectCallback()
+            this.fhDirectCallback();
         end
         
         
