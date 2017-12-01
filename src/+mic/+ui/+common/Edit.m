@@ -450,11 +450,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         %this.hUI
         
             
-            this.onKeyPress(src, evt);
-            mic.Utils.keyboard_navigation(src, evt)
-        %      end
-        
-            
+            this.onKeyPress(src, evt);            
             
          end
 
