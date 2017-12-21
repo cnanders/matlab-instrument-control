@@ -122,6 +122,11 @@ classdef ScanSetup < mic.Base
                 
         end
         
+        % Externally trigger a scan setup param change callback
+        function triggerCallback(this)
+            this.paramChangeCallback();
+        end
+        
         function paramChangeCallback(this)
             % For testing just echo somethign:
             disp('param change callback');
@@ -288,7 +293,13 @@ classdef ScanSetup < mic.Base
             this.paramChangeCallback();
         end
         
-
+        function ceNames = getScanAxisNames(this)
+            ceNames = this.ceScanAxisLabels(this.u8selectedDefaults);
+        end
+        
+        function cOutput = getOutputName(this)
+            cOutput = this.uipOutput.getSelectedValue;
+        end
         
         % Builds the UI elements
         function build(this,  hParent,  dLeft,  dTop,  dWidth,  dHeight)

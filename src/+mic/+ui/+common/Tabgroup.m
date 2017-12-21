@@ -30,7 +30,7 @@ classdef Tabgroup < mic.Base
         lIsBuilt = false;
         
         % {function_handle 1x1} callback when user presses up, down, or X
-        fhDirectCallback = @()[];
+        fhDirectCallback = {@()[]};
         
         % {uint8 1} selected tab index
         u8Selected
@@ -69,6 +69,20 @@ classdef Tabgroup < mic.Base
             uitTab = this.uitTabs{dIndex};
         end
         
+        function onSelectionChange(this, src, evt)
+            cNewTabName = evt.NewValue.Title;
+            
+            % get new tab index:
+            dIdx = find(strcmp(this.ceTabNames, cNewTabName));
+            
+            % Call callback associated with this tab:
+            if length(this.fhDirectCallback) >= dIdx
+                this.fhDirectCallback{dIdx}();
+            end
+            
+            
+        end
+    
         
         % Builds the UI elements
         function build(this,  hParent,  dLeft, dBot,  dWidth,  dHeight ...
@@ -78,7 +92,8 @@ classdef Tabgroup < mic.Base
             this.hUI = uitabgroup( ...
                 'Parent', hParent, ...
                 'Unit', 'pixels', ...
-                'Position', [dLeft, dBot, dWidth, dHeight] ...
+                'Position', [dLeft, dBot, dWidth, dHeight], ...
+                'SelectionChangedFcn', @this.onSelectionChange ...
                 );
             
             for k = 1:length(this.ceTabNames)

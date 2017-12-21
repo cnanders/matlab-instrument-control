@@ -1,5 +1,8 @@
 ﻿
 # 1.0.0-beta.25
+- Adding accessor for u8Index in `Scan.m`
+
+- Adding functionality to `ScanSetup` to allow parameter change callbacks.
 
 - Fixed a bug in `mic.scan` causing it to fail to stop when stop() is called during a state change or an acquisition. Also fixing a bug causing raster scanning to fail in `mic.ui.common.ScanSetup`
 
