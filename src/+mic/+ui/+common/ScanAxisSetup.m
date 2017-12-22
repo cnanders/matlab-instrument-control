@@ -192,7 +192,7 @@ classdef ScanAxisSetup < mic.Base
         
         % if End is 0, fill end using Nsteps, start and step
         % if Steps is 0, fill using Nsteps, start, and end
-        function fill(this)
+        function fill(this, ~, ~)
             % get values:
             dStart = this.uieStart.get();
             dStep = this.uieStep.get();
@@ -216,10 +216,10 @@ classdef ScanAxisSetup < mic.Base
                 this.uieEnd.set(dEnd);
                 
             end
-            this.fhDirectCallback()
+            this.fhDirectCallback();
         end
         
-        function center0(this)
+        function center0(this, ~, ~)
             % get values:
             dStart = this.uieStart.get();
             dStep = this.uieStep.get();
@@ -233,7 +233,7 @@ classdef ScanAxisSetup < mic.Base
             
             this.uieStart.set(dStart);
             this.uieEnd.set(dEnd);
-            this.fhDirectCallback()
+            this.fhDirectCallback();
         end
         
         

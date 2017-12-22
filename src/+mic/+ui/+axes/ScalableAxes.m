@@ -31,15 +31,16 @@ classdef ScalableAxes < mic.Base
 
         hZoomState
         
-        dXData
-        dYData
-        dZData
-        cPlotType = 'none' % 'plot' or 'image'
-        cImageDomain = 'real'
-        cLogState = 'none'
-        cColormap = 'default'
-        cMedState = 'normal'
-        dCLim = [0, 1]
+        dXData = []
+        dYData = []
+        dZData = 0
+        
+        cPlotType       = 'image' % 'plot' or 'image'
+        cImageDomain    = 'real'
+        cLogState       = 'none'
+        cColormap       = 'default'
+        cMedState       = 'normal'
+        dCLim           = [0, 1]
         
         uiButton5_95
         uiButton0_100
@@ -48,6 +49,18 @@ classdef ScalableAxes < mic.Base
         uiButtonLog
         uiButtonZoomToggle
         uiButtonColormapToggle
+        
+        uiSliderL
+        uiSliderH
+        
+        uitCL
+        uitCH
+        
+        uitMax
+        uitMin
+        uitAve
+        uitPnt
+        uitSat
         
         
     end
@@ -86,26 +99,35 @@ classdef ScalableAxes < mic.Base
             
 
             this.uiButton5_95 = mic.ui.common.Button(...
-                'cText', '5%/95%', 'fhDirectCallback', @this.changeState ...
+                'cText', '5%/95%', 'fhDirectCallback', @(~,~)this.changeState(this.uiButton5_95) ...
             );
             this.uiButton0_100 = mic.ui.common.Button(...
-                'cText', '0%/100%', 'fhDirectCallback', @this.changeState ...
+                'cText', '0%/100%', 'fhDirectCallback', @(~,~)this.changeState(this.uiButton0_100) ...
             );
             this.uiButtonFft = mic.ui.common.Button(...
-                'cText', 'FFT', 'fhDirectCallback', @this.changeState ...
+                'cText', 'FFT', 'fhDirectCallback', @(~,~)this.changeState(this.uiButtonFft) ...
             );
             this.uiButtonLog = mic.ui.common.Button(...
-                'cText', 'LOG', 'fhDirectCallback',@this.changeState ...
+                'cText', 'LOG', 'fhDirectCallback',@(~,~)this.changeState(this.uiButtonLog) ...
             );
             this.uiButtonZoomToggle = mic.ui.common.Button(...
-                'cText', 'Zoom', 'fhDirectCallback', @this.changeState ...
+                'cText', 'Zoom', 'fhDirectCallback', @(~,~)this.changeState(this.uiButtonZoomToggle) ...
             );
             this.uiButtonColormapToggle = mic.ui.common.Button(...
-                'cText', 'C/BW', 'fhDirectCallback', @this.changeState ...
+                'cText', 'C/BW', 'fhDirectCallback', @(~,~)this.changeState(this.uiButtonColormapToggle) ...
             );
-            this.uiButtonMed= mic.ui.common.Button(...
-                'cText', '|MED - 2s|', 'fhDirectCallback', @this.changeState ...
+            this.uiButtonMed = mic.ui.common.Button(...
+                'cText', '|MED - 2s|', 'fhDirectCallback', @(~,~)this.changeState(this.uiButtonMed) ...
             );
+        
+            this.uitCH = mic.ui.common.Text('cVal', 'H: 100%');
+            this.uitCL = mic.ui.common.Text('cVal', 'L: 0%');
+            
+            this.uitMax = mic.ui.common.Text('cVal', 'Max: ');
+            this.uitMin = mic.ui.common.Text('cVal', 'Min: ');
+            this.uitAve = mic.ui.common.Text('cVal', 'Ave: ');
+            this.uitPnt = mic.ui.common.Text('cVal', 'Point: ');
+            this.uitSat = mic.ui.common.Text('cVal', 'Saturated Px: ');
         
         
         end
@@ -123,8 +145,20 @@ classdef ScalableAxes < mic.Base
                 end
             end
                
+            
+            this.uiSliderL = uicontrol(hParent, 'style', 'slider', 'Callback', @(src,evt)this.changeState(src), ...
+                                        'Position', [60, 5, dWidth - 50, 15], 'value', 0);
+            this.uiSliderH = uicontrol(hParent, 'style', 'slider', 'Callback', @(src,evt)this.changeState(src), ...
+                                        'Position', [60, 21, dWidth - 50, 15], 'value', 1);
 
             % Set zoom handle:
+            
+            
+            % texts:
+            this.uitCH.build(hParent, 5, dHeight + 10, 50, 15)
+            this.uitCL.build(hParent, 5, dHeight + 29, 50, 15);
+            
+            
             
             
             % build panel:
@@ -134,7 +168,7 @@ classdef ScalableAxes < mic.Base
                 'Title', this.cLabel,...
                 'FontWeight', 'Bold',...
                 'Clipping', 'on',...
-                'Position', [dLeft, dTop, dWidth, dHeight] ...
+                'Position', [dLeft, dTop + 40, dWidth, dHeight - 40] ...
                 );
             
             if (this.lShowXSectionAxes)
@@ -169,19 +203,24 @@ classdef ScalableAxes < mic.Base
                 
             end
            
+            this.uitMax.build(this.hPanel, 10, dHeight - 150 + 10, 80, 15);
+            this.uitMin.build(this.hPanel, 10, dHeight - 150 + 25, 80, 15);
+            this.uitAve.build(this.hPanel, 10, dHeight - 150 + 40, 80, 15);
+            this.uitPnt.build(this.hPanel, 10, dHeight - 150 + 55, 80, 15);
+            this.uitSat.build(this.hPanel, 10, dHeight - 150 + 70, 80, 15);
         
             
          % 'Position', [dLeft/dParentPos(1), dTop/dParentPos(2), ...
                %                   this.dWidth/dParentPos(1), this.dHeight/dParentPos(2)]...
            
         
-            this.uiButton5_95.build(this.hPanel, 0, dHeight - 20, 60, 20);
-            this.uiButton0_100.build(this.hPanel, 60, dHeight - 20, 60, 20);
-            this.uiButtonMed.build(this.hPanel, 120, dHeight - 20, 60, 20);
-            this.uiButtonLog.build(this.hPanel, 180, dHeight - 20, 60, 20);
-            this.uiButtonFft.build(this.hPanel, 240, dHeight - 20, 60, 20);
-            this.uiButtonZoomToggle.build(this.hPanel, 300, dHeight - 20, 60, 20);
-            this.uiButtonColormapToggle.build(this.hPanel, 360, dHeight - 20, 60, 20);
+            this.uiButton5_95.build(this.hPanel, 0, dHeight - 60, 60, 20);
+            this.uiButton0_100.build(this.hPanel, 60, dHeight - 60, 60, 20);
+            this.uiButtonMed.build(this.hPanel, 120, dHeight - 60, 60, 20);
+            this.uiButtonLog.build(this.hPanel, 180, dHeight - 60, 60, 20);
+            this.uiButtonFft.build(this.hPanel, 240, dHeight - 60, 60, 20);
+            this.uiButtonZoomToggle.build(this.hPanel, 300, dHeight - 60, 60, 20);
+            this.uiButtonColormapToggle.build(this.hPanel, 360, dHeight - 60, 60, 20);
             
             this.uiButton5_95.setColor(this.dColorGray);
             this.uiButton0_100.setColor(this.dColorBlue);
@@ -200,6 +239,12 @@ classdef ScalableAxes < mic.Base
         function plot(this, varargin)
             this.cPlotType = 'plot';
             this.replot();
+        end
+        
+        function manny(this)
+            img = sum(imread('assets/manny_tophat.png'), 3);
+            this.imagesc(img)
+            
         end
         
         function imagesc(this, varargin)
@@ -249,10 +294,20 @@ classdef ScalableAxes < mic.Base
                         this.uiButtonColormapToggle.setColor(this.dColorBlue);
                     end     
                 case this.uiButton5_95
+                    this.uiSliderL.Value = 0.05;
+                    this.uiSliderH.Value = 0.95;
+                    this.uitCL.set(sprintf('L: %d%%', 5));
+                    this.uitCH.set(sprintf('H: %d%%', 95));
+                    
                     this.dCLim = [5, 95]/100;
                     this.uiButton0_100.setColor(this.dColorGray);
                     this.uiButton5_95.setColor(this.dColorBlue);
                 case this.uiButton0_100
+                    this.uiSliderL.Value = 0;
+                    this.uiSliderH.Value = 1;
+                    this.uitCL.set(sprintf('L: %d%%', 0));
+                    this.uitCH.set(sprintf('H: %d%%', 100));
+                    
                     this.dCLim = [0, 1];
                     this.uiButton5_95.setColor(this.dColorGray);
                     this.uiButton0_100.setColor(this.dColorBlue);
@@ -268,11 +323,41 @@ classdef ScalableAxes < mic.Base
                      switch this.hZoomState.Enable
                          case 'on'
                              this.hZoomState.Enable = 'off';
+                             
                              this.uiButtonZoomToggle.setColor(this.dColorGray);
                          case 'off'
                              this.hZoomState.Enable = 'on';
                              this.uiButtonZoomToggle.setColor(this.dColorBlue);
                      end
+                case this.uiSliderH
+                    if this.uiSliderL.Value >= this.uiSliderH.Value
+                        this.uiSliderL.Value = this.uiSliderH.Value - .01;
+                    end
+                    
+                    this.dCLim(1) = this.uiSliderL.Value;
+                    this.dCLim(2) = this.uiSliderH.Value;
+                    
+                    this.uiButton0_100.setColor(this.dColorGray);
+                    this.uiButton5_95.setColor(this.dColorGray);
+                    
+                    this.uitCH.set(sprintf('H: %d%%', round(this.uiSliderH.Value*100)));
+                    this.uitCL.set(sprintf('L: %d%%', round(this.uiSliderL.Value*100)));
+                    
+                    
+                case this.uiSliderL
+                    if this.uiSliderL.Value >= this.uiSliderH.Value
+                        this.uiSliderH.Value = this.uiSliderL.Value + .01;
+                    end
+                    
+                    this.dCLim(1) = this.uiSliderL.Value;
+                    this.dCLim(2) = this.uiSliderH.Value;
+                    
+                    this.uiButton0_100.setColor(this.dColorGray);
+                    this.uiButton5_95.setColor(this.dColorGray);
+                    
+                    this.uitCH.set(sprintf('H: %d%%', round(this.uiSliderH.Value*100)));
+                    this.uitCL.set(sprintf('L: %d%%', round(this.uiSliderL.Value*100)));
+                    
                     
             end
             this.replot();
@@ -285,6 +370,14 @@ classdef ScalableAxes < mic.Base
                     
                 case 'image'
                     dData = this.dZData;
+                    
+                    this.uitMax.set(sprintf('Max: %d', round(max(dData(:)))));
+                    this.uitMin.set(sprintf('Min: %d', round(min(dData(:)))));
+                    this.uitAve.set(sprintf('Ave: %0.1f', mean(dData(:))));
+                    this.uitPnt.set(sprintf('Pnt:'));
+                    this.uitSat.set(sprintf('Saturated Px: %d', sum(double(dData(:) > 65535))));
+            
+            
                     if strcmp(this.cImageDomain, 'fft')
                         dData = abs(fftshift(fft2(this.dZData)));
                     end
@@ -323,8 +416,8 @@ classdef ScalableAxes < mic.Base
                         xSec = sum(dData,1);
                         ySec = sum(dData,2);
                         
-                        plot(this.hXAxes, this.dXData, xSec, 'm');
-                        plot(this.hYAxes, this.dYData, ySec, 'm');
+                        plot(this.hXAxes, this.dXData, xSec, 'm', 'linewidth', 1.5);
+                        plot(this.hYAxes, this.dYData, ySec, 'm', 'linewidth', 1.5);
                         this.hYAxes.CameraUpVector = [1 0 0 ];
                         this.hXAxes.XTick = [];
                         this.hXAxes.YTick = [];
@@ -333,6 +426,11 @@ classdef ScalableAxes < mic.Base
                         this.hXAxes.Color = [0 0 0];
                         this.hYAxes.Color = [0 0 0];
                         
+                        this.hXAxes.XLim = [0, length(xSec)];
+                        this.hYAxes.XLim = [0, length(ySec)];
+                        
+                        
+                        
                         % Resize X x-section to fit colorbar:
                         dPosMain = this.hAxes.Position;
                         dPosX = this.hXAxes.Position;
@@ -340,6 +438,8 @@ classdef ScalableAxes < mic.Base
                         this.hXAxes.Position = dPosX;
                         
                     end
+                    
+                    
                    
             end
             

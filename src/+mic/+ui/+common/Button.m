@@ -21,6 +21,10 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         % {function_handle 1x1} is called any time eChange is emitted (if
         % is not null)
         fhOnClick
+        
+        % {function_handle 1x1} is called any time eChange is emitted 
+        % need to deprecate fhOnClick
+        fhDirectCallback = @(src, evt)[];
     end
 
 
@@ -53,9 +57,12 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                 if this.hasProp(varargin{k})
                     this.msg(sprintf('settting %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
+                end
+                %{
                 elseif strcmp(varargin{k}, 'fhDirectCallback')
                     this.fhOnClick = varargin{k + 1};
                 end
+                %}
             end
 
         end
@@ -105,6 +112,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                                 if ~isempty(this.fhOnClick)
                                     this.fhOnClick();
                                 end
+                                this.fhDirectCallback(this, evt);
                                 notify(this,'eChange');
 
                             otherwise
@@ -116,6 +124,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         if ~isempty(this.fhOnClick)
                             this.fhOnClick();
                         end
+                        this.fhDirectCallback(this, evt);
                         notify(this,'eChange');
                     end
            end

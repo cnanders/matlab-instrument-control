@@ -32,7 +32,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         % temporary disabling of notify
         lNotify = true;
         
-        fhDirectCallback = @()[];
+        fhDirectCallback = @(src, evt)[];
     end
 
 
@@ -124,10 +124,14 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             
             if uint8(this.cKeyPressLast) == 13
                 if (this.lNotify)
-                    this.fhDirectCallback();
+                    this.fhDirectCallback(this, evt);
                     notify(this, 'eEnter');
+                    return
                 end
             end
+            
+            this.fhDirectCallback(this, evt);
+            notify(this, 'eChange');
         end
 
 
@@ -391,6 +395,9 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
                this.msg(cMsg);
                msgbox(cMsg, 'Edit.set() invalid type', 'error');
            end
+           
+           this.fhDirectCallback(this, 'set');
+           notify(this, 'eChange');
 
         end
 
@@ -425,7 +432,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
          function onKeyRelease(this, src, evt)
              if uint8(evt.Character') == 13
                  if this.lNotify
-                    this.fhDirectCallback;
+                    this.fhDirectCallback(this, evt);
                     notify(this, 'eEnter');
                  end
              end
@@ -443,11 +450,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         %this.hUI
         
             
-            this.onKeyPress(src, evt);
-            mic.Utils.keyboard_navigation(src, evt)
-        %      end
-        
-            
+            this.onKeyPress(src, evt);            
             
          end
 
@@ -646,8 +649,8 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             end
 
             if this.lNotify
-                %this.fhDirectCallback();
-                notify(this,'eChange');
+                % this.fhDirectCallback(this, 'eChange');
+                % notify(this,'eChange');
             end
 
         end

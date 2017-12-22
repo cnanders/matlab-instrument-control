@@ -54,6 +54,8 @@ classdef PopupStruct < mic.Base
        
         hLabel
         hUI
+        
+        fhDirectCallback = @(src, evt)[];
     end
     
     
@@ -135,6 +137,7 @@ classdef PopupStruct < mic.Base
        function onPopup(this, src, evt)
            this.u8Selected = uint8(get(src, 'Value'));
            notify(this,'eChange');
+           this.fhDirectCallback(this, evt);
        end
        
        
@@ -182,6 +185,7 @@ classdef PopupStruct < mic.Base
            end
            
            notify(this,'eChange');
+           this.fhDirectCallback(this, 'setOptions');
            
        end
        
@@ -210,6 +214,7 @@ classdef PopupStruct < mic.Base
            end
            
            notify(this,'eChange');
+           this.fhDirectCallback(this, 'setSelectedIndex');
                
        end
        

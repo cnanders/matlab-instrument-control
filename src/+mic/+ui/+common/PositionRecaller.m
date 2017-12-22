@@ -146,7 +146,7 @@ classdef PositionRecaller < mic.ui.common.Base
             
         end
         
-        function savePosition(this, src)
+        function savePosition(this, ~, ~)
             cPosName = this.uiePosName.get();
             
             % load options
@@ -178,7 +178,7 @@ classdef PositionRecaller < mic.ui.common.Base
             this.syncAndSave();
         end
         
-        function loadPosition(this, src)
+        function loadPosition(this, ~, ~)
             % get selected option:
             cSelectedVal = this.uiList.get();
             

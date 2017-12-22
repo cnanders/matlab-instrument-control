@@ -9,6 +9,9 @@ purge
 
 u8Num = 8;
 ceOptions = cell(1, u8Num);
+
+fhDirect = @(src, evt) disp('cb Direct');
+
 for n = 1 : u8Num
                 
     stOption = struct( ...
@@ -27,6 +30,7 @@ end
 h = figure();
 
 ui = mic.ui.common.PopupStruct( ...
+    'fhDirectCallback', fhDirect, ...
     'ceOptions', ceOptions ...
 );
 
