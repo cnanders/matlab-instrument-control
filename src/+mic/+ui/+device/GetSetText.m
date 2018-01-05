@@ -363,7 +363,18 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         %   HardwareIO.onClock()
         %   updates the position reading and the hio status (=/~moving)
         
-            cVal = this.getDevice().get();
+            try
+                cVal = this.getDevice().get();
+            catch mE
+                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+        
+                % CA 2016 remove the task from the timer
+                if isvalid(this.clock) && ...
+                   this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                end
+            end
+            
             if ~strcmp(this.cValPrev, cVal)
                 notify(this, 'eChange');
             end
