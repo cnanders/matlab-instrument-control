@@ -1,4 +1,8 @@
-﻿# 1.0.0-beta.27
+﻿# 1.0.0-beta.28
+
+- Updated `mic.ui.device.GetSetText` to use log typing
+
+# 1.0.0-beta.27
 
 ### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
 
