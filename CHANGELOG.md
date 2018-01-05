@@ -1,4 +1,41 @@
-﻿# 1.0.0-beta.23
+﻿# 1.0.0-beta.27
+
+### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
+
+Updated `fhDirectCallback` to have two args: `(src, evt)` to match standard callback pattern in MATLAB.  
+
+# 1.0.0-beta.26
+
+### mic.ui.common.Edit
+
+Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `notify()`
+
+
+# 1.0.0-beta.25
+- Updating `mic.ui.axes.ScalableAxes.m` for bug fixes and customizable
+  scaling
+
+- Fixed a bug in `mic.scan` causing it to fail to stop when stop() is called during a state change or an acquisition. Also fixing a bug causing raster scanning to fail in `mic.ui.common.ScanSetup`
+
+- Generalizing scan axis and scan setup inputs
+
+- Adding getter for `mic.ui.common.Popup` to access selected value of list item.
+
+- Added options for changin colors in `mic.ui.common.ProgressBar`.
+
+- General robustness and bug fixes in `PositionRecaller`
+
+- Adding new classes `mic.ui.ScanAxisSetup` and `mic.ui.ScanSetup` as UI elements for setting up nested scan states of up to 3 dimensions.  
+
+- Adding the UI element `mic.ui.common.Tabgroup` to expose MATLAB's tabgroup ui element to mic.  This allows for tabs to be created in groups to optimize the usable space in UIs.
+
+# 1.0.0-beta.24
+
+- Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
+
+- Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
+
+# 1.0.0-beta.23
 
 - Adding property `fhDirectCallback` to ui classes `ui.common.Edit`, `ui.common.Button`, `ui.common.Checkbox`, which allows a callback to be passed in directly to object instance. Existing callback framework was not modified to preserve backward-compatibility.
 
@@ -227,7 +264,7 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 - Added `get()`, `getOptions()`, `getSelectedIndexes()`, `setOptions()` and `setSelectedIndexes()` methods
 - Fixed bug with `onMoveDown()` method when more than one item was selected while performing the action
 
-### mic.ui.common.Popup/Select
+### mic.ui.common.Popup*
 
 - Got rid of setters
 - Added  `get()`, `getOptions()`, `getSelectedIndex()`, `setOptions()` and `setSelectedIndex()` methods

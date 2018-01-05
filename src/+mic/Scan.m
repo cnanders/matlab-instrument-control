@@ -17,7 +17,7 @@ classdef Scan < mic.Base
     %               "value": 1,
     %               "unit": "mm"
     %           }
-    %       },
+    %       },xzds1
     %       {
     %           "x": {
     %               "value": 2,
@@ -107,6 +107,10 @@ classdef Scan < mic.Base
         % {logical 1x1} - true when paused
         lPaused = false;
         
+        % {logical 1x1} - true when stop command is called, set to false
+        % when start() is called
+        lStopped = true;
+        
         
         % @param {function_handle} fhSetState(stUnit, stState) - function to update the
         % N-dimensional (N-motor / N-degree-of-freedom) destination 
@@ -191,7 +195,8 @@ classdef Scan < mic.Base
                 fhAcquire, ...
                 fhIsAcquired, ...
                 fhOnComplete, ...
-                fhOnAbort)
+                fhOnAbort, ...
+                dDelay)
           
         
         %   @param {struct} stRecipe - see below
@@ -211,6 +216,10 @@ classdef Scan < mic.Base
             this.fhOnComplete = fhOnComplete;
             this.fhOnAbort = fhOnAbort;
             
+            if nargin > 8
+                this.dDelay = dDelay;
+            end
+            
         end
        
         function start(this) 
@@ -221,6 +230,8 @@ classdef Scan < mic.Base
             % Reset elapsed time and tic
             this.dSecondsElapsed = 0;
             this.ticId = tic;
+            
+            this.lStopped = false;
             
             this.go();
             
@@ -269,11 +280,18 @@ classdef Scan < mic.Base
         function stop(this)
         %STOP abort the scan, reset back to start index
              this.removeClockTask();
+             this.lStopped = true;
+              
              this.u8Index = 1;
              
              %notify(this,'eAbort');
              this.fhOnAbort(this.stUnit);
 
+        end
+        
+        % Accessor for the current state index
+        function u8Idx = getCurrentStateIndex(this)
+            u8Idx = this.u8Index;
         end
         
         % @typedef {struct 1x1} Status
@@ -351,8 +369,11 @@ classdef Scan < mic.Base
            
             this.fhSetState(this.stUnit, this.ceValues{this.u8Index});
             
-            % Start checking the state
-            this.clock.add(@this.handleClockIsAtState, this.id(), this.dDelay); 
+            % Start checking the state.  Don't add task if we have
+            % requested a stop
+            if (~this.lStopped)
+                this.clock.add(@this.handleClockIsAtState, this.id(), this.dDelay); 
+            end
             
         end
         
@@ -373,8 +394,11 @@ classdef Scan < mic.Base
                 % Call acuire, passing in units
                 this.fhAcquire(this.stUnit, this.ceValues{this.u8Index});
                 
-                % Start checking for acquire complete
-                this.clock.add(@this.handleClockIsAcquired, this.id(), this.dDelay);
+                % Start checking for acquire complete.  Do not call if we
+                % have stopped during the acquire
+                if (~this.lStopped)
+                    this.clock.add(@this.handleClockIsAcquired, this.id(), this.dDelay);
+                end
                                 
             end
             

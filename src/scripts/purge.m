@@ -29,6 +29,10 @@
 fprintf('\n*** purge.m listing workspace variables: *** \n');
 ceVars = who
 fprintf('*** purge.m end workspace variables *** \n\n');
+
+
+
+
 for n = 1:length(ceVars)
     if isobject(eval(ceVars{n}))
         if ishandle(eval(ceVars{n}))
@@ -56,6 +60,7 @@ for n = 1:length(ceVars)
         fprintf('purge.m NON-OBJECT: %s.\n', ceVars{n});
     end
 end
+
 
 
 clear variables
