@@ -584,7 +584,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
         
         function syncDestination(this)
-        % SETDESTCALABS Set the destination mic.ui.common.Edit value to
+        % SYNCDESTINATION Set the destination mic.ui.common.Edit value to
         % read what the actual calibrated value is.  This is useful when
         % manually setting the destnation value independent of the Edit UI
             dPosCal = str2double(sprintf(...

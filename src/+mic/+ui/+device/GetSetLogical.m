@@ -435,12 +435,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 this.uiilValue.set(this.lVal);
                 
                 this.updateInitializedButton();
-                
-               
-            
+                            
                                                
             catch err
-                this.msg(getReport(err));
+                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
             end 
 
         end

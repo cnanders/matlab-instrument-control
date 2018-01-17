@@ -1,4 +1,8 @@
-﻿# 1.0.0-beta.27
+# 1.0.0-beta.28
+
+- Updated `mic.ui.device.GetSetText` to use log typing
+
+# 1.0.0-beta.27
 
 ### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
 
@@ -35,6 +39,9 @@ Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `no
 - Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
 
 - Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
+
+- Adding syncDestination method to `mic.ui.device.GetSetNumber` to make edit box sync with actual read value.
+
 
 # 1.0.0-beta.23
 
