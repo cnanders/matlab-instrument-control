@@ -15,7 +15,9 @@ classdef ScalableAxes < mic.Base
 
     properties (Access = private)
 
-        hPanel
+        hParentFigure
+        hPanelAxes
+        hPanelMain
         hAxes
         
         hXAxes
@@ -56,8 +58,7 @@ classdef ScalableAxes < mic.Base
         uitCL
         uitCH
         
-        uitMax
-        uitMin
+        uitRange
         uitAve
         uitPnt
         uitSat
@@ -123,11 +124,10 @@ classdef ScalableAxes < mic.Base
             this.uitCH = mic.ui.common.Text('cVal', 'H: 100%');
             this.uitCL = mic.ui.common.Text('cVal', 'L: 0%');
             
-            this.uitMax = mic.ui.common.Text('cVal', 'Max: ');
-            this.uitMin = mic.ui.common.Text('cVal', 'Min: ');
-            this.uitAve = mic.ui.common.Text('cVal', 'Ave: ');
+            this.uitRange = mic.ui.common.Text('cVal', '[0 0]');
+            this.uitAve = mic.ui.common.Text('cVal', 'Av: ');
             this.uitPnt = mic.ui.common.Text('cVal', 'Point: ');
-            this.uitSat = mic.ui.common.Text('cVal', 'Saturated Px: ');
+            this.uitSat = mic.ui.common.Text('cVal', 'Sat: ');
         
         
         end
@@ -135,67 +135,75 @@ classdef ScalableAxes < mic.Base
         %% Build
         function build(this, hParent, dLeft, dTop, dWidth, dHeight)
             
-            if isa(hParent, 'matlab.ui.Figure')
-                this.hZoomState = zoom(hParent);
-            else
-                try
-                    this.hZoomState = zoom(hParent.hParent);
-                catch me
-                    fprintf('scalableAxes: no parent available for zoom');
-                end
+            if isa(this.hParentFigure, 'matlab.ui.Figure')
+                this.hZoomState = zoom(this.hParentFigure);
             end
                
             
-            this.uiSliderL = uicontrol(hParent, 'style', 'slider', 'Callback', @(src,evt)this.changeState(src), ...
-                                        'Position', [60, 5, dWidth - 50, 15], 'value', 0);
-            this.uiSliderH = uicontrol(hParent, 'style', 'slider', 'Callback', @(src,evt)this.changeState(src), ...
-                                        'Position', [60, 21, dWidth - 50, 15], 'value', 1);
-
-            % Set zoom handle:
+           
             
             
-            % texts:
-            this.uitCH.build(hParent, 5, dHeight + 10, 50, 15)
-            this.uitCL.build(hParent, 5, dHeight + 29, 50, 15);
+           
             
             
             
-            
-            % build panel:
-            this.hPanel = uipanel(...
+             % build panel:
+            this.hPanelMain = uipanel(...
                 'Parent', hParent,...
                 'Units', 'pixels',...
                 'Title', this.cLabel,...
                 'FontWeight', 'Bold',...
                 'Clipping', 'on',...
-                'Position', [dLeft, dTop + 40, dWidth, dHeight - 40] ...
+                'BorderWidth',1, ... 
+                'Position', [dLeft, dTop, dWidth, dHeight] ...
                 );
+            % build panel:
+            this.hPanelAxes = uipanel(...
+                'Parent', this.hPanelMain,...
+                'Units', 'pixels',...
+                'FontWeight', 'Bold',...
+                'Clipping', 'on',...
+                'BorderWidth',0, ... 
+                'Position', [0,  40, dWidth, dHeight - 40] ...
+                );
+            
+            
+            this.uiSliderL = uicontrol(this.hPanelMain, 'style', 'slider', 'Callback', @(src,evt)this.changeState(src), 'Units', 'pixels', ...
+                                        'Position', [55, 3, dWidth - 60, 15], 'value', 0);
+            this.uiSliderH = uicontrol(this.hPanelMain, 'style', 'slider', 'Callback', @(src,evt)this.changeState(src), 'Units', 'pixels',...
+                                        'Position', [55, 19, dWidth - 60, 15], 'value', 1);
+
+            % Set zoom handle:
+            
+            
+            % texts:
+            this.uitCH.build(this.hPanelMain, 5, dHeight - 36, 50, 15)
+            this.uitCL.build(this.hPanelMain, 5, dHeight - 20, 50, 15);
             
             if (this.lShowXSectionAxes)
                 this.hAxes = axes( ...
-                    'Parent', this.hPanel, ...
+                    'Parent', this.hPanelAxes, ...
                     'XTick', [0, 1], ...
                     'YTick', [0, 1], ...
-                    'Position', [.15, .165, .8, .8]...
+                    'Position', [.15, .165, .8, .78]...
                     );
-                
                 this.hXAxes = axes( ...
-                    'Parent', this.hPanel, ...
+                    'Parent', this.hPanelAxes, ...
                     'XTick', [], ...
                     'YTick', [], ...
                     'Position', [.15, .045, .8, .07]...
                     );
                 
                 this.hYAxes = axes( ...
-                    'Parent', this.hPanel, ...
+                    'Parent', this.hPanelAxes, ...
                     'XTick', [], ...
                     'YTick', [], ...
-                    'Position', [0.03, .165, .07, .8]...
+                    'Position', [0.03, .165, .07, .78]...
                     );
                 
             else
                 this.hAxes = axes( ...
-                    'Parent', this.hPanel, ...
+                    'Parent', this.hPanelAxes, ...
                     'XTick', [0, 1], ...
                     'YTick', [0, 1], ...
                     'Position', [.05, .1, .9, .85]...
@@ -203,24 +211,23 @@ classdef ScalableAxes < mic.Base
                 
             end
            
-            this.uitMax.build(this.hPanel, 10, dHeight - 150 + 10, 80, 15);
-            this.uitMin.build(this.hPanel, 10, dHeight - 150 + 25, 80, 15);
-            this.uitAve.build(this.hPanel, 10, dHeight - 150 + 40, 80, 15);
-            this.uitPnt.build(this.hPanel, 10, dHeight - 150 + 55, 80, 15);
-            this.uitSat.build(this.hPanel, 10, dHeight - 150 + 70, 80, 15);
+            this.uitRange.build(this.hPanelAxes, 10, dHeight - 150 + 40, 60, 15);
+            this.uitAve.build(this.hPanelAxes, 10, dHeight - 150 + 55, 60, 15);
+%             this.uitPnt.build(this.hPanelAxes, 10, dHeight - 150 + 55, 80, 15);
+            this.uitSat.build(this.hPanelAxes, 10, dHeight - 150 + 70, 60, 15);
         
             
          % 'Position', [dLeft/dParentPos(1), dTop/dParentPos(2), ...
                %                   this.dWidth/dParentPos(1), this.dHeight/dParentPos(2)]...
            
         
-            this.uiButton5_95.build(this.hPanel, 0, dHeight - 60, 60, 20);
-            this.uiButton0_100.build(this.hPanel, 60, dHeight - 60, 60, 20);
-            this.uiButtonMed.build(this.hPanel, 120, dHeight - 60, 60, 20);
-            this.uiButtonLog.build(this.hPanel, 180, dHeight - 60, 60, 20);
-            this.uiButtonFft.build(this.hPanel, 240, dHeight - 60, 60, 20);
-            this.uiButtonZoomToggle.build(this.hPanel, 300, dHeight - 60, 60, 20);
-            this.uiButtonColormapToggle.build(this.hPanel, 360, dHeight - 60, 60, 20);
+            this.uiButton5_95.build(this.hPanelAxes, 0, dHeight - 60, 60, 20);
+            this.uiButton0_100.build(this.hPanelAxes, 60, dHeight - 60, 60, 20);
+            this.uiButtonMed.build(this.hPanelAxes, 120, dHeight - 60, 60, 20);
+            this.uiButtonLog.build(this.hPanelAxes, 180, dHeight - 60, 60, 20);
+            this.uiButtonFft.build(this.hPanelAxes, 240, dHeight - 60, 60, 20);
+            this.uiButtonZoomToggle.build(this.hPanelAxes, 300, dHeight - 60, 60, 20);
+            this.uiButtonColormapToggle.build(this.hPanelAxes, 360, dHeight - 60, 60, 20);
             
             this.uiButton5_95.setColor(this.dColorGray);
             this.uiButton0_100.setColor(this.dColorBlue);
@@ -371,11 +378,10 @@ classdef ScalableAxes < mic.Base
                 case 'image'
                     dData = this.dZData;
                     
-                    this.uitMax.set(sprintf('Max: %d', round(max(dData(:)))));
-                    this.uitMin.set(sprintf('Min: %d', round(min(dData(:)))));
-                    this.uitAve.set(sprintf('Ave: %0.1f', mean(dData(:))));
-                    this.uitPnt.set(sprintf('Pnt:'));
-                    this.uitSat.set(sprintf('Saturated Px: %d', sum(double(dData(:) > 65535))));
+                    this.uitRange.set(sprintf('[%d -> %d]', round(min(dData(:))), round(max(dData(:))) ));
+                    this.uitAve.set(sprintf('Av: %0.1f', mean(dData(:))));
+%                     this.uitPnt.set(sprintf('Pnt:'));
+                    this.uitSat.set(sprintf('Sat: %d', sum(double(dData(:) >= 65535))));
             
             
                     if strcmp(this.cImageDomain, 'fft')
@@ -410,6 +416,9 @@ classdef ScalableAxes < mic.Base
                     if ~any(isnan(dLim))
                         this.hAxes.CLim =dLim;
                     end
+                    if dLim(2) == dLim(1)
+                       dLim(2) = dLim(1) + 1e-6;
+                    end
                     
                     if (this.lShowXSectionAxes)
                         % generate cross sections:
@@ -430,12 +439,8 @@ classdef ScalableAxes < mic.Base
                         this.hYAxes.XLim = [0, length(ySec)];
                         
                         
-                        
-                        % Resize X x-section to fit colorbar:
-                        dPosMain = this.hAxes.Position;
-                        dPosX = this.hXAxes.Position;
-                        dPosX(3) = dPosMain(3);
-                        this.hXAxes.Position = dPosX;
+                        this.alignXsec();
+                       
                         
                     end
                     
@@ -443,6 +448,18 @@ classdef ScalableAxes < mic.Base
                    
             end
             
+        end
+        
+        function alignXsec(this)
+            drawnow
+            % Resize X x-section to fit colorbar:
+            dPosMain = this.hAxes.Position;
+            dPosX = this.hXAxes.Position;
+            
+%             fprintf('Changing xsec len from %0.2f to %0.2f\n', dPosX(3), dPosMain(3));
+            dPosX(3) = dPosMain(3);
+            this.hXAxes.Position = dPosX;
+             
         end
         
         function letMeIn(this)

@@ -1,3 +1,12 @@
+# 1.0.0-beta.29
+
+- Adding a logical value to `mic.ui.common.Edit` to allow disabling of callback when set method is programmatically called.
+
+- Added a new colorscheme to `Utils` to represent an error state.
+
+- Updates to `ScalableAxis` to make the slider position correct with respect to the main figure.
+
+
 # 1.0.0-beta.28
 
 - Updated `mic.ui.device.GetSetText` to use log typing

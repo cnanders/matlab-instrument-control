@@ -100,7 +100,8 @@ classdef Tabgroup < mic.Base
                 cTabname = this.ceTabNames{k};
                 
                 this.uitTabs{k} = uitab('parent', this.hUI, ...
-                                        'title', cTabname);
+                                        'title', cTabname, ...
+                                        'Unit', 'pixels');
             end
             
             

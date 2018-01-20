@@ -143,6 +143,13 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             set(this.hUI, 'FontSize', dFontSize)
         end
         
+        function setAlign(this, cAlign)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'HorizontalAlignment', cAlign)
+        end
+        
         function delete(this)
             cMsg = sprintf('delete() %s', this.cVal);
             % this.msg(cMsg);
