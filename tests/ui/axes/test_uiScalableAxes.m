@@ -10,6 +10,6 @@ h = figure( ...
 
 
 sa = mic.ui.axes.ScalableAxes('hParentFigure', h);
-sa.build(h, 200, 10, 500, 500);
+sa.build(h,h, 200, 10, 500, 500);
 
 sa.manny()

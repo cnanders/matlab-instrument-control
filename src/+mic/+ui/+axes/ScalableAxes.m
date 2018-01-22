@@ -2,6 +2,15 @@ classdef ScalableAxes < mic.Base
 
    
     properties (Constant, Access = private)
+        U8DOMAIN_REAL       = 1
+        U8DOMAIN_FFT        = 2
+        
+        U8LOGSTATE_LOG      = 1
+        U8LOGSTATE_NORMAL   = 2
+        
+        U8COLORSTATE_DEFAULT = 1
+        U8COLORSTATE_GRAY   = 2
+        
     end
     
 
@@ -19,6 +28,9 @@ classdef ScalableAxes < mic.Base
         hPanelAxes
         hPanelMain
         hAxes
+        hImageChild
+        
+        dFigOffsetXY = [0, 0]
         
         hXAxes
         hYAxes
@@ -30,6 +42,8 @@ classdef ScalableAxes < mic.Base
         
         lShowLabel = true;
         lShowXSectionAxes = true;
+        
+        fhOnDomainChange = @(cAnalysisDomain)[]
 
         hZoomState
         
@@ -37,12 +51,11 @@ classdef ScalableAxes < mic.Base
         dYData = []
         dZData = 0
         
-        cPlotType       = 'image' % 'plot' or 'image'
-        cImageDomain    = 'real'
+        cImageDomain 
         cLogState       = 'none'
         cColormap       = 'default'
-        cMedState       = 'normal'
         dCLim           = [0, 1]
+        
         
         uiButton5_95
         uiButton0_100
@@ -63,7 +76,11 @@ classdef ScalableAxes < mic.Base
         uitPnt
         uitSat
         
-        
+        lnMainLineX
+        lnMainLineY
+        lnSecLineX
+        lnSecLineY
+        ptCircle
     end
 
 
@@ -89,6 +106,10 @@ classdef ScalableAxes < mic.Base
         %% constructor
         % cLabel, cType, lShowLabel, cHorizontalAlignment
         function this = ScalableAxes(varargin)
+            
+            this.cImageDomain = this.U8DOMAIN_REAL;
+            this.cLogState = this.U8LOGSTATE_NORMAL;
+            this.cColormap = this.U8COLORSTATE_DEFAULT;
 
             for k = 1 : 2: length(varargin)
                 % this.msg(sprintf('passed in %s', varargin{k}));
@@ -133,19 +154,14 @@ classdef ScalableAxes < mic.Base
         end
 
         %% Build
-        function build(this, hParent, dLeft, dTop, dWidth, dHeight)
+        function build(this, hParent, hParentFigure, dLeft, dTop, dWidth, dHeight)
             
+            this.hParentFigure = hParentFigure;
             if isa(this.hParentFigure, 'matlab.ui.Figure')
                 this.hZoomState = zoom(this.hParentFigure);
             end
                
-            
-           
-            
-            
-           
-            
-            
+
             
              % build panel:
             this.hPanelMain = uipanel(...
@@ -223,7 +239,7 @@ classdef ScalableAxes < mic.Base
         
             this.uiButton5_95.build(this.hPanelAxes, 0, dHeight - 60, 60, 20);
             this.uiButton0_100.build(this.hPanelAxes, 60, dHeight - 60, 60, 20);
-            this.uiButtonMed.build(this.hPanelAxes, 120, dHeight - 60, 60, 20);
+%             this.uiButtonMed.build(this.hPanelAxes, 120, dHeight - 60, 60, 20);
             this.uiButtonLog.build(this.hPanelAxes, 180, dHeight - 60, 60, 20);
             this.uiButtonFft.build(this.hPanelAxes, 240, dHeight - 60, 60, 20);
             this.uiButtonZoomToggle.build(this.hPanelAxes, 300, dHeight - 60, 60, 20);
@@ -243,9 +259,8 @@ classdef ScalableAxes < mic.Base
         
   
         % Need to build plot tools
-        function plot(this, varargin)
-            this.cPlotType = 'plot';
-            this.replot();
+        function hPlotHandle = plot(this, varargin)
+            hPlotHandle = plot(this.hAxes, varargin{:});
         end
         
         function manny(this)
@@ -254,8 +269,11 @@ classdef ScalableAxes < mic.Base
             
         end
         
+        function setAxesOffset(this, dOffset)
+            this.dFigOffsetXY = dOffset;
+        end
+        
         function imagesc(this, varargin)
-            this.cPlotType = 'image';
 
             if length(varargin) == 1
                 [sr, sc] = size(varargin{1});
@@ -272,33 +290,60 @@ classdef ScalableAxes < mic.Base
             this.replot();
         end
         
+        function setHoldState(this, cState) % 'on' or 'off'
+            switch cState
+                case 'on'
+                    this.hAxes.NextPlot = 'add';
+                case 'off'
+                    this.hAxes.NextPlot = 'replace';
+            end
+        end
       
+        function cDomain = getAnalysisDomain(this)
+            cDomain = this.cImageDomain;
+        end
+        
+        function setAnalysisDomain(this, cDomain)
+            if this.cImageDomain == this.U8DOMAIN_REAL
+                this.cImageDomain = cDomain;
+                this.uiButtonFft.setColor(this.dColorBlue);
+            else
+                this.cImageDomain = cDomain;
+                this.uiButtonFft.setColor(this.dColorGray);
+            end
+            this.replot();
+        end
         
         function changeState(this, src, ~)
             switch src
                 case this.uiButtonFft 
-                    if strcmp(this.cImageDomain, 'real')
-                        this.cImageDomain = 'fft';
+                    this.fhOnDomainChange(this.cImageDomain)
+                    if this.cImageDomain == this.U8DOMAIN_REAL
+                        this.cImageDomain =  this.U8DOMAIN_FFT;
                         this.uiButtonFft.setColor(this.dColorBlue);
                     else
-                        this.cImageDomain = 'real';
+                        this.cImageDomain = this.U8DOMAIN_REAL;
                         this.uiButtonFft.setColor(this.dColorGray);
                     end
+                    this.replot();
                 case this.uiButtonLog
-                    if strcmp(this.cLogState, 'normal')
-                        this.cLogState = 'log';
+                    if this.cLogState == this.U8LOGSTATE_NORMAL
+                        this.cLogState = this.U8LOGSTATE_LOG;
                         this.uiButtonLog.setColor(this.dColorBlue);
                     else
-                        this.cLogState = 'normal';
+                        this.cLogState = this.U8LOGSTATE_NORMAL;
                         this.uiButtonLog.setColor(this.dColorGray);
                     end
+                    this.replot();
                 case this.uiButtonColormapToggle
-                    if strcmp(this.cColormap, 'default')
-                        this.cColormap = 'gray';
+                    if this.cColormap == this.U8COLORSTATE_DEFAULT
+                        this.cColormap = this.U8COLORSTATE_GRAY;
                         this.uiButtonColormapToggle.setColor(this.dColorGray);
+                        colormap(this.hAxes, 'gray')
                     else
-                        this.cColormap = 'default';
+                        this.cColormap = this.U8COLORSTATE_DEFAULT;
                         this.uiButtonColormapToggle.setColor(this.dColorBlue);
+                         colormap(this.hAxes, 'default')
                     end     
                 case this.uiButton5_95
                     this.uiSliderL.Value = 0.05;
@@ -309,6 +354,8 @@ classdef ScalableAxes < mic.Base
                     this.dCLim = [5, 95]/100;
                     this.uiButton0_100.setColor(this.dColorGray);
                     this.uiButton5_95.setColor(this.dColorBlue);
+                    
+                    this.rescale();
                 case this.uiButton0_100
                     this.uiSliderL.Value = 0;
                     this.uiSliderH.Value = 1;
@@ -318,14 +365,16 @@ classdef ScalableAxes < mic.Base
                     this.dCLim = [0, 1];
                     this.uiButton5_95.setColor(this.dColorGray);
                     this.uiButton0_100.setColor(this.dColorBlue);
-                case this.uiButtonMed
-                    if strcmp(this.cMedState, 'normal')
-                        this.cMedState = 'med';
-                        this.uiButtonMed.setColor(this.dColorBlue);
-                    else
-                        this.cMedState = 'normal';
-                        this.uiButtonMed.setColor(this.dColorGray);
-                    end   
+                    
+                    this.rescale();
+%                 case this.uiButtonMed
+%                     if strcmp(this.cMedState, 'normal')
+%                         this.cMedState = 'med';
+%                         this.uiButtonMed.setColor(this.dColorBlue);
+%                     else
+%                         this.cMedState = 'normal';
+%                         this.uiButtonMed.setColor(this.dColorGray);
+%                     end   
                 case this.uiButtonZoomToggle
                      switch this.hZoomState.Enable
                          case 'on'
@@ -350,6 +399,8 @@ classdef ScalableAxes < mic.Base
                     this.uitCH.set(sprintf('H: %d%%', round(this.uiSliderH.Value*100)));
                     this.uitCL.set(sprintf('L: %d%%', round(this.uiSliderL.Value*100)));
                     
+                    this.rescale();
+                    
                     
                 case this.uiSliderL
                     if this.uiSliderL.Value >= this.uiSliderH.Value
@@ -365,89 +416,96 @@ classdef ScalableAxes < mic.Base
                     this.uitCH.set(sprintf('H: %d%%', round(this.uiSliderH.Value*100)));
                     this.uitCL.set(sprintf('L: %d%%', round(this.uiSliderL.Value*100)));
                     
-                    
+                    this.rescale();
             end
-            this.replot();
+%             this.replot();
+        end
+        
+        function rescale(this)
+            % Get min and max values:
+            dMin = min(this.hImageChild.CData(:));
+            dMax = max(this.hImageChild.CData(:));
+            dRange = dMax - dMin;
+            colorbar('peer',this.hAxes)
+            if (this.cColormap == this.U8COLORSTATE_DEFAULT)
+                colormap(this.hAxes, 'default')
+            else
+                colormap(this.hAxes, 'gray')
+            end
+            
+            dLim =  [(dMin + dRange*this.dCLim(1)) (dMin + dRange*this.dCLim(2))];
+            if dLim(2) == dLim(1)
+                dLim(2) = dLim(1) + 1e-6;
+            end
+            
+            if ~any(isnan(dLim))
+                this.hAxes.CLim =dLim;
+            end
+ 
+            this.hXAxes.YLim = dLim;
+            this.hYAxes.YLim = dLim;
+            this.hAxes.CLim = dLim;    
         end
         
         function replot(this)
-            switch this.cPlotType
-                case 'none'
-                case 'plot'
-                    
-                case 'image'
-                    dData = this.dZData;
-                    
-                    this.uitRange.set(sprintf('[%d -> %d]', round(min(dData(:))), round(max(dData(:))) ));
-                    this.uitAve.set(sprintf('Av: %0.1f', mean(dData(:))));
-%                     this.uitPnt.set(sprintf('Pnt:'));
-                    this.uitSat.set(sprintf('Sat: %d', sum(double(dData(:) >= 65535))));
+           
+      
+            dData = this.dZData;
+            
+            this.uitRange.set(sprintf('[%d -> %d]', round(min(dData(:))), round(max(dData(:))) ));
+            this.uitAve.set(sprintf('Av: %0.1f', mean(dData(:))));
+            %                     this.uitPnt.set(sprintf('Pnt:'));
+            this.uitSat.set(sprintf('Sat: %d', sum(double(dData(:) >= 65535))));
             
             
-                    if strcmp(this.cImageDomain, 'fft')
-                        dData = abs(fftshift(fft2(this.dZData)));
-                    end
-                    if strcmp(this.cLogState, 'log')
-                        dData = log(dData);
-                    end
-                    if strcmp(this.cMedState, 'med')
-                        dScaleFac = 2;
-                        dMed = median(dData(:));
-                        dMedMin = min(abs([(dMed - min(dData(:))), (dMed - max(dData(:)))]));
-                        dStd = std(dData(:)) * dScaleFac;
-                        dData(dData < dMed - dStd ) = dMed - dStd;
-                        dData(dData > dMed + dStd) = dMed + dStd;
-                    end
-                    
-                    % create image:
-                    imagesc(this.hAxes, this.dXData, this.dYData, dData);
-                    set(this.hAxes, 'YDir', 'normal');
-                    
-                    
-                    
-                    % Get min and max values:
-                    dMin = min(this.hAxes.Children.CData(:));
-                    dMax = max(this.hAxes.Children.CData(:));
-                    
-                    dRange = dMax - dMin;
-                    colorbar('peer',this.hAxes)
-                    colormap(this.hAxes, this.cColormap)
-                    dLim =  [(dMin + dRange*this.dCLim(1)) (dMin + dRange*this.dCLim(2))];
-                    if ~any(isnan(dLim))
-                        this.hAxes.CLim =dLim;
-                    end
-                    if dLim(2) == dLim(1)
-                       dLim(2) = dLim(1) + 1e-6;
-                    end
-                    
-                    if (this.lShowXSectionAxes)
-                        % generate cross sections:
-                        xSec = sum(dData,1);
-                        ySec = sum(dData,2);
-                        
-                        plot(this.hXAxes, this.dXData, xSec, 'm', 'linewidth', 1.5);
-                        plot(this.hYAxes, this.dYData, ySec, 'm', 'linewidth', 1.5);
-                        this.hYAxes.CameraUpVector = [1 0 0 ];
-                        this.hXAxes.XTick = [];
-                        this.hXAxes.YTick = [];
-                        this.hYAxes.XTick = [];
-                        this.hYAxes.YTick = [];
-                        this.hXAxes.Color = [0 0 0];
-                        this.hYAxes.Color = [0 0 0];
-                        
-                        this.hXAxes.XLim = [0, length(xSec)];
-                        this.hYAxes.XLim = [0, length(ySec)];
-                        
-                        
-                        this.alignXsec();
-                       
-                        
-                    end
-                    
-                    
-                   
+            if this.cImageDomain == this.U8DOMAIN_FFT
+                dData = abs(fftshift(fft2(this.dZData)));
             end
+            if this.cLogState == this.U8LOGSTATE_LOG
+                dData = log(dData);
+            end
+%             if strcmp(this.cMedState, 'med')
+%                 dScaleFac = 2;
+%                 dMed = median(dData(:));
+%                 dMedMin = min(abs([(dMed - min(dData(:))), (dMed - max(dData(:)))]));
+%                 dStd = std(dData(:)) * dScaleFac;
+%                 dData(dData < dMed - dStd ) = dMed - dStd;
+%                 dData(dData > dMed + dStd) = dMed + dStd;
+%             end
             
+            % create image:
+            this.hImageChild = imagesc(this.hAxes, this.dXData, this.dYData, dData);
+            set(this.hAxes, 'YDir', 'normal');
+            
+            
+            
+  
+            
+            if (this.lShowXSectionAxes)
+                % generate cross sections:
+                xSec = mean(dData,1);
+                ySec = mean(dData,2);
+                
+                plot(this.hXAxes, this.dXData, xSec, 'm', 'linewidth', 1.5);
+                plot(this.hYAxes, this.dYData, ySec, 'm', 'linewidth', 1.5);
+                this.hYAxes.CameraUpVector = [1 0 0 ];
+                this.hXAxes.XTick = [];
+                this.hXAxes.YTick = [];
+                this.hYAxes.XTick = [];
+                this.hYAxes.YTick = [];
+                this.hXAxes.Color = [0 0 0];
+                this.hYAxes.Color = [0 0 0];
+                
+                this.hXAxes.XLim = [0, length(xSec)];
+                this.hYAxes.XLim = [0, length(ySec)];
+                
+                
+                
+            end      
+            
+            this.rescale();
+            this.alignXsec();
+
         end
         
         function alignXsec(this)
@@ -465,6 +523,128 @@ classdef ScalableAxes < mic.Base
         function letMeIn(this)
            1; 
         end
+        
+        
+        function xy = ginput(this, dCircRad)
+            if nargin == 1
+                dCircRad = 1;
+            end
+            
+            
+            colormap(this.hAxes, 'gray')
+            
+            delete(this.lnMainLineX);
+            delete(this.lnMainLineY);
+            delete(this.lnSecLineX);
+            delete(this.lnSecLineY);
+            delete(this.ptCircle);
+            
+            dMin = min(this.hImageChild.CData(:));
+            dMax = max(this.hImageChild.CData(:));
+            
+            % Turn off zoom
+            this.hZoomState.Enable = 'off';
+            this.uiButtonZoomToggle.setColor(this.dColorGray);
+            
+            drawnow
+
+            xy = zeros(1,2);
+            
+            set(this.hParentFigure,'WindowButtonMotionFcn',@changepointer)
+            set(this.hAxes,'ButtonDownFcn',@getpoints)
+            
+            set(this.hImageChild,'hittest','off')
+            
+            % make base circle:
+            idx = linspace(0, 2*pi, 51)';
+            dX = dCircRad*cos(idx);
+            dY = dCircRad*sin(idx);
+           
+            this.lnMainLineX = line(this.hAxes, [0, 1], [0, 1]);
+            this.lnMainLineY = line(this.hAxes, [0, 1], [0, 1]);
+            this.lnSecLineX = line(this.hXAxes, [0, 1], [0, 1]);
+            this.lnSecLineY = line(this.hYAxes, [0, 1], [0, 1]);
+            this.ptCircle   = patch(this.hAxes, dX, dY, 'y');
+            
+            
+            
+            
+            % Line Styling
+            this.lnMainLineX.Color = 'g';
+            this.lnMainLineY.Color = 'g';
+            this.lnSecLineX.Color = 'g';
+            this.lnSecLineY.Color = 'g';
+            this.lnMainLineX.LineWidth = 2;
+            this.lnMainLineY.LineWidth = 2;
+            this.lnSecLineX.LineWidth = 2;
+            this.lnSecLineY.LineWidth = 2;
+            this.lnMainLineX.HitTest = 'off';
+            this.lnMainLineY.HitTest = 'off';
+            this.lnSecLineX.HitTest = 'off';
+            this.lnSecLineY.HitTest = 'off';
+            this.ptCircle.HitTest = 'off';
+            this.ptCircle.FaceAlpha = 0.2;
+            this.ptCircle.EdgeColor = 'r';
+            this.ptCircle.EdgeAlpha = 0.3;
+            this.ptCircle.LineWidth = 2;
+            
+            waitfor(this.hParentFigure,'WindowButtonMotionFcn',[])
+            
+            delete(this.lnMainLineX);
+            delete(this.lnMainLineY);
+            delete(this.lnSecLineX);
+            delete(this.lnSecLineY);
+            delete(this.ptCircle);
+            
+            if this.cColormap == this.U8COLORSTATE_DEFAULT
+                colormap(this.hAxes, 'default')
+            end
+
+            function changepointer(~,~)
+                PLaxes = get(this.hAxes, 'CurrentPoint');
+                dXVal = PLaxes(1,1);
+                dYVal = PLaxes(1, 2);
+                    
+                    
+                    
+                if dXVal > 0 && dYVal > 0 && dXVal < this.dXData(end) && dYVal < this.dYData(end)
+                    set(this.hParentFigure,'Pointer','crosshair')
+
+                    
+                    % display lines on axes:
+                    this.lnMainLineX.XData = [this.dXData(1), this.dXData(end)];
+                    this.lnMainLineX.YData = dYVal*[1, 1];
+                    this.lnMainLineY.XData = dXVal*[1, 1];
+                    this.lnMainLineY.YData = [this.dYData(1), this.dYData(end)];
+                    this.ptCircle.Vertices = [dXVal + dX, dYVal + dY];
+
+                    
+                    this.lnSecLineX.XData = dXVal*[1, 1];
+                    this.lnSecLineX.YData = [dMin, dMax];
+                    this.lnSecLineY.XData = dYVal*[1, 1];
+                    this.lnSecLineY.YData = [dMin, dMax];
+                    
+                    
+                else
+                    set(this.hParentFigure,'Pointer','arrow')
+                end
+                
+               
+            end
+            
+            function getpoints(hObj,~,~)
+                fprintf('getting points now!');
+                cp = get(hObj,'CurrentPoint');
+                xy(1,:) = cp(1,1:2);
+                set(this.hParentFigure,'Pointer','arrow')
+                set(this.hParentFigure,'WindowButtonMotionFcn',[])
+                set(this.hAxes,'ButtonDownFcn',[])
+
+            end
+            
+        end
+        
+        
 
     end
 
