@@ -59,6 +59,20 @@ classdef Tabgroup < mic.Base
         end
         
         
+        function cName = getSelectedTabName(this)
+            uitSelectedTab = this.hUI.SelectedTab;
+            cName = uitSelectedTab.Title;
+        end
+        
+        function selectTabByName(this, cName)
+            uitTab = this.getTabByName(cName);
+            this.hUI.SelectedTab = uitTab;
+        end
+        
+        function selectTabByIndex(this, dIndex)
+            uitTab = this.getTabByIndex(dIndex);
+            this.hUI.SelectedTab = uitTab;
+        end
        
         
         function uitTab = getTabByName(this, cName)
