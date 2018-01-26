@@ -1,12 +1,9 @@
 %{
-ScanSetup is a ui element used to set up scan states for use in the
-mic.scan class.  ScanSetup is implemented by instantiating ScanAxisSetups
-which control parameters for the individual axes.
+ScanSetup is a container for ScanAxisSetups, used to set up the parameters
+of a scan.  ScanSetup must contain at least once ScanAxisSetup to be
+useful.
 
-Instantiate with at least parameter dScanAxes,  ceOutputOptions, and
-ceScanAxisLabels, which control the dimensionality of the scan, the labels
-for the output options, and the labels for the input axis options
-respectively
+
 
 Pass parameter 
     fhOnScanChangeParams = @(ceScanStates, u8ScanAxisIdx, lUseDeltas)
@@ -337,7 +334,7 @@ classdef ScanSetup < mic.Base
             
             dLeft = 10;
             dPad = 6;
-            dY = 60;
+            dY = 35;
             dScanButHeight = 70;
             dTop = 2;
             

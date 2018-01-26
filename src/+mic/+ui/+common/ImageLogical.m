@@ -63,8 +63,10 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
 %                 'Parent', this.hAxes ...
 %             );
 
-            this.hImage = image(this.u8ImgFalse);
-            set(this.hImage, 'Parent', this.hAxes);
+            this.hImage = image(this.hAxes, this.u8ImgFalse);
+            
+%             set(this.hImage, 'Parent', this.hAxes);
+            
             % set(this.hAxes, 'XTick', []); % gets rid of axes and gridlines
             % set(this.hAxes, 'YTick', []); % gets rid of axes and gridlines
             % set(this.hAxes, 'box', 'off');

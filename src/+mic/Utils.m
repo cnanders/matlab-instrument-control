@@ -22,6 +22,9 @@ classdef Utils
         
         dColorEditBgVerified    = [0.07 0.38 0.07];
         dColorTextBgVerified    = [0.07 0.38 0.07];
+        
+        dColorEditBgBad         = [0.88 0.57 0.57];
+        dColorTextBgBad         = [0.88 0.57 0.57];
          
         cUpDir = sprintf('..%s', filesep)
     end

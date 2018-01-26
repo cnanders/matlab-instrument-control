@@ -26,11 +26,13 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
         cHorizontalAlignment = 'left'
         lShowLabel = true;
         
+        
 
         cKeyPressLast = '';
         % {logical 1x1} - used to wrap all calls to notify to allow
         % temporary disabling of notify
         lNotify = true;
+        lNotifyOnProgrammaticSet = true;
         
         fhDirectCallback = @(src, evt)[];
     end
@@ -355,6 +357,20 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             end
             
         end
+        
+        function styleBad(this)
+            
+            % Make it look vanilla
+           
+            if ishandle(this.hUI)
+                set(this.hUI, 'BackgroundColor', mic.Utils.dColorEditBgBad);
+            end
+
+            if ishandle(this.hLabel)
+                set(this.hLabel, 'BackgroundColor', mic.Utils.dColorEditBgBad);
+            end
+            
+        end
 
         function setWithoutNotify(this, xVal)
             this.lNotify = false;
@@ -396,8 +412,10 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
                msgbox(cMsg, 'Edit.set() invalid type', 'error');
            end
            
-           this.fhDirectCallback(this, 'set');
-           notify(this, 'eChange');
+           if this.lNotifyOnProgrammaticSet
+               this.fhDirectCallback(this, 'set');
+               notify(this, 'eChange');
+           end
 
         end
 

@@ -1,4 +1,19 @@
-﻿# 1.0.0-beta.27
+# 1.0.0-beta.29
+- Changes to the usability of `mic.ui.axes.ScalableAxes.m` to add some
+  new centering functionality.
+
+- Adding a logical value to `mic.ui.common.Edit` to allow disabling of callback when set method is programmatically called.
+
+- Added a new colorscheme to `Utils` to represent an error state.
+
+- Updates to `ScalableAxis` to make the slider position correct with respect to the main figure.
+
+
+# 1.0.0-beta.28
+
+- Updated `mic.ui.device.GetSetText` to use log typing
+
+# 1.0.0-beta.27
 
 ### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
 
@@ -11,9 +26,10 @@ Updated `fhDirectCallback` to have two args: `(src, evt)` to match standard call
 Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `notify()`
 
 
-# 1.0.0-beta.25
+- Adding accessor for u8Index in `Scan.m`
+
 - Updating `mic.ui.axes.ScalableAxes.m` for bug fixes and customizable
-  scaling
+
 
 - Fixed a bug in `mic.scan` causing it to fail to stop when stop() is called during a state change or an acquisition. Also fixing a bug causing raster scanning to fail in `mic.ui.common.ScanSetup`
 
@@ -34,6 +50,9 @@ Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `no
 - Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
 
 - Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
+
+- Adding syncDestination method to `mic.ui.device.GetSetNumber` to make edit box sync with actual read value.
+
 
 # 1.0.0-beta.23
 

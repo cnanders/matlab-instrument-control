@@ -20,7 +20,7 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
         cVal = 'cVal'
         cAlign = 'left'
         cFontWeight = 'normal'
-        dFontSize = 10
+        dFontSize = 8
         dColorBg = [.94 .94 .94]; % MATLAB default
         
         lShowLabel = false;
@@ -71,7 +71,8 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             this.hUI = uicontrol( ...
                 'Parent', hParent, ...
                 'HorizontalAlignment', this.cAlign, ...
-                'FontWeight', this.cFontWeight, ... % 'FontSize', this.dFontSize, ...
+                'FontWeight', this.cFontWeight, ... 
+                ...%'FontSize', this.dFontSize, ...
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
                 'Style', 'text', ...
                 'BackgroundColor', this.dColorBg, ...
@@ -135,7 +136,19 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             
         end
         
+        function setFontSize(this, dFontSize)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'FontSize', dFontSize)
+        end
         
+        function setAlign(this, cAlign)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'HorizontalAlignment', cAlign)
+        end
         
         function delete(this)
             cMsg = sprintf('delete() %s', this.cVal);

@@ -16,7 +16,7 @@ classdef Checkbox < mic.interface.ui.common.Logical & mic.ui.common.Base
         lShowLabel = true
         fhDirectCallback = @(src, evt)[];
         
-        dColor = 'white'
+        dColor = [0.94 0.94 0.94];
     end
     
     
