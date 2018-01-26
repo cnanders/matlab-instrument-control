@@ -243,6 +243,11 @@ classdef ScanAxisSetup < mic.Base
             dStep = this.uieStep.get();
             dEnd = this.uieEnd.get();
             
+            if dStart == dEnd
+                dScanRange = dStart;
+                return
+            end
+            
             dScanRange = dStart:dStep:dEnd*1.001;
         end
         
