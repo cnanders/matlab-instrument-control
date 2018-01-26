@@ -337,7 +337,7 @@ classdef ScanSetup < mic.Base
             
             dLeft = 10;
             dPad = 6;
-            dY = 35;
+            dY = 60;
             dScanButHeight = 70;
             dTop = 2;
             
