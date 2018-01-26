@@ -1,3 +1,8 @@
+
+# 1.0.0-beta.30
+
+- `mic.Base` now shows `msgbox` when `msg()` is called with a type of `u8_MSG_TYPE_ERROR`
+
 # 1.0.0-beta.29
 - Changes to the usability of `mic.ui.axes.ScalableAxes.m` to add some
   new centering functionality.
