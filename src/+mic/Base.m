@@ -18,6 +18,9 @@ classdef Base < handle
         u8_MSG_TYPE_DELETE = 13
         u8_MSG_TYPE_CREATE_UI_COMMON = 14
         u8_MSG_TYPE_CREATE_UI_DEVICE = 15
+        u8_MSG_TYPE_PROP_DELETED = 16
+        u8_MSG_TYPE_PROP_DELETE_SKIPPED = 17
+        u8_MSG_TYPE_PROP_DELETE_CHECK = 18
         
         u8_MSG_STYLE_ALL = [1 : 13]
         u8_MSG_STYLE_CLOCK = [7]
@@ -29,6 +32,7 @@ classdef Base < handle
         u8_MSG_STYLE_NONE = []
         u8_MSG_STYLE_CREATE_UI_DEVICE = [15]
         u8_MSG_STYLE_CREATE = [14, 15] 
+        u8_MSG_STYLE_CLASS_INIT_DELETE = [9, 16, 17, 18]
         
     end
     
@@ -40,7 +44,7 @@ classdef Base < handle
     methods
         
         function this = Base()
-            this.u8MsgStyle = this.u8_MSG_STYLE_NONE; %this.u8_MSG_STYLE_NONE;
+            this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; %this.u8_MSG_STYLE_NONE;
         end
 
 
