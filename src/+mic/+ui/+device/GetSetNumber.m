@@ -1033,15 +1033,15 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.updateInitializedButton();
                                 
                
-            catch err
-                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+            catch mE
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
         %         %AW(5/24/13) : Added a timer stop when the axis instance has been
         %         %deleted
-        %         if (strcmp(err.identifier,'MATLAB:class:InvalidHandle'))
+        %         if (strcmp(mE.identifier,'MATLAB:class:InvalidHandle'))
         %                 %msgbox({'Axis Timer has been stopped','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
         %                 stop(this.t);
         %         else
-        %             this.msg(getReport(err));
+        %             this.msg(mE.message);
         %         end
         
                 % CA 2016 remove the task from the timer
@@ -1489,14 +1489,29 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function updatePlayButton(this)
             
             % UIButtonTobble
-            if this.lReady && ~this.uibtPlay.get()
-                this.uibtPlay.set(true);
-            end
-
-            if ~this.lReady && this.uibtPlay.get()
-                this.uibtPlay.set(false);
-            end
             
+            try
+                if ~islogical(this.lReady)
+                    fprintf('GetSetNumber.updatePlayButton() lReady is not logical\n');
+                    return
+                end
+
+                if ~islogical(this.uibtPlay.get())
+                    fprintf('GetSetNumber.updatePlayButton() uibtPlay.get() is not logical\n');
+                    return;
+                end
+
+                if this.lReady && ~this.uibtPlay.get()
+                    this.uibtPlay.set(true);
+                end
+
+                if ~this.lReady && this.uibtPlay.get()
+                    this.uibtPlay.set(false);
+                end
+            
+            catch mE
+                fprintf('GetSetNumber.updatePlayButton() caught: %s\n', mE.message);
+            end
 
         end
         

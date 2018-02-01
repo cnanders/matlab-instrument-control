@@ -366,7 +366,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             try
                 cVal = this.getDevice().get();
             catch mE
-                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
         
                 % CA 2016 remove the task from the timer
                 if isvalid(this.clock) && ...

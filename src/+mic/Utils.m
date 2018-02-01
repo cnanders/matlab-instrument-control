@@ -191,7 +191,7 @@ classdef Utils
 
                 out = dLTWH;
                 out(2) = dBottom;
-            catch err
+            catch mE
                 disp('Utils::lt2lb unable to draw the element to the specified position')
                 out = dLTWH
             end

@@ -368,11 +368,11 @@ classdef Clock < mic.Base
             % this.msg(sprintf('%s', cName));
 
             if this.has(cName)
-                err = MException( ...
+                mE = MException( ...
                     'Clock:add', ...
                     sprintf('cName of %s already exists.  It must be unique.', cName) ...
                 );
-                throw(err)
+                throw(mE)
             end
             
             %{
@@ -692,7 +692,7 @@ classdef Clock < mic.Base
                     
                     ceTaskFcnToDo{n}();                     
 
-                catch err
+                catch mE
                     
                     cMsg = sprintf(...
                         'Clock.timerFcn() ERROR executing %1.0f of %1.0f: %s() ', ...
@@ -701,8 +701,8 @@ classdef Clock < mic.Base
                         ceTaskNameToDo{n} ...
                     );
                     this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
-                    this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
-                    % rethrow(err);
+                    this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
+                    % rethrow(mE);
                 end
             end
             
@@ -767,8 +767,8 @@ classdef Clock < mic.Base
                     delete(this.t);
                 end
                 
-            catch err
-                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+            catch mE
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
             end
                 
             

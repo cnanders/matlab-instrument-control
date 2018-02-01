@@ -1,3 +1,7 @@
+# 1.0.0-beta.31
+
+- All instances of getReport(Exception) have been replaced by Exception.message
+
 
 # 1.0.0-beta.30
 

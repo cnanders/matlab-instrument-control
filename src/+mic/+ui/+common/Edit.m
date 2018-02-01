@@ -606,20 +606,20 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
  
 
                     %{
-                    if (strcmp(err.identifier,'MATLAB:UndefinedFunction'))
+                    if (strcmp(mE.identifier,'MATLAB:UndefinedFunction'))
                         msgbox({'Not a regular expression entered in the eval()','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    elseif (strcmp(err.identifier,'MATLAB:m_unexpected_sep'))
+                    elseif (strcmp(mE.identifier,'MATLAB:m_unexpected_sep'))
                         msgbox({'no default value','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    elseif (strcmp(err.identifier,'MATLAB:minrhs'))
+                    elseif (strcmp(mE.identifier,'MATLAB:minrhs'))
                         msgbox({'You have tried to use a buitin function, without argument. Builtin functions are not supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                    elseif (strcmp(err.identifier,'MATLAB:m_unbalanced_parens'))
+                    elseif (strcmp(mE.identifier,'MATLAB:m_unbalanced_parens'))
                         msgbox({'You have tried to use a built-in function, without proper parenthesis. Besides, built-in functions are not supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
                     else
-                        msgbox({'set.cData reported an exception of type :',err.identifier,'that is not yet supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
-                        %rethrow(err);
+                        msgbox({'set.cData reported an exception of type :',mE.identifier,'that is not yet supported','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
+                        %rethrow(mE);
                     end
                     %}
-                    % rethrow(err);
+                    % rethrow(mE);
                 end
             end
 

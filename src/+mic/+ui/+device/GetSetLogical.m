@@ -437,8 +437,8 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 this.updateInitializedButton();
                             
                                                
-            catch err
-                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+            catch mE
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
             end 
 
         end
