@@ -233,9 +233,9 @@ classdef Utils
         % arguments, where arguments are (element, index, array)
             switch nargin(fhLambda)
                 case 1
-                    fhIteratee = (elm, idx, ar) fhLambda(elm);
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm);
                 case 2
-                    fhIteratee = (elm, idx, ar) fhLambda(elm, idx);
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm, idx);
                 case 3
                     fhIteratee = fhLambda;
             end
@@ -259,9 +259,9 @@ classdef Utils
         % arguments, where arguments are (element, index, array)
             switch nargin(fhLambda)
                 case 1
-                    fhIteratee = (elm, idx, ar) fhLambda(elm);
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm);
                 case 2
-                    fhIteratee = (elm, idx, ar) fhLambda(elm, idx);
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm, idx);
                 case 3
                     fhIteratee = fhLambda;
             end
