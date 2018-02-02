@@ -118,7 +118,18 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         % {mic.ui.commin.ImageLogical 1x1} visual state
         uiilValue
         
-       
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+        % {function handle 1x1} 
+        fhGet = @() false
+
+        % {function handle 1x1} 
+        fhSet = @(lVal) []
+
+        % {function handle 1x1} 
+        fhIsInitialized
+
+        % {function handle 1x1} 
+        fhInitialize
                         
     end
     
@@ -324,7 +335,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         end
         
         function l = get(this)
-            l = this.getDevice().get();
+
+            if this.lUseFunctionCallbacks
+                l = this.fhGet();
+            else
+                l = this.getDevice().get();
+            end
         end
         
        
@@ -423,7 +439,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         function onClock(this) 
            
             try
-                this.lVal = this.getDevice().get();
+                if this.lUseFunctionCallbacks
+                    this.lVal = this.fhGet();
+                else
+                    this.lVal = this.getDevice().get();
+                end
+
+                
                 
                 % Force the toggle back to the current state without it
                 % notifying eChange

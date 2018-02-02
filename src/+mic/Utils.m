@@ -198,6 +198,92 @@ classdef Utils
         end
 
 
+        % MATLAB functional programming utilities:
+
+
+        function out = tern(lCondition, mixedTrueValue, mixedFalseValue)
+        % Implements a ternary value operator.  Returns either
+        % mixedTrueValue or mixedFalseValue depending on lCondition
+            if lCondition
+                out = mixedTrueValue;
+            else
+                out = mixedFalseValue;
+            end
+        end
+
+        function ternEval(lCondition, fhTrueLambda, fhFalseLambda)
+        % Implements a ternary function evaluator.  Evaulates either fhTrueLambda or fhFalseLambda
+        % depending on lCondition.  Lambdas must be anonymous functions with no inputs
+            if lCondition
+                fhTrueLambda();
+            else
+                fhFalseLambda();
+            end
+        end
+
+        function out = iif(varargin) 
+        % Inline If.  Pass {condition, value, condition, value...}
+        % returns the first value with the true condition.
+            out = varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+        end
+
+
+        function out = map(mixedList, fhLambda)
+        % Functional programming map.  FhLambda can have between 1 and 3
+        % arguments, where arguments are (element, index, array)
+            switch nargin(fhLambda)
+                case 1
+                    fhIteratee = (elm, idx, ar) fhLambda(elm);
+                case 2
+                    fhIteratee = (elm, idx, ar) fhLambda(elm, idx);
+                case 3
+                    fhIteratee = fhLambda;
+            end
+
+            if iscell(mixedList)
+                out = cell(size(mixedList));
+                for k = 1:numel(mixedList)
+                    out{k} = fhIteratee(mixedList{k}, k, mixedList);
+                end
+            else
+                out = zeros(size(mixedList));
+                for k = 1:numel(mixedList)
+                    out(k) = fhIteratee(mixedList(k), k, mixedList);
+                end
+            end
+
+        end
+
+        function out = filter(mixedList, fhLambda)
+        % Functional programming filter.  FhLambda can have between 1 and 3
+        % arguments, where arguments are (element, index, array)
+            switch nargin(fhLambda)
+                case 1
+                    fhIteratee = (elm, idx, ar) fhLambda(elm);
+                case 2
+                    fhIteratee = (elm, idx, ar) fhLambda(elm, idx);
+                case 3
+                    fhIteratee = fhLambda;
+            end
+
+            if iscell(mixedList)
+                out = {};
+                for k = 1:numel(mixedList)
+                    if fhIteratee(mixedList{k}, k, mixedList)
+                        out{end + 1} = mixedList{k};
+                    end
+                end
+            else
+                out = [];
+                for k = 1:numel(mixedList)
+                    if fhIteratee(mixedList(k), k, mixedList)
+                        out(end + 1) = mixedList(k);
+                    end
+                end
+            end
+        end
+
+
     end % Static
 end
 

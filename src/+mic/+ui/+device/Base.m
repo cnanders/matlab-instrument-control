@@ -77,6 +77,14 @@ classdef Base < mic.Base
         lDeviceIsSet = false
         
         
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+
+
+        % {Logical 1x1} - "Set" function 
+        lUseFunctionCallbacks = false
+
+
+
     end
     
     
@@ -91,6 +99,8 @@ classdef Base < mic.Base
         function this = Base()
 
         end
+
+
         
         
         function l = isActive(this)

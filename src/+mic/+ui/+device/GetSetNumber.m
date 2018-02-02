@@ -43,6 +43,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         u8Layout = uint8(1); 
         % lIsThere 
 
+
+        
+
+
     end
 
     properties (SetAccess = private, GetAccess = protected)
@@ -241,6 +245,28 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         dValDeviceDefault = 0
         
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+        % {function handle 1x1} 
+        fhGet = @() 0
+
+        % {function handle 1x1} 
+        fhSet = @(dVal) []
+
+        % {function handle 1x1} 
+        fhStop = @() []
+
+        % {function handle 1x1} 
+        fhIsReady = @() []
+
+        % {function handle 1x1} 
+        fhIsInitialized
+
+        % {function handle 1x1} 
+        fhInitialize
+        
+        % {function handle 1x1} 
+        fhIndex
+
     end
     
 
@@ -699,14 +725,23 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % update its value from the device Device.
             
            
-            this.getDevice().set(dRaw);
+            if this.lUseFunctionCallbacks
+                this.fhSet(dRaw);
+            else
+                this.getDevice().set(dRaw);
+            end
                        
         end
         
         function stop(this)
         %STOPMOVE Aborts the current motion
         %   HardwareIO.stopMove()
-            this.getDevice().stop();
+
+            if this.lUseFunctionCallbacks
+                this.fhStop();
+            else
+                this.getDevice().stop();
+            end
             
         end
 
@@ -714,8 +749,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function index(this)
         %INDEX Moves the HIO to the index position
         %   HardwareIO.index()
-        
-            this.getDevice().index();
+            if this.lUseFunctionCallbacks
+                this.fhIndex();
+            else
+                this.getDevice().index();
+            end
             
         end
         
@@ -807,8 +845,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %
         %   If you want the value showed in the display (with the active
         %   display unit and abs/rel state use getValCalDisplay()
-                        
-            dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
+
+            if this.lUseFunctionCallbacks
+                dOut = this.raw2cal(this.fhGet(), cUnit, false);
+            else
+                dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
+            end
+            
             
         end
         
@@ -819,14 +862,24 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   @returns {double} - the calibrated value
         %
         %   see also VALCAL 
-                        
-            dOut = this.raw2cal(this.getDevice().get(), this.getUnit().name, this.uitRel.get());
+            if this.lUseFunctionCallbacks
+                dOut = this.raw2cal(this.fhGet(), this.getUnit().name, this.uitRel.get());
+            else
+                dOut = this.raw2cal(this.getDevice().get(), this.getUnit().name, this.uitRel.get());
+            end
+
+            
             
         end
         
         function dOut = getValRaw(this)
         %VALRAW Get the value (not the destination) in raw units. 
-           dOut = this.getDevice().get(); 
+            if this.lUseFunctionCallbacks
+                dOut = this.fhGet(); 
+            else
+                dOut = this.getDevice().get(); 
+            end
+           
         end
         
         
@@ -1022,7 +1075,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 % may not be double
                 
                 if ~this.lDisableSet
-                    this.lReady = this.getDevice().isReady();
+                    if this.lUseFunctionCallbacks
+                        this.lReady = this.fhIsReady();
+                    else
+                        this.lReady = this.getDevice().isReady();
+                    end
+                    
                     this.updatePlayButton()
                 else
                     % The Device(V) doesn't implement isReady since this is a
@@ -1461,8 +1519,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         function updateInitializedButton(this)
+            if this.lUseFunctionCallbacks
+                lInitialized = this.fhIsInitialized();
+            else
+                lInitialized = this.getDevice().isInitialized();
+            end
+
             
-            lInitialized = this.getDevice.isInitialized();
                 
             if this.lShowInitButton
                 if lInitialized

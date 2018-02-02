@@ -110,6 +110,20 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         lReady = true
         
        
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+        % {function handle 1x1} 
+        fhGet = @() ''
+
+        % {function handle 1x1} 
+        fhSet = @(cVal) []
+
+        % {function handle 1x1} 
+        fhIsInitialized
+
+        % {function handle 1x1} 
+        fhInitialize
+
+
         
     end
     

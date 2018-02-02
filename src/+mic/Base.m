@@ -41,7 +41,7 @@ classdef Base < handle
     end
     
     
-    methods
+    methods 
         
         function this = Base()
             this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; %this.u8_MSG_STYLE_NONE;
