@@ -1,3 +1,10 @@
+# 1.0.0-beta.32
+
+- Added new functional programming constructs in `mic.Utils`
+
+- Updated `mic.ui.device` elements to accept function callbacks
+
+
 # 1.0.0-beta.31
 
 - All instances of getReport(Exception) have been replaced by Exception.message
