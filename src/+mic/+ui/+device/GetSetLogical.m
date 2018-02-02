@@ -280,20 +280,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
 
         
         
-        %{
-        % Expose the set command of the Device
-        % @param {logical 1x1} 
-        function set(this, l)
-           this.getDevice().set(l);
-           
-        end
-        %}
 
-           
-        
-        
-
-        
 
         
 
@@ -484,8 +471,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             % pre-click.  The toggle just issues set() commands.  It
             % doesn't do anything smart to show the value, this is handled
             % by the indicator image with each onClock()
-            
-            this.getDevice().set(this.uitCommand.get());            
+            if this.lUseFunctionCallbacks
+                this.fhSet(this.uitCommand.get());     
+            else
+                this.getDevice().set(this.uitCommand.get());     
+            end
+                   
                         
         end
         
@@ -494,7 +485,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function updateInitializedButton(this)
             
-            lInitialized = this.getDevice.isInitialized();
+            
+            if this.lUseFunctionCallbacks
+                lInitialized = this.fhIsInitialized();
+            else
+                lInitialized = this.getDevice.isInitialized();
+            end
+
                 
             if this.lShowInitButton
                 if lInitialized

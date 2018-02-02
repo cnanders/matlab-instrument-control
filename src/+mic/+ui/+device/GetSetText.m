@@ -313,7 +313,13 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 
             end
             
-            this.getDevice().set(this.uieDest.get());
+            
+            if this.lUseFunctionCallbacks
+                this.fhSet(this.uieDest.get());
+            else
+                this.getDevice().set(this.uieDest.get());
+            end
+
                        
         end
         
@@ -378,7 +384,13 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         %   updates the position reading and the hio status (=/~moving)
         
             try
-                cVal = this.getDevice().get();
+                if this.lUseFunctionCallbacks
+                    cVal = this.fhGet();
+                else
+                    cVal = this.getDevice().get();
+                end
+
+                
             catch mE
                 this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
         
@@ -400,7 +412,12 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         end 
         
         function c = get(this)
-            c = this.getDevice().get();
+            if this.lUseFunctionCallbacks
+                c = this.fhGet();
+            else
+                c = this.getDevice().get();
+            end
+
         end
         
         function c = getDest(this)
