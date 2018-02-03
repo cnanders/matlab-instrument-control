@@ -123,13 +123,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         fhGet = @() false
 
         % {function handle 1x1} 
-        fhSet = @(lVal) []
+        fhSet = @(lVal) [] % Called when button is pressed
 
         % {function handle 1x1} 
-        fhIsInitialized
+        fhIsInitialized % Controls state of display
 
         % {function handle 1x1} 
-        fhInitialize
+        fhInitialize % Not used
                         
     end
     

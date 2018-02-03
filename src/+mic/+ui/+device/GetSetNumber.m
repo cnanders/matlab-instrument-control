@@ -247,16 +247,16 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         % RM (2/2018): Adding new methods for implementing function callback mode:
         % {function handle 1x1} 
-        fhGet = @() 0
+        fhGet 
 
         % {function handle 1x1} 
-        fhSet = @(dVal) []
+        fhSet
 
         % {function handle 1x1} 
-        fhStop = @() []
+        fhStop
 
         % {function handle 1x1} 
-        fhIsReady = @() []
+        fhIsReady 
 
         % {function handle 1x1} 
         fhIsInitialized
