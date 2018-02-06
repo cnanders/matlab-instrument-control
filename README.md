@@ -247,6 +247,96 @@ MATLAB is ubiquitous in science.
 
 This repo uses [MATLAB Hungarian notation](https://github.com/cnanders/matlab-hungarian) for variable names.  
 
+# Notes on Discussion of MIC 2.0 Refactor With Ryan
+
+Ryan and I considered a direct-callback-based refactor.  `GetSetNumber` would have the following properties
+
+- fhSet
+- fhGet
+- fhIsReady
+- fhStop
+- fhInitialize (possibly not?)
+- fhIsInitialized (possibly not?)
+
+- fhSet2
+- fhGet2
+- fhIsReady2
+- fhStop2
+- fhInitialize2
+- fhIsInitialized2
+
+- fhUseRoute2
+
+`fhUseRoute2`, if not provided, defaults to a function that returns `false`.  
+
+- When `fhUseRoute2` returns `false`, `get()`, `set()`, etc are routed to the vanilla `fhGet`, `fhSet`, methods, respectively.  
+- When `fhUseRoute2` returns `true`, `get()`, `set()`, etc are routed to the vanilla `fhGet2`, `fhSet2`, methods, respectively.
+- In principle, there could be an array of `fhGet*()` methods and `fhUseRoute2` could be `fhGetRouteIndex` which would tell the UI which collection of get, set, ... methods to use.
+
+- `fhSet`, `fhGet`, `fhIsReady`, `fhStop`, `fhInitialize`, `fhIsInitialized`, if not provided would have defaults.  The `mic.ui.device.GetSetNumber` would instantiate its own `mic.device.GetSetNumber` to a privae property named `device` and 
+  - `fhGet` = @device.get
+  - `fhSet` = @device.set
+  - and so on
+
+
+The idea is that the UI works by default in "internal Matlab mode" (virtual).  If the developer wants to code the UI to call different get, set, etc. methods, the developer needs to program that.
+
+For the case where there are two routes, one that is virtual and one that controls real hardware, `fhUseRoute2` would be mapped to the the `get()` method of a `GetSetLogical` instance, which is a connect button. 
+
+Example UI Module
+
+```matlab
+
+class StageTest < mic.Base
+  properties
+    uiX
+  end
+
+  properties (Access = private)
+    comm
+    clock
+  end
+
+  methods
+    function this = StageTest(comm, clock)
+      this.comm = comm
+      this.clock = clock
+    end
+
+
+    function init(this)
+
+      this.uiConnect = mic.ui.device.GetSetLogical(...
+        'clock', this.clock ...
+      )
+      this.uiX = mic.ui.device.GetSetNumber(...
+        'fhGet2', @this.comm.getPosition, ...
+        'fhSet2', @this.comm.setPosition, ...
+        'fhIsReady2', @this.comm.isStopped, ...
+        'fhStop2', @this.comm.stopAxis, ...
+        'fhInitialize2', @()[], ...
+        'fhIsInitialized2', @()[], ...
+        'fhUseRoute2', @this.uiConnect.get ...
+        'clock', this.clock
+      )
+
+    end
+
+    function build(this)
+
+      // Build code here
+
+    end
+
+  end
+
+
+```
+
+- It is also probably worth thinking if this should be Matlab.  
+- Also think about the clock.  Do UI components need a clock?  What if instead they had a render() method that told them to redraw?.  Calling ui.get() would always fetch a new value but render() could be called on demand.
+
+
 
 <!--
 # Notes
