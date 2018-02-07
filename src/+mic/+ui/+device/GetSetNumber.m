@@ -76,6 +76,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         dWidthPadDest = 5;
         dWidthPadPlay = 0;
         dWidthPadJog = 0;
+        dWidthPadStepNeg = 0;
+        dWidthPadStep = 0;
+        dWidthPadStepPos = 0;
         dWidthPadUnit = 0;
         dWidthPadRel = 0;
         dWidthPadZero = 0;
@@ -197,6 +200,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         lShowRel = true
         % {logical 1x1}
         lShowJog = true
+        % {logical 1x1}
+        lShowStepNeg = true
+        % {logical 1x1}
+        lShowStep = true
+        % {logical 1x1}
+        lShowStepPos = true;
         % {logical 1x1}
         lShowDest = true
         % {logical 1x1}
@@ -320,7 +329,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 
             
             if this.lDisableSet == true
-                this.lShowJog = false; 
+                this.lShowJog = false;
+                this.lShowStepNeg = false;
+                this.lShowStep = false;
+                this.lShowStepPos = false;
                 this.lShowStores = false; 
                 this.lShowPlay = false; 
                 this.lShowDest = false; 
@@ -474,20 +486,31 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             end 
 
             % Jog
-            if this.lShowJog
-                dLeft = dLeft + this.dWidthPadJog;
+            if this.lShowStepNeg
+                dLeft = dLeft + this.dWidthPadStepNeg;
                 if this.lShowLabels
                     this.uitxLabelJogL.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
                 this.uibStepNeg.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeightBtn);
                 dLeft = dLeft + this.dWidthBtn;
+                
+            end
 
+            if this.lShowStep
+                
+                dLeft = dLeft + this.dWidthPadStep;
+                
                 if this.lShowLabels
                     this.uitxLabelJog.build(this.hPanel, dLeft, dTopLabel, this.dWidthStep, this.dHeightLabel);
                 end
                 this.uieStep.build(this.hPanel, dLeft, dTop, this.dWidthStep, this.dHeightEdit);
                 dLeft = dLeft + this.dWidthStep;
+                
+            end
+            
+            if this.lShowStepPos
 
+                dLeft = dLeft + this.dWidthPadStepPos;
                 if this.lShowLabels
                     this.uitxLabelJogR.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
@@ -1837,8 +1860,23 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             if this.lShowPlay
                 dOut = dOut + this.dWidthPadPlay + this.dWidthBtn;
             end
+            
+            %{
             if this.lShowJog
                 dOut = dOut + this.dWidthPadJog + 2 * this.dWidthBtn + this.dWidthStep;
+            end
+            %}
+            
+            if this.lShowStepNeg
+                dOut = dOut + this.dWidthPadStepNeg;
+            end
+            
+            if this.lShowStep
+                dOut = dOut + this.dWidthPadStep;
+            end
+            
+            if this.lShowStepPos
+                dOut = dOut + this.dWidthPadStepPos;
             end
             
             if this.lShowUnit
