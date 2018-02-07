@@ -227,6 +227,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         % {logical 1x1} - enable to have config file set valid destinations
         lValidateByConfigRange = false
+        
+        lDisableMoveToDestOnDestEnter = false
                 
         uitxLabelName
         uitxLabelVal
@@ -1341,6 +1343,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
         
         function onDestEnter(this, src, evt)
+            if (this.lDisableMoveToDestOnDestEnter)
+                return
+            end
             this.msg('onDestEnter');
             this.moveToDest();
         end
