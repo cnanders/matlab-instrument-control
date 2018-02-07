@@ -266,6 +266,16 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         % {function handle 1x1} 
         fhIndex
+        
+        % Adding virtual methods
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhGetV 
+        fhSetV
+        fhIsReadyV
+        fhStopV
+        fhIsInitializedV
+        fhInitializeV
+        fhIndexV
 
     end
     
@@ -726,7 +736,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
            
             if this.lUseFunctionCallbacks
-                this.fhSet(dRaw);
+                mic.Utils.ternEval(this.fhIsVirtual(), ...
+                    @()this.fhSetV(dRaw), @()this.fhSet(dRaw));
             else
                 this.getDevice().set(dRaw);
             end
@@ -738,7 +749,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   HardwareIO.stopMove()
 
             if this.lUseFunctionCallbacks
-                this.fhStop();
+                 mic.Utils.ternEval(this.fhIsVirtual(), ...
+                    @this.fhStopV, @this.fhStop);
             else
                 this.getDevice().stop();
             end
@@ -750,7 +762,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %INDEX Moves the HIO to the index position
         %   HardwareIO.index()
             if this.lUseFunctionCallbacks
-                this.fhIndex();
+                mic.Utils.ternEval(this.fhIsVirtual(), ...
+                    @this.fhIndexV, @this.fhIndex);
             else
                 this.getDevice().index();
             end
@@ -847,7 +860,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   display unit and abs/rel state use getValCalDisplay()
 
             if this.lUseFunctionCallbacks
-                dOut = this.raw2cal(this.fhGet(), cUnit, false);
+                if this.fhIsVirtual()
+                    dOut = this.raw2cal(this.fhGetV(), cUnit, false);
+                else
+                    dOut = this.raw2cal(this.fhGet(), cUnit, false);
+                end
             else
                 dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
             end
@@ -863,7 +880,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %
         %   see also VALCAL 
             if this.lUseFunctionCallbacks
-                dOut = this.raw2cal(this.fhGet(), this.getUnit().name, this.uitRel.get());
+                if this.fhIsVirtual()
+                    dOut = this.raw2cal(this.fhGetV(), this.getUnit().name, this.uitRel.get());
+                else
+                    dOut = this.raw2cal(this.fhGet(), this.getUnit().name, this.uitRel.get());
+                end
+                
             else
                 dOut = this.raw2cal(this.getDevice().get(), this.getUnit().name, this.uitRel.get());
             end
@@ -875,7 +897,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function dOut = getValRaw(this)
         %VALRAW Get the value (not the destination) in raw units. 
             if this.lUseFunctionCallbacks
-                dOut = this.fhGet(); 
+                if this.fhIsVirtual()
+                    dOut = this.fhGetV(); 
+                else
+                    dOut = this.fhGet(); 
+                end
+                
             else
                 dOut = this.getDevice().get(); 
             end
@@ -1076,7 +1103,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 
                 if ~this.lDisableSet
                     if this.lUseFunctionCallbacks
-                        this.lReady = this.fhIsReady();
+                        if this.fhIsVirtual()
+                            this.lReady = this.fhIsReadyV();
+                        else
+                            this.lReady = this.fhIsReady();
+                        end
                     else
                         this.lReady = this.getDevice().isReady();
                     end
@@ -1107,6 +1138,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                    this.clock.has(this.id())
                     this.clock.remove(this.id());
                 end
+                
+                error(mE);
                 
             end %try/catch
 
@@ -1202,9 +1235,19 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uitxName = mic.ui.common.Text(...
                 'cVal', this.cLabel ...
             );
-
-            this.setDeviceVirtual(this.newDeviceVirtual());
+        
+            vdVirtualDevice = this.newDeviceVirtual();
+            this.setDeviceVirtual(vdVirtualDevice);
             
+            % RM 2/2018 set function callbacks:
+            this.fhGetV             = @()vdVirtualDevice.get();
+            this.fhSetV             = @(dVal)vdVirtualDevice.set(dVal);
+            this.fhIsReadyV         = @()vdVirtualDevice.isReady();
+            this.fhStopV            = @()vdVirtualDevice.stop();
+            this.fhIsInitializedV   = @()vdVirtualDevice.isInitialized();
+            this.fhInitializeV      = @()vdVirtualDevice.initialize();
+            this.fhIndexV           = @()[];
+
             
             % if ~isempty(this.config.ceStores)
                 this.uipStores = mic.ui.common.PopupStruct(...
@@ -1520,7 +1563,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         function updateInitializedButton(this)
             if this.lUseFunctionCallbacks
-                lInitialized = this.fhIsInitialized();
+                if this.fhIsVirtual()
+                    lInitialized = this.fhIsInitializedV();
+                else
+                    lInitialized = this.fhIsInitialized();
+                end
+                
             else
                 lInitialized = this.getDevice().isInitialized();
             end

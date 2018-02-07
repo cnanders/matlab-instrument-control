@@ -130,6 +130,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
 
         % {function handle 1x1} 
         fhInitialize % Not used
+        
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhGetV 
+        fhSetV
+        fhIsInitializedV
+        fhInitializeV
                         
     end
     
@@ -324,7 +330,11 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         function l = get(this)
 
             if this.lUseFunctionCallbacks
-                l = this.fhGet();
+                if this.fhIsVirtual()
+                    l = this.fhGet();
+                else
+                    l = this.fhGet();
+                end
             else
                 l = this.getDevice().get();
             end
@@ -383,6 +393,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             this.initLabels();
                                        
             this.deviceVirtual = this.newDeviceVirtual();
+            
+            % Set virtual functions:
+            this.fhGetV             = @()this.deviceVirtual.get();
+            this.fhSetV             = @(lVal)this.deviceVirtual.set(lVal);
+            this.fhIsInitializedV   = @()this.deviceVirtual.isInitialized();
+            this.fhInitializeV      = @()this.deviceVirtual.initialize();
+        
             this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             
         end
@@ -427,7 +444,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
            
             try
                 if this.lUseFunctionCallbacks
-                    this.lVal = this.fhGet();
+                    if this.fhIsVirtual()
+                        this.lVal = this.fhGetV();
+                    else
+                        this.lVal = this.fhGet();
+                    end
+                    
                 else
                     this.lVal = this.getDevice().get();
                 end
@@ -472,7 +494,11 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             % doesn't do anything smart to show the value, this is handled
             % by the indicator image with each onClock()
             if this.lUseFunctionCallbacks
-                this.fhSet(this.uitCommand.get());     
+                if this.fhIsVirtual()
+                    this.fhSetV(this.uitCommand.get());     
+                else
+                    this.fhSet(this.uitCommand.get());     
+                end
             else
                 this.getDevice().set(this.uitCommand.get());     
             end
@@ -487,7 +513,11 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             
             
             if this.lUseFunctionCallbacks
-                lInitialized = this.fhIsInitialized();
+                if this.fhIsVirtual()
+                    lInitialized = this.fhIsInitializedV();
+                else
+                    lInitialized = this.fhIsInitialized();
+                end
             else
                 lInitialized = this.getDevice.isInitialized();
             end

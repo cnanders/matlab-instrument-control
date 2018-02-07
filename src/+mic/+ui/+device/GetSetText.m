@@ -123,7 +123,11 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         % {function handle 1x1} 
         fhInitialize
 
-
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhGetV 
+        fhSetV
+        fhIsInitializedV
+        fhInitializeV
         
     end
     
@@ -315,7 +319,11 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             
             
             if this.lUseFunctionCallbacks
-                this.fhSet(this.uieDest.get());
+                if this.fhIsVirtual()
+                    this.fhSetV(this.uieDest.get());
+                else
+                    this.fhSet(this.uieDest.get());
+                end
             else
                 this.getDevice().set(this.uieDest.get());
             end
@@ -413,7 +421,11 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         
         function c = get(this)
             if this.lUseFunctionCallbacks
-                c = this.fhGet();
+                if this.fhIsVirtual()
+                    c = this.fhGetV();
+                else
+                    c = this.fhGet();
+                end
             else
                 c = this.getDevice().get();
             end
@@ -520,7 +532,14 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             % Name (on the left)
             this.uitxName = mic.ui.common.Text('cVal', this.cLabel);
 
-            this.setDeviceVirtual(this.newDeviceVirtual());
+            % Set virtual device callbacks
+            vdVirtualDevice         = this.newDeviceVirtual();
+            this.fhGetV             = @()vdVirtualDevice.get();
+            this.fhSetV             = @(cVal)vdVirtualDevice.set(cVal);
+            this.fhIsInitializedV   = @()vdVirtualDevice.isInitialized();
+            this.fhInitializeV      = @()vdVirtualDevice.initialize();
+        
+            this.setDeviceVirtual(vdVirtualDevice);
             
             % if ~isempty(this.config.ceStores)
                 this.uipStores = mic.ui.common.PopupStruct(...
@@ -606,7 +625,15 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         
         function updateInitializedButton(this)
             
-            lInitialized = this.getDevice.isInitialized();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    lInitialized = this.fhIsInitializedV();
+                else
+                    lInitialized = this.fhIsInitialized();
+                end
+            else
+                lInitialized = this.getDevice.isInitialized();
+            end
                 
             if this.lShowInitButton
                 if lInitialized

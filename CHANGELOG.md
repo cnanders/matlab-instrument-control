@@ -1,3 +1,7 @@
+# 1.0.0-beta.33
+
+- Adding virtual function callbacks.  See MIC notes for details
+
 # 1.0.0-beta.32
 
 - Added new functional programming constructs in `mic.Utils`
