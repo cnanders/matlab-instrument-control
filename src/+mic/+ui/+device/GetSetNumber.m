@@ -1868,15 +1868,15 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             %}
             
             if this.lShowStepNeg
-                dOut = dOut + this.dWidthPadStepNeg;
+                dOut = dOut + this.dWidthPadStepNeg + this.dWidthBtn;
             end
             
             if this.lShowStep
-                dOut = dOut + this.dWidthPadStep;
+                dOut = dOut + this.dWidthPadStep + this.dWidthStep;
             end
             
             if this.lShowStepPos
-                dOut = dOut + this.dWidthPadStepPos;
+                dOut = dOut + this.dWidthPadStepPos + this.dWidthBtn;
             end
             
             if this.lShowUnit
