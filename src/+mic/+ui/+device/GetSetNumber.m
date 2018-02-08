@@ -1125,7 +1125,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 
                 % 2016.11.02 CNA always cast as double.  Underlying unit
                 % may not be double
-                
+                  
                 if ~this.lDisableSet
                     if this.lUseFunctionCallbacks
                         if this.fhIsVirtual()
@@ -1628,7 +1628,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function updatePlayButton(this)
             
             % UIButtonTobble
-            
             try
                 if ~islogical(this.lReady)
                     fprintf('GetSetNumber.updatePlayButton() lReady is not logical\n');

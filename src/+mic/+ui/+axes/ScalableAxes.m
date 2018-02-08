@@ -317,7 +317,7 @@ classdef ScalableAxes < mic.Base
         function changeState(this, src, ~)
             switch src
                 case this.uiButtonFft 
-                    this.fhOnDomainChange(this.cImageDomain)
+                    
                     if this.cImageDomain == this.U8DOMAIN_REAL
                         this.cImageDomain =  this.U8DOMAIN_FFT;
                         this.uiButtonFft.setColor(this.dColorBlue);
@@ -326,6 +326,7 @@ classdef ScalableAxes < mic.Base
                         this.uiButtonFft.setColor(this.dColorGray);
                     end
                     this.replot();
+                    this.fhOnDomainChange(this.cImageDomain)
                 case this.uiButtonLog
                     if this.cLogState == this.U8LOGSTATE_NORMAL
                         this.cLogState = this.U8LOGSTATE_LOG;
