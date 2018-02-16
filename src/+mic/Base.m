@@ -72,11 +72,13 @@ classdef Base < handle
 
             if any(ismember(u8MsgStyle, u8Type))
                  cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
-                 fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
+                %  fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
             
             % Obtrusive message box for errors, since they are bad and want
             % user to be aware
+            
+            %{
             if u8Type == this.u8_MSG_TYPE_ERROR
                 msgbox( ...
                     cMsg, ...
@@ -85,6 +87,7 @@ classdef Base < handle
                     'modal' ...
                 ); 
             end
+            %}
         end
 
         function cID = id(this)
