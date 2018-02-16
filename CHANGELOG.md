@@ -1,3 +1,8 @@
+# 1.0.0-beta.34
+
+- `ui.device.GetSetNumber` SET button now allows mapping from arbitrary value to new value instead of current value to new value.  
+- `ui.device.GetSetNumber` has new method `setValToVal` which is a convenient way of defining a new software offset by passing in a calibrated value and the desired calibrated value.  
+
 # 1.0.0-beta.33
 
 - Adding virtual function callbacks.  See MIC notes for details
