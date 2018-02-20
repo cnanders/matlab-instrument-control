@@ -75,15 +75,21 @@ classdef Base < handle
                  fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
             
-            % Obtrusive message box for errors, since they are bad and want
-            % user to be aware
+            
             if u8Type == this.u8_MSG_TYPE_ERROR
+                
+                % Obtrusive message box for errors, since they are bad and want
+                % user to be aware
+            
+                %{
                 msgbox( ...
                     cMsg, ...
                     'Error', ...
                     'error', ...
                     'modal' ...
-                ); 
+                );
+                %}
+                error(cMsg);
             end
         end
 
