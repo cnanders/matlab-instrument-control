@@ -21,7 +21,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % {uint8 1x1} storage of the index of uipUnit
         u8UnitIndex = uint8(1);
         % {double 1x1 zero offset in raw units when in relative mode}
-        dZeroRaw = 0;
+        dOffsetRel = 0;
         % {logical 1x1 value of uitRel}
         lRelVal = false;
     end
@@ -353,7 +353,29 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.init();
         end
 
+        % @param {double 1x1} dVal1 - current calibrated value (calculated
+        % using config.slope and config.offset if in REL mode, or this.dOffsetRel if in REL
+        % mode)
+        % @param {double 1x1} dVal2 - desired calibrated value (used to
+        % re-compute this.dOffsetRel)
         
+        
+        function setValToNewVal(this, dVal1, dVal2)
+            
+            if  this.uitRel.get()
+                dOffset = this.dOffsetRel;
+            else
+                dOffset = this.getUnit().offset;
+            end
+            
+            dOffsetNew = dOffset - (dVal2 - dVal1)/this.getUnit().slope;
+            this.dOffsetRel = dOffsetNew;
+            
+            this.updateZeroTooltip();
+            % Force to "Rel" mode
+            this.uitRel.set(true);
+            
+        end
 
         
         function build(this, hParent, dLeft, dTop)
@@ -1076,7 +1098,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             st.uitRel = this.uitRel.save();
             st.uipUnit = this.uipUnit.save();
             % st.uieDest = this.uieDest.save();
-            st.dZeroRaw = this.dZeroRaw;
+            st.dOffsetRel = this.dOffsetRel;
         end
                 
         function load(this, st)
@@ -1101,7 +1123,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.uipUnit.load(st.uipUnit);
             end
 
-            this.dZeroRaw = st.dZeroRaw;
+            if isfield(st, 'dOffsetRel')
+                this.dOffsetRel = st.dOffsetRel;
+            end
 
         end
         
@@ -1679,12 +1703,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             
             if (lRel)
-                % Offset is replaced by the stored dZeroRaw in rel mode
+                % Offset is replaced by the stored dOffsetRel in rel mode
                 
                 if stUnit.invert
-                    dOut = stUnit.slope / dCal + this.dZeroRaw;
+                    dOut = stUnit.slope / dCal + this.dOffsetRel;
                 else
-                    dOut = dCal/stUnit.slope + this.dZeroRaw;
+                    dOut = dCal/stUnit.slope + this.dOffsetRel;
                 end
             else
                 if stUnit.invert
@@ -1711,11 +1735,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % cal = slope * (raw - offset)
             
             if (lRel)
-                % Offset is replaced by the stored dZeroRaw in rel mode
+                % Offset is replaced by the stored dOffsetRel in rel mode
                 if (stUnit.invert)
-                    dOut = stUnit.slope * (dRaw - this.dZeroRaw)^-1;
+                    dOut = stUnit.slope * (dRaw - this.dOffsetRel)^-1;
                 else
-                    dOut = stUnit.slope * (dRaw - this.dZeroRaw);
+                    dOut = stUnit.slope * (dRaw - this.dOffsetRel);
                 end
             else
                 if stUnit.invert
@@ -1732,20 +1756,25 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         
-        
+       
         
         % Allow the user to set the current raw position to any desired calibrated value
         function onSetPress(this, src, evt)
                        
-            cePrompt = {'New calibrated value of current position:'};
-            cTitle = 'Input';
+            cePrompt = {'Original Calibrated Value:', 'New Calibrated Value:'};
+            cTitle = 'Set a New Software Offset';
             dLines = 1;
-            ceDefaultAns = {num2str(this.getValCalDisplay())};
+            ceDefaultAns = {num2str(this.getValCalDisplay()), num2str(this.getValCalDisplay())};
+            stOptions = struct(...
+                'Resize', 'on' ...
+            );
             ceAnswer = inputdlg(...
                 cePrompt,...
                 cTitle,...
                 dLines,...
-                ceDefaultAns);
+                ceDefaultAns, ...
+                stOptions ...
+            );
             
             if isempty(ceAnswer)
                 return
@@ -1775,12 +1804,17 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % additionally, you have to consider that the value the person
             % types in is in inverse units.
            
-            dNewOffset = this.getUnit().offset - (str2double(ceAnswer{1}) - this.getValCalDisplay())/this.getUnit().slope;
-            this.dZeroRaw = dNewOffset;
+            %{
+            dOffsetNew = this.getUnit().offset - (str2double(ceAnswer{1}) - this.getValCalDisplay())/this.getUnit().slope;
+            this.dOffsetRel = dOffsetNew;
             
             this.updateZeroTooltip();
             % Force to "Rel" mode
             this.uitRel.set(true);
+            %}
+            
+            this.setValToNewVal(str2double(ceAnswer{1}), str2double(ceAnswer{2}));
+            
             
         end
         
@@ -1789,7 +1823,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.onSetPress(src, evt);
             return;
             
-            this.dZeroRaw = this.getValRaw(); % raw units            
+            this.dOffsetRel = this.getValRaw(); % raw units            
             this.updateZeroTooltip();
             
             % Force to "Rel" mode
@@ -1842,9 +1876,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         function updateZeroTooltip(this)
             cMsg = sprintf(...
-                'Update the stored zero. It is currently %1.*f %s', ...
+                'Set a new software offset. The offset is currently %1.*f %s', ...
                 this.getUnit().precision, ...
-                this.raw2cal(this.dZeroRaw, this.getUnit().name, false), ...
+                this.raw2cal(this.dOffsetRel, this.getUnit().name, false), ...
                 this.getUnit().name ...
             );            
             this.uibZero.setTooltip(cMsg);
