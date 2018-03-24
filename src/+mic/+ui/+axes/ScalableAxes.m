@@ -443,6 +443,10 @@ classdef ScalableAxes < mic.Base
                 this.hAxes.CLim =dLim;
             end
  
+            if isinf(dLim(2))
+                dLim(2) = 1e20;
+            end
+            
             this.hXAxes.YLim = dLim;
             this.hYAxes.YLim = dLim;
             this.hAxes.CLim = dLim;    
