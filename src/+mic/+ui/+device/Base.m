@@ -178,8 +178,9 @@ classdef Base < mic.Base
                     end
                    
                 case 'mic.ui.device.GetNumber'
-                    if ~isa(device, 'mic.interface.device.GetNumber')
-                        cMsg = '"mic.ui.device.GetNumber" UI controls require devices that implement the "mic.interface.device.GetNumber" interface.';
+                    if ~isa(device, 'mic.interface.device.GetNumber') && ...
+                       ~isa(device, 'mic.interface.device.GetSetNumber')
+                        cMsg = '"mic.ui.device.GetNumber" UI controls require devices that implement the "mic.interface.device.GetNumber" or "mic.interface.GetSetNumber" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
                         l = false;
@@ -187,8 +188,9 @@ classdef Base < mic.Base
                     end
                     
                 case 'mic.ui.device.GetText'
-                    if ~isa(device, 'mic.interface.device.GetText')
-                        cMsg = '"mic.ui.device.GetText" UI controls require devices that implement the "mic.interface.device.GetText" interface.';
+                    if ~isa(device, 'mic.interface.device.GetText') && ...
+                       ~isa(device, 'mic.interface.device.GetSetText')
+                        cMsg = '"mic.ui.device.GetText" UI controls require devices that implement the "mic.interface.device.GetText" or "mic.interface.GetSetText" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
                         l = false;
@@ -196,8 +198,9 @@ classdef Base < mic.Base
                     end
                    
                 case 'mic.ui.device.GetLogical'
-                    if ~isa(device, 'mic.interface.device.GetLogical')
-                        cMsg = '"mic.ui.device.GetLogical" UI controls require devices that implement the "mic.interface.device.GetLogical" interface.';
+                    if ~isa(device, 'mic.interface.device.GetLogical') && ...
+                       ~isa(device, 'mic.interface.device.GetSetLogical')
+                        cMsg = '"mic.ui.device.GetLogical" UI controls require devices that implement the "mic.interface.device.GetLogical" or "mic.interface.GetSetLogical" interface.';
                         cTitle = 'Device error';
                         msgbox(cMsg, cTitle, 'warn');
                         l = false;
