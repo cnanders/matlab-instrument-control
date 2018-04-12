@@ -253,7 +253,7 @@ classdef ScalableAxes < mic.Base
             this.uiButtonZoomToggle.setColor(this.dColorBlue);
             this.uiButtonColormapToggle.setColor(this.dColorBlue);
             
-            this.hZoomState.Enable = 'on';
+            this.hZoomState.Enable = 'off';
                        
         end
         
@@ -443,6 +443,10 @@ classdef ScalableAxes < mic.Base
                 this.hAxes.CLim =dLim;
             end
  
+            if isinf(dLim(2))
+                dLim(2) = 1e20;
+            end
+            
             this.hXAxes.YLim = dLim;
             this.hYAxes.YLim = dLim;
             this.hAxes.CLim = dLim;    

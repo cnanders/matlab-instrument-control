@@ -147,6 +147,8 @@ classdef ScanSetup < mic.Base
             this.paramChangeCallback();
         end
         
+
+        
         function paramChangeCallback(this)
             % For testing just echo somethign:
             disp('param change callback');
@@ -213,33 +215,26 @@ classdef ScanSetup < mic.Base
                                     [ceScanRanges{1}(kidx), ceScanRanges{2}(midx)]);
                         end
                     end
-                case 3
-                    for k = 1:length(ceScanRanges{1})
-                        for m = 1:length(ceScanRanges{2})
-                            for p = 1:length(ceScanRanges{3})
-                                if ~this.uicbRaster.get() || (this.uicbRaster.get() && isodd(k) && isodd(m))
+                case 3 % raster only dimensions 2 and 3
+                    for p = 1:length(ceScanRanges{1})
+                        for k = 1:length(ceScanRanges{2})
+                            for m = 1:length(ceScanRanges{3})
+                                if ~this.uicbRaster.get() || isodd(k)
                                     kidx = k;
                                     midx = m;
-                                    pidx = p;
-                                elseif this.uicbRaster.get() && iseven(k) && isodd(m) % raster m
+                                    
+                                else % raster direction
                                     kidx = k;
                                     midx = length(ceScanRanges{2}) - m + 1;
-                                    pidx = p;
-                                elseif this.uicbRaster.get() && isodd(k) && iseven(m) % raster p
-                                    kidx = k;
-                                    midx = m;
-                                    pidx = length(ceScanRanges{3}) - p + 1;
-                                elseif this.uicbRaster.get() && iseven(k) && iseven(m) % raster m and p
-                                    kidx = k;
-                                    midx = length(ceScanRanges{2}) - m + 1;
-                                    pidx = length(ceScanRanges{3}) - p + 1;
                                 end
-                                ceScanStates{end + 1} = struct('indices', [kidx, midx, pidx], 'axes', u8ScanAxisIdx, 'values',...
-                                        [ceScanRanges{1}(kidx), ceScanRanges{2}(midx), ceScanRanges{3}(pidx)]);
+                                ceScanStates{end + 1} = struct('indices', [p, kidx, midx], 'axes', u8ScanAxisIdx, 'values',...
+                                        [ceScanRanges{1}(p), ceScanRanges{2}(kidx), ceScanRanges{3}(midx)]);
+                                
                             end
                         end
                     end
             end % Switch
+            
         end
             
         
@@ -266,7 +261,7 @@ classdef ScanSetup < mic.Base
         % Gets scan ranges for each scan axis
         function ceScanRanges = getScanRanges(this)
             for k = 1:this.dScanAxes
-                ceScanRanges{k} = this.saScanAxisSetups.getScanRange(); 
+                ceScanRanges{k} = this.saScanAxisSetups{k}.getScanRanges(); 
             end
         end
         

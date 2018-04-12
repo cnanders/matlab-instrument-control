@@ -700,7 +700,7 @@ classdef Clock < mic.Base
                         sum(lItems), ...
                         ceTaskNameToDo{n} ...
                     );
-                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
+                    % this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
                     this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
                     % rethrow(mE);
                 end
