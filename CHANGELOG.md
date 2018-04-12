@@ -1,3 +1,8 @@
+# 1.0.0-beta.35
+
+- `mic.Base` now supports new logging thpe `u8_MSG_TYPE_SCAN`
+
+
 # 1.0.0-beta.34
 
 - `ui.device.GetSetNumber` SET button now allows mapping from arbitrary value to new value instead of current value to new value.  

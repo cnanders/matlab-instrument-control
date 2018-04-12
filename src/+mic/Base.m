@@ -21,6 +21,7 @@ classdef Base < handle
         u8_MSG_TYPE_PROP_DELETED = 16
         u8_MSG_TYPE_PROP_DELETE_SKIPPED = 17
         u8_MSG_TYPE_PROP_DELETE_CHECK = 18
+        u8_MSG_TYPE_SCAN = 19
         
         u8_MSG_STYLE_ALL = [1 : 13]
         u8_MSG_STYLE_CLOCK = [7]
@@ -33,6 +34,7 @@ classdef Base < handle
         u8_MSG_STYLE_CREATE_UI_DEVICE = [15]
         u8_MSG_STYLE_CREATE = [14, 15] 
         u8_MSG_STYLE_CLASS_INIT_DELETE = [9, 16, 17, 18]
+        u8_MSG_STYLE_SCAN = [19]
         
     end
     
@@ -44,7 +46,10 @@ classdef Base < handle
     methods 
         
         function this = Base()
-            this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; %this.u8_MSG_STYLE_NONE;
+            this.u8MsgStyle = this.u8_MSG_STYLE_ALL;
+            this.u8MsgStyle = this.u8_MSG_STYLE_SCAN;
+            %this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; 
+            %this.u8MsgStyle = this.u8_MSG_STYLE_NONE;
         end
 
 
@@ -72,7 +77,7 @@ classdef Base < handle
 
             if any(ismember(u8MsgStyle, u8Type))
                  cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
-                %  fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
+                 fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
             
 
