@@ -1,3 +1,8 @@
+# 1.0.0-beta.36
+
+- mic.ui.device.GetSetNumber has improved error message if lValidateByConfigRange is true and the requested destination value is outside of the allowed range.
+
+
 # 1.0.0-beta.35
 
 - `mic.Base` now supports new logging thpe `u8_MSG_TYPE_SCAN`
@@ -233,7 +238,7 @@ Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that sh
 
 
 ### mic.StateScan
-- Added documentation for the “contract” pattern that is useful in classes that utilize a `mic.StateScan`
+- Added documentation for the “contract�? pattern that is useful in classes that utilize a `mic.StateScan`
 
 ### mic.ui.common.Text
 - Now has an optional label.  Set `lShowLabel` to `true` to use the label.  The default value of `lShowLabel` is `false` 
@@ -271,7 +276,7 @@ Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that sh
 ### mic.ui.device.Base
 
 - `setDevice()` now checks that the passed `device` extends the correct `mic.interface.device.*` device interface
-- added `isActive()` method to programatically check if the UI is routing `device` calls to the “virtual” `device`
+- added `isActive()` method to programatically check if the UI is routing `device` calls to the “virtual�? `device`
 
 ### mic.ui.common.List
 
@@ -322,13 +327,13 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 
 ### mic.ui.device.GetSetNumber
 
-- Added [`dValDeviceDefault` = 0] prop that is now used to set the `dVal` prop of the `mic.device.GetSetNumber` “virtual” device on instantiation.
+- Added [`dValDeviceDefault` = 0] prop that is now used to set the `dVal` prop of the `mic.device.GetSetNumber` “virtual�? device on instantiation.
 
 # 1.0.0-beta.3
 
 ### mic.config.GetSetNumber
 
-- Added support for “invert” property in config files.  Unit structures now have a `invert` property of type `logical` that defaults to false if the “invert” field is not provided in the config .json file. 
+- Added support for “invert�? property in config files.  Unit structures now have a `invert` property of type `logical` that defaults to false if the “invert�? field is not provided in the config .json file. 
 
 ### mic.ui.device.GetSetNumber
 
@@ -340,7 +345,7 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 
 ### mic.ui.axes.ZoomPanAxes
 - When zooming, the scene coordinate under the mouse now stays fixed like in Google Maps.  This required adjusting pan x and pan y during zoom.
-- Now supports click to pan.  Children graphical objects, e.g., `patch` with `HitTest` set to `on` (the default) will absorb/block the click from reaching to the low-level `hggroup`.  Anything you want to be able to “click to pan”, must have its `HitTest` property set to `off`.
+- Now supports click to pan.  Children graphical objects, e.g., `patch` with `HitTest` set to `on` (the default) will absorb/block the click from reaching to the low-level `hggroup`.  Anything you want to be able to “click to pan�?, must have its `HitTest` property set to `off`.
 
 ### mic.ui.device.GetSetNumber
 - Adding clock task inside init() instead of build()
@@ -355,7 +360,7 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 # 1.0.0-beta.1
 
 - Namespaced the library (massive restructuring)
-- Using the term “device” throughout instead of “api”
+- Using the term “device�? throughout instead of “api�?
 - HardwareIO\* -> mic.ui.device.GetSet\*
 - HardwareO* -> mic.ui.device.Get\*
 - Removed instrumentation libraries.  They no longer belong in this framework.
