@@ -4,7 +4,7 @@
 - **Breaking change**: build() method now takes left and top as arguments instead of left and bottom
 - New property cTitleOfPanel = '' allows control of the title of the panel
 - New property cShowLabelOfList = true allows showing or hiding the title of the list.  Intension is the UI as a whole looks better if the panel has a title and the list does not
-
+- Removed language of "positions" since this is technically a value recaller.  The values need not be positions. E.g., load position has been replaced with load.
 ### mic.Scan
 - **Breaking change** Now requires passing in cName as first argument.  Previously it did not support cName and simultaneous scans would cause app to crash
 
