@@ -27,6 +27,9 @@ classdef ScanSetup < mic.Base
     
     properties (SetAccess = private)
         
+        % Name of scan
+        cName
+        
         
     end
     
@@ -74,8 +77,6 @@ classdef ScanSetup < mic.Base
         % Path to configuration directory where recipes are stored
         cConfigPath
         
-        % Name of scan
-        cName
         
         dColorBg = [.94 .94 .94]; % MATLAB default
     end

@@ -1,3 +1,18 @@
+# 1.0.0-beta.37
+
+### mic.ui.common.PositionRecaller.  
+- **Breaking change**: build() method now takes left and top as arguments instead of left and bottom
+- New property cTitleOfPanel = '' allows control of the title of the panel
+- New property cShowLabelOfList = true allows showing or hiding the title of the list.  Intension is the UI as a whole looks better if the panel has a title and the list does not
+
+### mic.Scan
+- **Breaking change** Now requires passing in cName as first argument.  Previously it did not support cName and simultaneous scans would cause app to crash
+
+### mic.Clock
+- Improved error reporting / console log when a clock task fails to execute.  The application now stops and the stack trace with links is logged to the console.
+
+
+
 # 1.0.0-beta.36
 
 - mic.ui.device.GetSetNumber has improved error message if lValidateByConfigRange is true and the requested destination value is outside of the allowed range.

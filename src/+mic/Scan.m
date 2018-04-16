@@ -93,6 +93,9 @@ classdef Scan < mic.Base
        
         stUnit
         
+        % {char 1xm} unique identifier within application
+        cName
+        
     end
     
     properties (Access = private)
@@ -188,6 +191,7 @@ classdef Scan < mic.Base
        % constructor
        
         function this= Scan( ....
+                cName, ...
                 clock, ...
                 stRecipe, ...
                 fhSetState, ...
@@ -206,6 +210,7 @@ classdef Scan < mic.Base
         %       @prop {cell of any} values - list of value structures that
         %           define each state. 
         
+            this.cName = cName;
             this.clock = clock;
             this.stUnit = stRecipe.unit;
             this.ceValues = stRecipe.values;
@@ -216,8 +221,10 @@ classdef Scan < mic.Base
             this.fhOnComplete = fhOnComplete;
             this.fhOnAbort = fhOnAbort;
             
-            if nargin > 8
+            if nargin > 9
                 this.dDelay = dDelay;
+            else
+                % use default
             end
             
         end
