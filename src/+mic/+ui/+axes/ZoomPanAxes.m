@@ -112,6 +112,8 @@ classdef ZoomPanAxes < mic.Base
         
         eClick
         eZoom
+        ePanX
+        ePanY
         
     end
     
@@ -281,7 +283,39 @@ classdef ZoomPanAxes < mic.Base
         end
         
         
+        function d = getVisibleSceneWidth(this)
+            dXLim = get(this.hAxes, 'Xlim');
+            d = dXLim(2) - dXLim(1);
+        end
         
+        function d = getVisibleSceneHeight(this)
+            dYLim = get(this.hAxes, 'Ylim');
+            d = dYLim(2) - dYLim(1);
+        end
+        
+        function d = getVisibleSceneLeft(this)
+            dXLim = get(this.hAxes, 'Xlim');
+            d = dXLim(1);
+            
+        end
+        
+        function d = getVisibleSceneBottom(this)
+            dYLim = get(this.hAxes, 'Ylim');
+            d = dYLim(1);
+        end
+        
+        function [dLeft, dBottom, dWidth, dHeight] = getVisibleSceneLBWH(this)
+            
+            dXLim = get(this.hAxes, 'Xlim');
+            dYLim = get(this.hAxes, 'Ylim');
+            
+            dWidth = dXLim(2) - dXLim(1);
+            dHeight = dYLim(2) - dYLim(1);
+           
+            dLeft = dXLim(1);
+            dBottom = dYLim(1);
+            
+        end
                 
         
         %% Destructor
@@ -546,6 +580,8 @@ classdef ZoomPanAxes < mic.Base
             % Set axis limits
             
             set(this.hAxes, 'Xlim', [dLimMin dLimMax]);
+            
+            notify(this, 'ePanX');
               
         end
         
@@ -584,7 +620,7 @@ classdef ZoomPanAxes < mic.Base
             % Set axis limits
             
             set(this.hAxes, 'Ylim', [dLimMin dLimMax]);
-            
+            notify(this, 'ePanY');
         end
         
         function onSliderXPan(this, ~, ~)
@@ -653,39 +689,7 @@ classdef ZoomPanAxes < mic.Base
             
         end
         
-        function d = getVisibleSceneWidth(this)
-            dXLim = get(this.hAxes, 'Xlim');
-            d = dXLim(2) - dXLim(1);
-        end
         
-        function d = getVisibleSceneHeight(this)
-            dYLim = get(this.hAxes, 'Ylim');
-            d = dYLim(2) - dYLim(1);
-        end
-        
-        function d = getVisibleSceneLeft(this)
-            dXLim = get(this.hAxes, 'Xlim');
-            d = dXLim(1);
-            
-        end
-        
-        function d = getVisibleSceneBottom(this)
-            dYLim = get(this.hAxes, 'Ylim');
-            d = dYLim(1);
-        end
-        
-        function [dLeft, dBottom, dWidth, dHeight] = getVisibleSceneLBWH(this)
-            
-            dXLim = get(this.hAxes, 'Xlim');
-            dYLim = get(this.hAxes, 'Ylim');
-            
-            dWidth = dXLim(2) - dXLim(1);
-            dHeight = dYLim(2) - dYLim(1);
-           
-            dLeft = dXLim(1);
-            dBottom = dYLim(1);
-            
-        end
         
         function onWindowButtonMotion(this, src, evt)
             
@@ -857,7 +861,7 @@ classdef ZoomPanAxes < mic.Base
            % VerticalScrollCount
            % scale factor
            
-           dMult = 1.02^(-evt.VerticalScrollCount);
+           dMult = 1.08^(-evt.VerticalScrollCount);
            dZoom1 = this.getZoom();
            dZoom2 = dZoom1 * dMult;
            

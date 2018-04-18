@@ -1,3 +1,11 @@
+# 1.0.0-beta.38
+
+### mic.ui.axes.ZoomPanAxes
+- Exposed methods to get the bounds of the viewable scene
+- Exposed events panX and panY
+
+
+
 # 1.0.0-beta.37
 
 ### mic.ui.common.PositionRecaller.  
