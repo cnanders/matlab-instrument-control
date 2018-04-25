@@ -401,6 +401,7 @@ classdef ScalableAxes < mic.Base
                     this.uitCL.set(sprintf('L: %d%%', round(this.uiSliderL.Value*100)));
                     
                     this.rescale();
+                     this.replot();
                     
                     
                 case this.uiSliderL
@@ -418,6 +419,7 @@ classdef ScalableAxes < mic.Base
                     this.uitCL.set(sprintf('L: %d%%', round(this.uiSliderL.Value*100)));
                     
                     this.rescale();
+                     this.replot();
             end
 %             this.replot();
         end
