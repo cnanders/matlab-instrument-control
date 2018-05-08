@@ -154,6 +154,19 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             cMsg = sprintf('delete() %s', this.cVal);
             % this.msg(cMsg);
         end
+        
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.cVal = this.cVal;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            if isfield(st, 'cVal')
+                this.set(st.cVal)
+            end
+        end
        
        
         
