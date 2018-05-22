@@ -31,6 +31,9 @@ classdef ListDir < mic.ui.common.List
         % {logical 1x1} - show the "choose dir" button
         lShowChooseDir = true
         
+        cOrderByPredicate = 'date'
+        lOrderByReverse = false
+        
     end
     
     properties (Access = private)
@@ -229,10 +232,17 @@ classdef ListDir < mic.ui.common.List
         
         
         function ceReturn = refreshList(this)
+            
+            if this.lOrderByReverse
+                cOrder = 'ascend';
+            else
+                cOrder = 'descend';
+            end
+            
             ceReturn = mic.Utils.dir2cell(...
                 this.cDir, ...
-                'date', ...
-                'ascend', ...
+                this.cOrderByPredicate, ...
+                cOrder, ...
                 this.cFilter ...
             );
         end

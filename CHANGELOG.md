@@ -1,3 +1,10 @@
+# 1.0.0-beta.40
+
+### mic.ui.common.ListDir
+
+- cOrderByPredicate property with varargin syntax
+- lOrderByReverse property settable with varargin syntax
+
 # 1.0.0-beta.39
 
 ### mic.ui.common.Text
