@@ -41,6 +41,18 @@ classdef Scan < mic.Base
        uiButtonStart
        
        lDisableNotify = false
+       
+       % Eventually there should be callbacks passed in that call out to
+       % the mic.Scan class on a timer and update these values.  The
+       % buttons in this UI should serve as a "request" to the scan but the
+       % state of the scan should dictate what the buttons show.
+       
+       % {logical 1x1} - true when paused
+        lPaused = false;
+
+        % {logical 1x1} - true when stop command is called, set to false
+        % when start() is called
+        lStopped = true;
 
     end
     
@@ -80,6 +92,7 @@ classdef Scan < mic.Base
                 'Position', mic.Utils.lt2lb([dLeft dTop this.dWidth this.dHeight], hParent) ...
             );
         
+            drawnow;
             dLeft = 10;
             dTop = this.dHeightPadPanel;
             
@@ -147,6 +160,10 @@ classdef Scan < mic.Base
             this.uiTextTimeComplete.build(this.hPanel, dLeft, dTop, this.dWidthValue, this.dHeightText);
             dTop = dTop + this.dHeightText + this.dHeightPadText;
             
+            this.refreshButtons();
+            
+            
+            
         end
         
         % @param {Status 1x1} - see mic.StateScan
@@ -165,10 +182,66 @@ classdef Scan < mic.Base
             this.uiTextTimeComplete.set(st.cTimeComplete);
         end
         
-        function reset(this)
-            this.uiButtonStart.show();
-            this.uiTogglePause.hide();
-            this.uiButtonAbort.hide();
+        
+        function abort(this)
+            notify(this, 'eAbort');
+            
+            this.lStopped = true;
+            this.lPaused = false;
+            this.refreshButtons();
+            
+        end
+        
+        function pause(this)
+            notify(this, 'ePause');
+            this.lPaused = true;
+            this.refreshButtons();
+        end
+        
+        function resume(this)
+            notify(this, 'eResume');
+            this.lPaused = false;
+            this.refreshButtons();
+        end
+        
+        
+        function refreshButtons(this)
+            if this.lStopped
+                this.uiButtonStart.show();
+                this.uiTogglePause.hide();
+                this.uiButtonAbort.hide();
+            else
+                this.uiButtonStart.hide();
+                this.uiTogglePause.show();
+                this.uiButtonAbort.show();
+            end
+            
+            if this.lPaused
+                % Make sure pause/resume is showing resume
+                if this.uiTogglePause.get() == false
+                    this.lDisableNotify = true;
+                    this.uiTogglePause.set(true)
+                    this.lDisableNotify = false;
+                end
+                this.uiTogglePause.setTooltip('Resume the scan');
+                
+            else
+                % Make sure pause/resume not showing resume
+                if this.uiTogglePause.get()
+                    this.lDisableNotify = true;
+                    this.uiTogglePause.set(false)
+                    this.lDisableNotify = false;
+                end
+                this.uiTogglePause.setTooltip('Pause the scan');
+            end
+            
+        end
+        
+         function reset(this)
+            this.lStopped = true;
+            this.lPaused = false;
+            this.refreshButtons();
+            
         end
         
     end 
@@ -235,24 +308,22 @@ classdef Scan < mic.Base
         end
         
         
-        function onUiButtonStart(this, src, evt)
+       
+        
+        
+        function start(this)
             
-            this.uiButtonStart.hide();
-            this.uiTogglePause.show();
-            this.uiButtonAbort.show();
+            this.lStopped = false;
+            this.lPaused = false;
+            this.refreshButtons();
             
             this.msg('onUiButtonStart');
-            
-            % Make sure pause/resume not showing resume
-            if this.uiTogglePause.get()
-                this.lDisableNotify = true;
-                this.uiTogglePause.set(false)
-                this.lDisableNotify = false;
-            end
-            this.uiTogglePause.setTooltip('Pause the scan');
-            
             notify(this, 'eStart');
-
+        end
+        
+        function onUiButtonStart(this, src, evt)
+            
+            this.start();
             
         end
         
@@ -262,11 +333,9 @@ classdef Scan < mic.Base
             end
             
             if (this.uiTogglePause.get()) % just changed to true, so was playing
-                notify(this, 'ePause');
-                this.uiTogglePause.setTooltip('Resume the scan');
+                this.pause()
             else
-                notify(this, 'eResume');
-                this.uiTogglePause.setTooltip('Pause the scan');
+                this.resume()
             end
         end
         
@@ -275,10 +344,7 @@ classdef Scan < mic.Base
         end
         
         function onUiButtonAbort(this, ~, ~)
-            notify(this, 'eAbort');
-            this.uiButtonStart.show();
-            this.uiTogglePause.hide();
-            this.uiButtonAbort.hide();
+            this.abort()
         end
         
 
