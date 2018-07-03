@@ -24,6 +24,8 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
         dColorBg = [.94 .94 .94]; % MATLAB default
         
         lShowLabel = false;
+        
+        dWidth = 0;
     end
     
     
@@ -50,8 +52,16 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             
        end
        
+       % Returns the width
+       
+       function d = getWidth(this)
+           d = this.dWidth;
+       end
+       
        function build(this, hParent, dLeft, dTop, dWidth, dHeight) 
               
+           this.dWidth = dWidth;
+           
             if this.lShowLabel
                 this.hLabel = uicontrol( ...
                     'Parent', hParent, ...
