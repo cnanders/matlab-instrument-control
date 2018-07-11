@@ -29,7 +29,8 @@ classdef Tabgroup < mic.Base
         % {logical}
         lIsBuilt = false;
         
-        % {function_handle 1x1} callback when user presses up, down, or X
+        % {cell array of function_handle 1xm} one for each item in
+        % ceTabNames
         fhDirectCallback = {@()[]};
         
         % {uint8 1} selected tab index
