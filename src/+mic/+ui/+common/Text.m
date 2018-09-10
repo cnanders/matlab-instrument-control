@@ -20,10 +20,12 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
         cVal = 'cVal'
         cAlign = 'left'
         cFontWeight = 'normal'
-        dFontSize = 10
+        dFontSize = 8
         dColorBg = [.94 .94 .94]; % MATLAB default
         
         lShowLabel = false;
+        
+        dWidth = 0;
     end
     
     
@@ -50,8 +52,16 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             
        end
        
+       % Returns the width
+       
+       function d = getWidth(this)
+           d = this.dWidth;
+       end
+       
        function build(this, hParent, dLeft, dTop, dWidth, dHeight) 
               
+           this.dWidth = dWidth;
+           
             if this.lShowLabel
                 this.hLabel = uicontrol( ...
                     'Parent', hParent, ...
@@ -71,7 +81,8 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             this.hUI = uicontrol( ...
                 'Parent', hParent, ...
                 'HorizontalAlignment', this.cAlign, ...
-                'FontWeight', this.cFontWeight, ... % 'FontSize', this.dFontSize, ...
+                'FontWeight', this.cFontWeight, ... 
+                ...%'FontSize', this.dFontSize, ...
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
                 'Style', 'text', ...
                 'BackgroundColor', this.dColorBg, ...
@@ -135,11 +146,36 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
             
         end
         
+        function setFontSize(this, dFontSize)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'FontSize', dFontSize)
+        end
         
+        function setAlign(this, cAlign)
+            if ~ishandle(this.hUI)
+                return
+            end
+            set(this.hUI, 'HorizontalAlignment', cAlign)
+        end
         
         function delete(this)
             cMsg = sprintf('delete() %s', this.cVal);
             % this.msg(cMsg);
+        end
+        
+        % @return {struct} state to save
+        function st = save(this)
+            st = struct();
+            st.cVal = this.cVal;
+        end
+        
+        % @param {struct} state to load
+        function load(this, st)
+            if isfield(st, 'cVal')
+                this.set(st.cVal)
+            end
         end
        
        

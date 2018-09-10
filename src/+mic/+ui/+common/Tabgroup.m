@@ -29,8 +29,9 @@ classdef Tabgroup < mic.Base
         % {logical}
         lIsBuilt = false;
         
-        % {function_handle 1x1} callback when user presses up, down, or X
-        fhDirectCallback = @()[];
+        % {cell array of function_handle 1xm} one for each item in
+        % ceTabNames
+        fhDirectCallback = {@()[]};
         
         % {uint8 1} selected tab index
         u8Selected
@@ -59,6 +60,20 @@ classdef Tabgroup < mic.Base
         end
         
         
+        function cName = getSelectedTabName(this)
+            uitSelectedTab = this.hUI.SelectedTab;
+            cName = uitSelectedTab.Title;
+        end
+        
+        function selectTabByName(this, cName)
+            uitTab = this.getTabByName(cName);
+            this.hUI.SelectedTab = uitTab;
+        end
+        
+        function selectTabByIndex(this, dIndex)
+            uitTab = this.getTabByIndex(dIndex);
+            this.hUI.SelectedTab = uitTab;
+        end
        
         
         function uitTab = getTabByName(this, cName)
@@ -69,23 +84,39 @@ classdef Tabgroup < mic.Base
             uitTab = this.uitTabs{dIndex};
         end
         
+        function onSelectionChange(this, src, evt)
+            cNewTabName = evt.NewValue.Title;
+            
+            % get new tab index:
+            dIdx = find(strcmp(this.ceTabNames, cNewTabName));
+            
+            % Call callback associated with this tab:
+            if length(this.fhDirectCallback) >= dIdx
+                this.fhDirectCallback{dIdx}();
+            end
+            
+            
+        end
+    
         
         % Builds the UI elements
-        function build(this,  hParent,  dLeft, dBot,  dWidth,  dHeight ...
+        function build(this,  hParent,  dLeft, dTop,  dWidth,  dHeight ...
                 )
             
             
             this.hUI = uitabgroup( ...
                 'Parent', hParent, ...
                 'Unit', 'pixels', ...
-                'Position', [dLeft, dBot, dWidth, dHeight] ...
+                'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
+                'SelectionChangedFcn', @this.onSelectionChange ...
                 );
             
             for k = 1:length(this.ceTabNames)
                 cTabname = this.ceTabNames{k};
                 
                 this.uitTabs{k} = uitab('parent', this.hUI, ...
-                                        'title', cTabname);
+                                        'title', cTabname, ...
+                                        'Unit', 'pixels');
             end
             
             

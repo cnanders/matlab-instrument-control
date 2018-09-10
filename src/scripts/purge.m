@@ -42,7 +42,12 @@ for n = 1:length(ceVars)
                     ceVars{n}, ...
                     class(eval(ceVars{n})) ...
                 );
-                delete(eval(ceVars{n}));
+                try
+                    delete(eval(ceVars{n}));
+                catch
+                    fprintf('purge.m delete failed in try/catch\n');
+                end
+                
             else 
                fprintf('purge.m OBJECT + HANDLE + INVALID %s\n', ceVars{n}); 
             end
@@ -52,7 +57,12 @@ for n = 1:length(ceVars)
                 ceVars{n}, ...
                 class(eval(ceVars{n})) ...
             );
-            delete(eval(ceVars{n}));
+            try
+                delete(eval(ceVars{n}));
+            catch
+                fprintf('purge.m delete failed in try/catch\n');
+            end
+            
             % eval(ceVars{n}).delete();
         end
             

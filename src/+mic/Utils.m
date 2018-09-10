@@ -22,6 +22,9 @@ classdef Utils
         
         dColorEditBgVerified    = [0.07 0.38 0.07];
         dColorTextBgVerified    = [0.07 0.38 0.07];
+        
+        dColorEditBgBad         = [0.88 0.57 0.57];
+        dColorTextBgBad         = [0.88 0.57 0.57];
          
         cUpDir = sprintf('..%s', filesep)
     end
@@ -188,12 +191,150 @@ classdef Utils
 
                 out = dLTWH;
                 out(2) = dBottom;
-            catch err
+            catch mE
                 disp('Utils::lt2lb unable to draw the element to the specified position')
                 out = dLTWH
             end
         end
 
+
+        % MATLAB functional programming utilities:
+
+
+        function out = tern(lCondition, mixedTrueValue, mixedFalseValue)
+        % Implements a ternary value operator.  Returns either
+        % mixedTrueValue or mixedFalseValue depending on lCondition
+            if lCondition
+                out = mixedTrueValue;
+            else
+                out = mixedFalseValue;
+            end
+        end
+
+        function ternEval(lCondition, fhTrueLambda, fhFalseLambda)
+        % Implements a ternary function evaluator.  Evaulates either fhTrueLambda or fhFalseLambda
+        % depending on lCondition.  Lambdas must be anonymous functions with no inputs
+            if lCondition
+                fhTrueLambda();
+            else
+                fhFalseLambda();
+            end
+        end
+
+        function out = iif(varargin) 
+        % Inline If.  Pass {condition, value, condition, value...}
+        % returns the first value with the true condition.
+            out = varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+        end
+
+
+        function out = map(mixedList, fhLambda, nargout)
+            if nargin == 2
+                nargout = 1;
+            end
+            
+            % Functional programming map.  FhLambda can have between 1 and 3
+            % arguments, where arguments are (element, index, array)
+            switch nargin(fhLambda)
+                case 1
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm);
+                case 2
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm, idx);
+                case 3
+                    fhIteratee = fhLambda;
+            end
+
+            if iscell(mixedList)
+                out = cell(size(mixedList));
+                for k = 1:numel(mixedList)
+                    if nargout == 0
+                        fhIteratee(mixedList{k}, k, mixedList);
+                    else
+                        out{k} = fhIteratee(mixedList{k}, k, mixedList);
+                    end
+                end
+            else
+                out = zeros(size(mixedList));
+                for k = 1:numel(mixedList)
+                    if nargout == 0
+                        out(k) = fhIteratee(mixedList(k), k, mixedList);
+                    end
+                end
+            end
+
+        end
+
+        function out = filter(mixedList, fhLambda)
+        % Functional programming filter.  FhLambda can have between 1 and 3
+        % arguments, where arguments are (element, index, array)
+            switch nargin(fhLambda)
+                case 1
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm);
+                case 2
+                    fhIteratee = @(elm, idx, ar) fhLambda(elm, idx);
+                case 3
+                    fhIteratee = fhLambda;
+            end
+
+            if iscell(mixedList)
+                out = {};
+                for k = 1:numel(mixedList)
+                    if fhIteratee(mixedList{k}, k, mixedList)
+                        out{end + 1} = mixedList{k};
+                    end
+                end
+            else
+                out = [];
+                for k = 1:numel(mixedList)
+                    if fhIteratee(mixedList(k), k, mixedList)
+                        out(end + 1) = mixedList(k);
+                    end
+                end
+            end
+        end
+
+        % Jesse Hopkins: https://www.mathworks.com/matlabcentral/fileexchange/22209-genpath-exclude
+        function p = genpath_exclude(d,excludeDirs)
+            % if the input is a string, then use it as the searchstr
+            if ischar(excludeDirs)
+                excludeStr = excludeDirs;
+            else
+                excludeStr = '';
+                if ~iscellstr(excludeDirs)
+                    error('excludeDirs input must be a cell-array of strings');
+                end
+                
+                for i = 1:length(excludeDirs)
+                    excludeStr = [excludeStr '|^' excludeDirs{i} '$'];
+                end
+            end
+            
+            
+            % Generate path based on given root directory
+            files = dir(d);
+            if isempty(files)
+                return
+            end
+            
+            % Add d to the path even if it is empty.
+            p = [d pathsep];
+            
+            % set logical vector for subdirectory entries in d
+            isdir = logical(cat(1,files.isdir));
+            %
+            % Recursively descend through directories which are neither
+            % private nor "class" directories.
+            %
+            dirs = files(isdir); % select only directory entries from the current listing
+            
+            for i=1:length(dirs)
+                dirname = dirs(i).name;
+                %NOTE: regexp ignores '.', '..', '@.*', and 'private' directories by default.
+                if ~any(regexp(dirname,['^\.$|^\.\.$|^\@.*|^private$|' excludeStr ],'start'))
+                    p = [p mic.Utils.genpath_exclude(fullfile(d,dirname),excludeStr)]; % recursive calling of this function.
+                end
+            end
+        end
 
     end % Static
 end

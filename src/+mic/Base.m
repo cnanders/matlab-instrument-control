@@ -18,8 +18,13 @@ classdef Base < handle
         u8_MSG_TYPE_DELETE = 13
         u8_MSG_TYPE_CREATE_UI_COMMON = 14
         u8_MSG_TYPE_CREATE_UI_DEVICE = 15
+        u8_MSG_TYPE_PROP_DELETED = 16
+        u8_MSG_TYPE_PROP_DELETE_SKIPPED = 17
+        u8_MSG_TYPE_PROP_DELETE_CHECK = 18
+        u8_MSG_TYPE_SCAN = 19
         
-        u8_MSG_STYLE_ALL = [1 : 13]
+        u8_MSG_STYLE_ALL = [1 : 19]
+        u8_MSG_STYLE_ALL_LESS_CLOCK = [1 : 6, 8 : 19]
         u8_MSG_STYLE_CLOCK = [7]
         u8_MSG_STYLE_JAVA = [5]
         u8_MSG_STYLE_EVENTS_AND_JAVA = [3, 4, 5, 6]
@@ -29,6 +34,9 @@ classdef Base < handle
         u8_MSG_STYLE_NONE = []
         u8_MSG_STYLE_CREATE_UI_DEVICE = [15]
         u8_MSG_STYLE_CREATE = [14, 15] 
+        u8_MSG_STYLE_CLASS_INIT_DELETE = [9, 16, 17, 18]
+        u8_MSG_STYLE_SCAN = [19]
+        u8_MSG_STYLE_INFO = [1]
         
     end
     
@@ -37,10 +45,14 @@ classdef Base < handle
     end
     
     
-    methods
+    methods 
         
         function this = Base()
-            this.u8MsgStyle = this.u8_MSG_STYLE_NONE; %this.u8_MSG_STYLE_NONE;
+            % this.u8MsgStyle = this.u8_MSG_STYLE_ALL;
+            %this.u8MsgStyle = this.u8_MSG_STYLE_INFO;
+            this.u8MsgStyle = this.u8_MSG_STYLE_SCAN;
+            %this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; 
+            % this.u8MsgStyle = this.u8_MSG_STYLE_NONE;
         end
 
 
@@ -70,6 +82,28 @@ classdef Base < handle
                  cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
                  fprintf('%s: %s %s\n', cTimestamp, this.id(), cMsg);
             end
+            
+
+            % Obtrusive message box for errors, since they are bad and want
+            % user to be aware
+            
+
+            if u8Type == this.u8_MSG_TYPE_ERROR
+                
+                % Obtrusive message box for errors, since they are bad and want
+                % user to be aware
+            
+                %{
+                msgbox( ...
+                    cMsg, ...
+                    'Error', ...
+                    'error', ...
+                    'modal' ...
+                );
+                %}
+                error(cMsg);
+            end
+           
         end
 
         function cID = id(this)

@@ -27,9 +27,14 @@ classdef PositionRecaller < mic.ui.common.Base
         uibSave
         uibLoad
         
+        lDisableSave = false
+        
         uiePosName
         
         hPanel
+        
+        lShowLabelOfList = true
+        cTitleOfPanel = ''
         
         
     end
@@ -60,8 +65,11 @@ classdef PositionRecaller < mic.ui.common.Base
             end
             
            
-            this.uiList = mic.ui.common.List('cLabel', this.cName, 'lShowRefresh', false, ...
-                        'fhDirectCallback', @this.syncAndSave);
+            this.uiList = mic.ui.common.List(...
+                'cLabel', this.cName, ...
+                'lShowRefresh', false, ...
+                'lShowLabel', this.lShowLabelOfList, ...
+                'fhDirectCallback', @this.syncAndSave);
             
             % Try loading corresponding JSON
 
@@ -80,14 +88,14 @@ classdef PositionRecaller < mic.ui.common.Base
             
             
             this.uibSave = mic.ui.common.Button(...
-                'cText', 'Save position', 'fhDirectCallback', @this.savePosition ...
+                'cText', 'Save', 'fhDirectCallback', @this.savePosition ...
             );
             this.uibLoad = mic.ui.common.Button(...
-                'cText', 'Load position', 'fhDirectCallback', @this.loadPosition ...
+                'cText', 'Load', 'fhDirectCallback', @this.loadPosition ...
             );
         
 
-            this.uiePosName = mic.ui.common.Edit('cLabel', 'Positon label', 'cType', 'c');
+            this.uiePosName = mic.ui.common.Edit('cLabel', 'Save As:', 'cType', 'c');
 
         
         end
@@ -99,18 +107,28 @@ classdef PositionRecaller < mic.ui.common.Base
             this.hPanel = uipanel(...
                 'Parent', hParent,...
                 'Units', 'pixels',...
-                'Title', '',...
-                'FontWeight', 'Bold',...
+                'Title', this.cTitleOfPanel,...
                 'Clipping', 'on',...
-                'Position', [dLeft, dTop, dWidth, dHeight] ...
-                );
+                'Position', mic.Utils.lt2lb(...
+                    [ ...
+                        dLeft ...
+                        dTop ...
+                        dWidth ...
+                        dHeight ...
+                    ], ...
+                    hParent ...
+                ) ...
+            );
             
-            this.uiList.build(this.hPanel, 10, 7, dWidth/2 + 25, dHeight - 57);
+            this.uiList.build(this.hPanel, 10, 20, dWidth/2 + 25, dHeight - 72); % dWidth/2 + 25
             this.uibLoad.build(this.hPanel,  dWidth/2 + 50, 40, 110, 20);
-            this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 110, 20);
             
-            this.uiePosName.build(this.hPanel,  dWidth/2 + 50, 70, 110, 20);
-            this.uiePosName.set('New_position');
+            if ~this.lDisableSave
+                this.uibSave.build(this.hPanel,  dWidth/2 + 50, 110, 110, 20);
+
+                this.uiePosName.build(this.hPanel,  dWidth/2 + 50, 70, 110, 20);
+                this.uiePosName.set('New');
+            end
         end
 
         function syncAndSave(this)
@@ -146,7 +164,12 @@ classdef PositionRecaller < mic.ui.common.Base
             
         end
         
-        function savePosition(this, src)
+        function programmaticSave(this, cStoreName)
+            this.uiePosName.set(cStoreName);
+            this.savePosition();
+        end
+        
+        function savePosition(this, ~, ~)
             cPosName = this.uiePosName.get();
             
             % load options
@@ -178,7 +201,7 @@ classdef PositionRecaller < mic.ui.common.Base
             this.syncAndSave();
         end
         
-        function loadPosition(this, src)
+        function loadPosition(this, ~, ~)
             % get selected option:
             cSelectedVal = this.uiList.get();
             

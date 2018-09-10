@@ -147,8 +147,8 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
                     this.clock.remove(this.id());                
                 end
 
-            catch err
-                this.msg(getReport(err), 2);
+            catch mE
+                this.msg(mE.message, 2);
             end
 
             % Update counter

@@ -1,4 +1,88 @@
-﻿# 1.0.0-beta.27
+# 1.0.0-beta.40
+
+### mic.ui.common.ListDir
+
+- cOrderByPredicate property with varargin syntax
+- lOrderByReverse property settable with varargin syntax
+
+# 1.0.0-beta.39
+
+### mic.ui.common.Text
+- save and load methods
+
+
+# 1.0.0-beta.38
+
+### mic.ui.axes.ZoomPanAxes
+- Exposed methods to get the bounds of the viewable scene
+- Exposed events panX and panY
+
+# 1.0.0-beta.37
+
+### mic.ui.common.PositionRecaller.  
+- **Breaking change**: build() method now takes left and top as arguments instead of left and bottom
+- New property cTitleOfPanel = '' allows control of the title of the panel
+- New property cShowLabelOfList = true allows showing or hiding the title of the list.  Intension is the UI as a whole looks better if the panel has a title and the list does not
+- Removed language of "positions" since this is technically a value recaller.  The values need not be positions. E.g., load position has been replaced with load.
+### mic.Scan
+- **Breaking change** Now requires passing in cName as first argument.  Previously it did not support cName and simultaneous scans would cause app to crash
+
+### mic.Clock
+- Improved error reporting / console log when a clock task fails to execute.  The application now stops and the stack trace with links is logged to the console.
+
+
+
+# 1.0.0-beta.36
+
+- mic.ui.device.GetSetNumber has improved error message if lValidateByConfigRange is true and the requested destination value is outside of the allowed range.
+
+
+# 1.0.0-beta.35
+
+- `mic.Base` now supports new logging thpe `u8_MSG_TYPE_SCAN`
+
+
+# 1.0.0-beta.34
+
+- `ui.device.GetSetNumber` SET button now allows mapping from arbitrary value to new value instead of current value to new value.  
+- `ui.device.GetSetNumber` has new method `setValToVal` which is a convenient way of defining a new software offset by passing in a calibrated value and the desired calibrated value.  
+
+# 1.0.0-beta.33
+
+- Adding virtual function callbacks.  See MIC notes for details
+
+# 1.0.0-beta.32
+
+- Added new functional programming constructs in `mic.Utils`
+
+- Updated `mic.ui.device` elements to accept function callbacks
+
+
+# 1.0.0-beta.31
+
+- All instances of getReport(Exception) have been replaced by Exception.message
+
+
+# 1.0.0-beta.30
+
+- `mic.Base` now shows `msgbox` when `msg()` is called with a type of `u8_MSG_TYPE_ERROR`
+
+# 1.0.0-beta.29
+- Changes to the usability of `mic.ui.axes.ScalableAxes.m` to add some
+  new centering functionality.
+
+- Adding a logical value to `mic.ui.common.Edit` to allow disabling of callback when set method is programmatically called.
+
+- Added a new colorscheme to `Utils` to represent an error state.
+
+- Updates to `ScalableAxis` to make the slider position correct with respect to the main figure.
+
+
+# 1.0.0-beta.28
+
+- Updated `mic.ui.device.GetSetText` to use log typing
+
+# 1.0.0-beta.27
 
 ### mic.ui.common.Edit/Button/Popup/PopupStruct/Checkbox
 
@@ -11,9 +95,10 @@ Updated `fhDirectCallback` to have two args: `(src, evt)` to match standard call
 Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `notify()`
 
 
-# 1.0.0-beta.25
+- Adding accessor for u8Index in `Scan.m`
+
 - Updating `mic.ui.axes.ScalableAxes.m` for bug fixes and customizable
-  scaling
+
 
 - Fixed a bug in `mic.scan` causing it to fail to stop when stop() is called during a state change or an acquisition. Also fixing a bug causing raster scanning to fail in `mic.ui.common.ScanSetup`
 
@@ -34,6 +119,9 @@ Updated mic.ui.common.Edit so it calls `fhDirectCallback()` any time it does `no
 - Adding `DeferredActionScheduler`, a class for executing deferred actions subject to a trigger condition.  Useful for scheduling asynchronous actions that need to wait for certain states, such as waiting for a stage to home or move.
 
 - Refactoring `SaveLoadList.m` into `PositionRecaller.m`, a UI class for saving and loading coupled-axis states into JSON.
+
+- Adding syncDestination method to `mic.ui.device.GetSetNumber` to make edit box sync with actual read value.
+
 
 # 1.0.0-beta.23
 
@@ -184,7 +272,7 @@ Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that sh
 
 
 ### mic.StateScan
-- Added documentation for the “contract” pattern that is useful in classes that utilize a `mic.StateScan`
+- Added documentation for the “contract�? pattern that is useful in classes that utilize a `mic.StateScan`
 
 ### mic.ui.common.Text
 - Now has an optional label.  Set `lShowLabel` to `true` to use the label.  The default value of `lShowLabel` is `false` 
@@ -222,7 +310,7 @@ Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that sh
 ### mic.ui.device.Base
 
 - `setDevice()` now checks that the passed `device` extends the correct `mic.interface.device.*` device interface
-- added `isActive()` method to programatically check if the UI is routing `device` calls to the “virtual” `device`
+- added `isActive()` method to programatically check if the UI is routing `device` calls to the “virtual�? `device`
 
 ### mic.ui.common.List
 
@@ -273,13 +361,13 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 
 ### mic.ui.device.GetSetNumber
 
-- Added [`dValDeviceDefault` = 0] prop that is now used to set the `dVal` prop of the `mic.device.GetSetNumber` “virtual” device on instantiation.
+- Added [`dValDeviceDefault` = 0] prop that is now used to set the `dVal` prop of the `mic.device.GetSetNumber` “virtual�? device on instantiation.
 
 # 1.0.0-beta.3
 
 ### mic.config.GetSetNumber
 
-- Added support for “invert” property in config files.  Unit structures now have a `invert` property of type `logical` that defaults to false if the “invert” field is not provided in the config .json file. 
+- Added support for “invert�? property in config files.  Unit structures now have a `invert` property of type `logical` that defaults to false if the “invert�? field is not provided in the config .json file. 
 
 ### mic.ui.device.GetSetNumber
 
@@ -291,7 +379,7 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 
 ### mic.ui.axes.ZoomPanAxes
 - When zooming, the scene coordinate under the mouse now stays fixed like in Google Maps.  This required adjusting pan x and pan y during zoom.
-- Now supports click to pan.  Children graphical objects, e.g., `patch` with `HitTest` set to `on` (the default) will absorb/block the click from reaching to the low-level `hggroup`.  Anything you want to be able to “click to pan”, must have its `HitTest` property set to `off`.
+- Now supports click to pan.  Children graphical objects, e.g., `patch` with `HitTest` set to `on` (the default) will absorb/block the click from reaching to the low-level `hggroup`.  Anything you want to be able to “click to pan�?, must have its `HitTest` property set to `off`.
 
 ### mic.ui.device.GetSetNumber
 - Adding clock task inside init() instead of build()
@@ -306,7 +394,7 @@ Added `save()` and `load()` methods and `saveToDisk()` and `loadFromDisk()` meth
 # 1.0.0-beta.1
 
 - Namespaced the library (massive restructuring)
-- Using the term “device” throughout instead of “api”
+- Using the term “device�? throughout instead of “api�?
 - HardwareIO\* -> mic.ui.device.GetSet\*
 - HardwareO* -> mic.ui.device.Get\*
 - Removed instrumentation libraries.  They no longer belong in this framework.

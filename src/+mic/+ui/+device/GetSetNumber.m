@@ -21,7 +21,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % {uint8 1x1} storage of the index of uipUnit
         u8UnitIndex = uint8(1);
         % {double 1x1 zero offset in raw units when in relative mode}
-        dZeroRaw = 0;
+        dOffsetRel = 0;
         % {logical 1x1 value of uitRel}
         lRelVal = false;
     end
@@ -42,6 +42,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   tall. 2 = narrow, twice as tall. 
         u8Layout = uint8(1); 
         % lIsThere 
+
+
+        
+
 
     end
 
@@ -72,6 +76,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         dWidthPadDest = 5;
         dWidthPadPlay = 0;
         dWidthPadJog = 0;
+        dWidthPadStepNeg = 0;
+        dWidthPadStep = 0;
+        dWidthPadStepPos = 0;
         dWidthPadUnit = 0;
         dWidthPadRel = 0;
         dWidthPadZero = 0;
@@ -194,6 +201,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % {logical 1x1}
         lShowJog = true
         % {logical 1x1}
+        lShowStepNeg = true
+        % {logical 1x1}
+        lShowStep = true
+        % {logical 1x1}
+        lShowStepPos = true;
+        % {logical 1x1}
         lShowDest = true
         % {logical 1x1}
         lShowPlay = true
@@ -214,6 +227,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         % {logical 1x1} - enable to have config file set valid destinations
         lValidateByConfigRange = false
+        
+        lDisableMoveToDestOnDestEnter = false
                 
         uitxLabelName
         uitxLabelVal
@@ -241,6 +256,38 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         dValDeviceDefault = 0
         
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+        % {function handle 1x1} 
+        fhGet 
+
+        % {function handle 1x1} 
+        fhSet
+
+        % {function handle 1x1} 
+        fhStop
+
+        % {function handle 1x1} 
+        fhIsReady 
+
+        % {function handle 1x1} 
+        fhIsInitialized
+
+        % {function handle 1x1} 
+        fhInitialize
+        
+        % {function handle 1x1} 
+        fhIndex
+        
+        % Adding virtual methods
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhGetV 
+        fhSetV
+        fhIsReadyV
+        fhStopV
+        fhIsInitializedV
+        fhInitializeV
+        fhIndexV
+
     end
     
 
@@ -294,7 +341,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 
             
             if this.lDisableSet == true
-                this.lShowJog = false; 
+                this.lShowJog = false;
+                this.lShowStepNeg = false;
+                this.lShowStep = false;
+                this.lShowStepPos = false;
                 this.lShowStores = false; 
                 this.lShowPlay = false; 
                 this.lShowDest = false; 
@@ -303,7 +353,29 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.init();
         end
 
+        % @param {double 1x1} dVal1 - current calibrated value (calculated
+        % using config.slope and config.offset if in REL mode, or this.dOffsetRel if in REL
+        % mode)
+        % @param {double 1x1} dVal2 - desired calibrated value (used to
+        % re-compute this.dOffsetRel)
         
+        
+        function setValToNewVal(this, dVal1, dVal2)
+            
+            if  this.uitRel.get()
+                dOffset = this.dOffsetRel;
+            else
+                dOffset = this.getUnit().offset;
+            end
+            
+            dOffsetNew = dOffset - (dVal2 - dVal1)/this.getUnit().slope;
+            this.dOffsetRel = dOffsetNew;
+            
+            this.updateZeroTooltip();
+            % Force to "Rel" mode
+            this.uitRel.set(true);
+            
+        end
 
         
         function build(this, hParent, dLeft, dTop)
@@ -448,20 +520,31 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             end 
 
             % Jog
-            if this.lShowJog
-                dLeft = dLeft + this.dWidthPadJog;
+            if this.lShowStepNeg
+                dLeft = dLeft + this.dWidthPadStepNeg;
                 if this.lShowLabels
                     this.uitxLabelJogL.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
                 this.uibStepNeg.build(this.hPanel, dLeft, dTop, this.dWidthBtn, this.dHeightBtn);
                 dLeft = dLeft + this.dWidthBtn;
+                
+            end
 
+            if this.lShowStep
+                
+                dLeft = dLeft + this.dWidthPadStep;
+                
                 if this.lShowLabels
                     this.uitxLabelJog.build(this.hPanel, dLeft, dTopLabel, this.dWidthStep, this.dHeightLabel);
                 end
                 this.uieStep.build(this.hPanel, dLeft, dTop, this.dWidthStep, this.dHeightEdit);
                 dLeft = dLeft + this.dWidthStep;
+                
+            end
+            
+            if this.lShowStepPos
 
+                dLeft = dLeft + this.dWidthPadStepPos;
                 if this.lShowLabels
                     this.uitxLabelJogR.build(this.hPanel, dLeft, dTopLabel, this.dWidthBtn, this.dHeightLabel);
                 end
@@ -584,7 +667,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
         
         function syncDestination(this)
-        % SETDESTCALABS Set the destination mic.ui.common.Edit value to
+        % SYNCDESTINATION Set the destination mic.ui.common.Edit value to
         % read what the actual calibrated value is.  This is useful when
         % manually setting the destnation value independent of the Edit UI
             dPosCal = str2double(sprintf(...
@@ -699,14 +782,25 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % update its value from the device Device.
             
            
-            this.getDevice().set(dRaw);
+            if this.lUseFunctionCallbacks
+                mic.Utils.ternEval(this.fhIsVirtual(), ...
+                    @()this.fhSetV(dRaw), @()this.fhSet(dRaw));
+            else
+                this.getDevice().set(dRaw);
+            end
                        
         end
         
         function stop(this)
         %STOPMOVE Aborts the current motion
         %   HardwareIO.stopMove()
-            this.getDevice().stop();
+
+            if this.lUseFunctionCallbacks
+                 mic.Utils.ternEval(this.fhIsVirtual(), ...
+                    @this.fhStopV, @this.fhStop);
+            else
+                this.getDevice().stop();
+            end
             
         end
 
@@ -714,8 +808,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function index(this)
         %INDEX Moves the HIO to the index position
         %   HardwareIO.index()
-        
-            this.getDevice().index();
+            if this.lUseFunctionCallbacks
+                mic.Utils.ternEval(this.fhIsVirtual(), ...
+                    @this.fhIndexV, @this.fhIndex);
+            else
+                this.getDevice().index();
+            end
             
         end
         
@@ -807,8 +905,17 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %
         %   If you want the value showed in the display (with the active
         %   display unit and abs/rel state use getValCalDisplay()
-                        
-            dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
+
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    dOut = this.raw2cal(this.fhGetV(), cUnit, false);
+                else
+                    dOut = this.raw2cal(this.fhGet(), cUnit, false);
+                end
+            else
+                dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
+            end
+            
             
         end
         
@@ -819,14 +926,34 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   @returns {double} - the calibrated value
         %
         %   see also VALCAL 
-                        
-            dOut = this.raw2cal(this.getDevice().get(), this.getUnit().name, this.uitRel.get());
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    dOut = this.raw2cal(this.fhGetV(), this.getUnit().name, this.uitRel.get());
+                else
+                    dOut = this.raw2cal(this.fhGet(), this.getUnit().name, this.uitRel.get());
+                end
+                
+            else
+                dOut = this.raw2cal(this.getDevice().get(), this.getUnit().name, this.uitRel.get());
+            end
+
+            
             
         end
         
         function dOut = getValRaw(this)
         %VALRAW Get the value (not the destination) in raw units. 
-           dOut = this.getDevice().get(); 
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    dOut = this.fhGetV(); 
+                else
+                    dOut = this.fhGet(); 
+                end
+                
+            else
+                dOut = this.getDevice().get(); 
+            end
+           
         end
         
         
@@ -971,7 +1098,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             st.uitRel = this.uitRel.save();
             st.uipUnit = this.uipUnit.save();
             % st.uieDest = this.uieDest.save();
-            st.dZeroRaw = this.dZeroRaw;
+            st.dOffsetRel = this.dOffsetRel;
         end
                 
         function load(this, st)
@@ -996,7 +1123,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.uipUnit.load(st.uipUnit);
             end
 
-            this.dZeroRaw = st.dZeroRaw;
+            if isfield(st, 'dOffsetRel')
+                this.dOffsetRel = st.dOffsetRel;
+            end
 
         end
         
@@ -1024,9 +1153,18 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 
                 % 2016.11.02 CNA always cast as double.  Underlying unit
                 % may not be double
-                
+                  
                 if ~this.lDisableSet
-                    this.lReady = this.getDevice().isReady();
+                    if this.lUseFunctionCallbacks
+                        if this.fhIsVirtual()
+                            this.lReady = this.fhIsReadyV();
+                        else
+                            this.lReady = this.fhIsReady();
+                        end
+                    else
+                        this.lReady = this.getDevice().isReady();
+                    end
+                    
                     this.updatePlayButton()
                 else
                     % The Device(V) doesn't implement isReady since this is a
@@ -1037,15 +1175,15 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.updateInitializedButton();
                                 
                
-            catch err
-                this.msg(getReport(err), this.u8_MSG_TYPE_ERROR);
+            catch mE
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
         %         %AW(5/24/13) : Added a timer stop when the axis instance has been
         %         %deleted
-        %         if (strcmp(err.identifier,'MATLAB:class:InvalidHandle'))
+        %         if (strcmp(mE.identifier,'MATLAB:class:InvalidHandle'))
         %                 %msgbox({'Axis Timer has been stopped','','NON-CRITICAL ERROR','This textbox is here for debugging error'});
         %                 stop(this.t);
         %         else
-        %             this.msg(getReport(err));
+        %             this.msg(mE.message);
         %         end
         
                 % CA 2016 remove the task from the timer
@@ -1053,6 +1191,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                    this.clock.has(this.id())
                     this.clock.remove(this.id());
                 end
+                
+                error(mE);
                 
             end %try/catch
 
@@ -1148,9 +1288,19 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uitxName = mic.ui.common.Text(...
                 'cVal', this.cLabel ...
             );
-
-            this.setDeviceVirtual(this.newDeviceVirtual());
+        
+            vdVirtualDevice = this.newDeviceVirtual();
+            this.setDeviceVirtual(vdVirtualDevice);
             
+            % RM 2/2018 set function callbacks:
+            this.fhGetV             = @()vdVirtualDevice.get();
+            this.fhSetV             = @(dVal)vdVirtualDevice.set(dVal);
+            this.fhIsReadyV         = @()vdVirtualDevice.isReady();
+            this.fhStopV            = @()vdVirtualDevice.stop();
+            this.fhIsInitializedV   = @()vdVirtualDevice.isInitialized();
+            this.fhInitializeV      = @()vdVirtualDevice.initialize();
+            this.fhIndexV           = @()[];
+
             
             % if ~isempty(this.config.ceStores)
                 this.uipStores = mic.ui.common.PopupStruct(...
@@ -1264,6 +1414,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         end
         
         function onDestEnter(this, src, evt)
+            if (this.lDisableMoveToDestOnDestEnter)
+                return
+            end
             this.msg('onDestEnter');
             this.moveToDest();
         end
@@ -1465,8 +1618,18 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         function updateInitializedButton(this)
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    lInitialized = this.fhIsInitializedV();
+                else
+                    lInitialized = this.fhIsInitialized();
+                end
+                
+            else
+                lInitialized = this.getDevice().isInitialized();
+            end
+
             
-            lInitialized = this.getDevice.isInitialized();
                 
             if this.lShowInitButton
                 if lInitialized
@@ -1493,14 +1656,28 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function updatePlayButton(this)
             
             % UIButtonTobble
-            if this.lReady && ~this.uibtPlay.get()
-                this.uibtPlay.set(true);
-            end
+            try
+                if ~islogical(this.lReady)
+                    fprintf('GetSetNumber.updatePlayButton() lReady is not logical\n');
+                    return
+                end
 
-            if ~this.lReady && this.uibtPlay.get()
-                this.uibtPlay.set(false);
-            end
+                if ~islogical(this.uibtPlay.get())
+                    fprintf('GetSetNumber.updatePlayButton() uibtPlay.get() is not logical\n');
+                    return;
+                end
+
+                if this.lReady && ~this.uibtPlay.get()
+                    this.uibtPlay.set(true);
+                end
+
+                if ~this.lReady && this.uibtPlay.get()
+                    this.uibtPlay.set(false);
+                end
             
+            catch mE
+                fprintf('GetSetNumber.updatePlayButton() caught: %s\n', mE.message);
+            end
 
         end
         
@@ -1530,12 +1707,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             
             if (lRel)
-                % Offset is replaced by the stored dZeroRaw in rel mode
+                % Offset is replaced by the stored dOffsetRel in rel mode
                 
                 if stUnit.invert
-                    dOut = stUnit.slope / dCal + this.dZeroRaw;
+                    dOut = stUnit.slope / dCal + this.dOffsetRel;
                 else
-                    dOut = dCal/stUnit.slope + this.dZeroRaw;
+                    dOut = dCal/stUnit.slope + this.dOffsetRel;
                 end
             else
                 if stUnit.invert
@@ -1562,11 +1739,11 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % cal = slope * (raw - offset)
             
             if (lRel)
-                % Offset is replaced by the stored dZeroRaw in rel mode
+                % Offset is replaced by the stored dOffsetRel in rel mode
                 if (stUnit.invert)
-                    dOut = stUnit.slope * (dRaw - this.dZeroRaw)^-1;
+                    dOut = stUnit.slope * (dRaw - this.dOffsetRel)^-1;
                 else
-                    dOut = stUnit.slope * (dRaw - this.dZeroRaw);
+                    dOut = stUnit.slope * (dRaw - this.dOffsetRel);
                 end
             else
                 if stUnit.invert
@@ -1583,20 +1760,25 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         
-        
+       
         
         % Allow the user to set the current raw position to any desired calibrated value
         function onSetPress(this, src, evt)
                        
-            cePrompt = {'New calibrated value of current position:'};
-            cTitle = 'Input';
+            cePrompt = {'Original Calibrated Value:', 'New Calibrated Value:'};
+            cTitle = 'Set a New Software Offset';
             dLines = 1;
-            ceDefaultAns = {num2str(this.getValCalDisplay())};
+            ceDefaultAns = {num2str(this.getValCalDisplay()), num2str(this.getValCalDisplay())};
+            stOptions = struct(...
+                'Resize', 'on' ...
+            );
             ceAnswer = inputdlg(...
                 cePrompt,...
                 cTitle,...
                 dLines,...
-                ceDefaultAns);
+                ceDefaultAns, ...
+                stOptions ...
+            );
             
             if isempty(ceAnswer)
                 return
@@ -1626,12 +1808,17 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % additionally, you have to consider that the value the person
             % types in is in inverse units.
            
-            dNewOffset = this.getUnit().offset - (str2double(ceAnswer{1}) - this.getValCalDisplay())/this.getUnit().slope;
-            this.dZeroRaw = dNewOffset;
+            %{
+            dOffsetNew = this.getUnit().offset - (str2double(ceAnswer{1}) - this.getValCalDisplay())/this.getUnit().slope;
+            this.dOffsetRel = dOffsetNew;
             
             this.updateZeroTooltip();
             % Force to "Rel" mode
             this.uitRel.set(true);
+            %}
+            
+            this.setValToNewVal(str2double(ceAnswer{1}), str2double(ceAnswer{2}));
+            
             
         end
         
@@ -1640,7 +1827,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.onSetPress(src, evt);
             return;
             
-            this.dZeroRaw = this.getValRaw(); % raw units            
+            this.dOffsetRel = this.getValRaw(); % raw units            
             this.updateZeroTooltip();
             
             % Force to "Rel" mode
@@ -1684,7 +1871,18 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             lOut = (dDest >= dCalMin && dDest <= dCalMax);
             
             if ~lOut
-                msgbox('Position not allowed', 'Position out of bounds', 'warn');
+                cMsg = [...
+                    sprintf('Requested value is outside of the allowed range. Restoring previous value. Move aborted.\n\n'), ...
+                    sprintf('min allowed value = %1.3e %s\n', dCalMin, stUnit.name), ...
+                    sprintf('max allowed value = %1.3e %s\n', dCalMax, stUnit.name) ...
+                ];
+                    
+                msgbox(...
+                    cMsg, ...
+                    'Value Not Allowed. Move Aborted.', ...
+                    'error', ...
+                    'modal' ...
+                );
                 this.syncDestination();
             end
                 
@@ -1693,9 +1891,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         function updateZeroTooltip(this)
             cMsg = sprintf(...
-                'Update the stored zero. It is currently %1.*f %s', ...
+                'Set a new software offset. The offset is currently %1.*f %s', ...
                 this.getUnit().precision, ...
-                this.raw2cal(this.dZeroRaw, this.getUnit().name, false), ...
+                this.raw2cal(this.dOffsetRel, this.getUnit().name, false), ...
                 this.getUnit().name ...
             );            
             this.uibZero.setTooltip(cMsg);
@@ -1763,8 +1961,23 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             if this.lShowPlay
                 dOut = dOut + this.dWidthPadPlay + this.dWidthBtn;
             end
+            
+            %{
             if this.lShowJog
                 dOut = dOut + this.dWidthPadJog + 2 * this.dWidthBtn + this.dWidthStep;
+            end
+            %}
+            
+            if this.lShowStepNeg
+                dOut = dOut + this.dWidthPadStepNeg + this.dWidthBtn;
+            end
+            
+            if this.lShowStep
+                dOut = dOut + this.dWidthPadStep + this.dWidthStep;
+            end
+            
+            if this.lShowStepPos
+                dOut = dOut + this.dWidthPadStepPos + this.dWidthBtn;
             end
             
             if this.lShowUnit

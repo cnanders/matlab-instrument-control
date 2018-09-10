@@ -55,7 +55,9 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
             'cAnswer1', 'Yes', ...
             'cAnswer2',  'Cancel' ...
         );               
-                                    
+           
+    
+        fhDirectCallback = @(src, evt)[];
 
     end
     
@@ -313,6 +315,7 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
                 
                if this.lInit
                    if lNotify
+                        this.fhDirectCallback(this, 'set');
                         notify(this, 'eChange');
                         this.msg('set.lVal notify eChange', this.u8_MSG_TYPE_INFO);
                    end

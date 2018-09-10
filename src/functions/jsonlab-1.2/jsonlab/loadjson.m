@@ -343,8 +343,8 @@ function num = parse_number(varargin)
         [num] = sscanf(currstr, '%f', 1);
         delta=numstr+1;
     else
-        [num, one, err, delta] = sscanf(currstr, '%f', 1);
-        if ~isempty(err)
+        [num, one, mE, delta] = sscanf(currstr, '%f', 1);
+        if ~isempty(mE)
             error_pos('Error reading number at position %d');
         end
     end

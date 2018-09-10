@@ -118,7 +118,24 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         % {mic.ui.commin.ImageLogical 1x1} visual state
         uiilValue
         
-       
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+        % {function handle 1x1} 
+        fhGet = @() false
+
+        % {function handle 1x1} 
+        fhSet = @(lVal) [] % Called when button is pressed
+
+        % {function handle 1x1} 
+        fhIsInitialized % Controls state of display
+
+        % {function handle 1x1} 
+        fhInitialize % Not used
+        
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhGetV 
+        fhSetV
+        fhIsInitializedV
+        fhInitializeV
                         
     end
     
@@ -269,20 +286,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
 
         
         
-        %{
-        % Expose the set command of the Device
-        % @param {logical 1x1} 
-        function set(this, l)
-           this.getDevice().set(l);
-           
-        end
-        %}
 
-           
-        
-        
-
-        
 
         
 
@@ -324,7 +328,16 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         end
         
         function l = get(this)
-            l = this.getDevice().get();
+
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    l = this.fhGet();
+                else
+                    l = this.fhGet();
+                end
+            else
+                l = this.getDevice().get();
+            end
         end
         
        
@@ -380,6 +393,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             this.initLabels();
                                        
             this.deviceVirtual = this.newDeviceVirtual();
+            
+            % Set virtual functions:
+            this.fhGetV             = @()this.deviceVirtual.get();
+            this.fhSetV             = @(lVal)this.deviceVirtual.set(lVal);
+            this.fhIsInitializedV   = @()this.deviceVirtual.isInitialized();
+            this.fhInitializeV      = @()this.deviceVirtual.initialize();
+        
             this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             
         end
@@ -427,7 +447,18 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             end
             
             try
-                this.lVal = this.getDevice().get();
+                if this.lUseFunctionCallbacks
+                    if this.fhIsVirtual()
+                        this.lVal = this.fhGetV();
+                    else
+                        this.lVal = this.fhGet();
+                    end
+                    
+                else
+                    this.lVal = this.getDevice().get();
+                end
+
+                
                 
                 % Force the toggle back to the current state without it
                 % notifying eChange
@@ -439,12 +470,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 this.uiilValue.set(this.lVal);
                 
                 this.updateInitializedButton();
-                
-               
-            
+                            
                                                
-            catch err
-                this.msg(getReport(err));
+            catch mE
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
             end 
 
         end
@@ -468,8 +497,16 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             % pre-click.  The toggle just issues set() commands.  It
             % doesn't do anything smart to show the value, this is handled
             % by the indicator image with each onClock()
-            
-            this.getDevice().set(this.uitCommand.get());            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.fhSetV(this.uitCommand.get());     
+                else
+                    this.fhSet(this.uitCommand.get());     
+                end
+            else
+                this.getDevice().set(this.uitCommand.get());     
+            end
+                   
                         
         end
         
@@ -478,7 +515,17 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function updateInitializedButton(this)
             
-            lInitialized = this.getDevice.isInitialized();
+            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    lInitialized = this.fhIsInitializedV();
+                else
+                    lInitialized = this.fhIsInitialized();
+                end
+            else
+                lInitialized = this.getDevice.isInitialized();
+            end
+
                 
             if this.lShowInitButton
                 if lInitialized

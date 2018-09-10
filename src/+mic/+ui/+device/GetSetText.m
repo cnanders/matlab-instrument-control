@@ -110,6 +110,24 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         lReady = true
         
        
+        % RM (2/2018): Adding new methods for implementing function callback mode:
+        % {function handle 1x1} 
+        fhGet = @() ''
+
+        % {function handle 1x1} 
+        fhSet = @(cVal) []
+
+        % {function handle 1x1} 
+        fhIsInitialized
+
+        % {function handle 1x1} 
+        fhInitialize
+
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhGetV 
+        fhSetV
+        fhIsInitializedV
+        fhInitializeV
         
     end
     
@@ -299,7 +317,17 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 
             end
             
-            this.getDevice().set(this.uieDest.get());
+            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.fhSetV(this.uieDest.get());
+                else
+                    this.fhSet(this.uieDest.get());
+                end
+            else
+                this.getDevice().set(this.uieDest.get());
+            end
+
                        
         end
         
@@ -367,19 +395,45 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
             end
             
-            cVal = this.getDevice().get();
+            try
+                if this.lUseFunctionCallbacks
+                    cVal = this.fhGet();
+                else
+                    cVal = this.getDevice().get();
+                end
+
+                
+            catch mE
+                this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
+        
+                % CA 2016 remove the task from the timer
+                if isvalid(this.clock) && ...
+                   this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                end
+            end
+            
             if ~strcmp(this.cValPrev, cVal)
                 notify(this, 'eChange');
             end
-            this.uitxVal.set(cVal);
             
+            this.uitxVal.set(cVal);
             this.updateInitializedButton();
                 
             
         end 
         
         function c = get(this)
-            c = this.getDevice().get();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    c = this.fhGetV();
+                else
+                    c = this.fhGet();
+                end
+            else
+                c = this.getDevice().get();
+            end
+
         end
         
         function c = getDest(this)
@@ -482,7 +536,14 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             % Name (on the left)
             this.uitxName = mic.ui.common.Text('cVal', this.cLabel);
 
-            this.setDeviceVirtual(this.newDeviceVirtual());
+            % Set virtual device callbacks
+            vdVirtualDevice         = this.newDeviceVirtual();
+            this.fhGetV             = @()vdVirtualDevice.get();
+            this.fhSetV             = @(cVal)vdVirtualDevice.set(cVal);
+            this.fhIsInitializedV   = @()vdVirtualDevice.isInitialized();
+            this.fhInitializeV      = @()vdVirtualDevice.initialize();
+        
+            this.setDeviceVirtual(vdVirtualDevice);
             
             % if ~isempty(this.config.ceStores)
                 this.uipStores = mic.ui.common.PopupStruct(...
@@ -568,7 +629,15 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         
         function updateInitializedButton(this)
             
-            lInitialized = this.getDevice.isInitialized();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    lInitialized = this.fhIsInitializedV();
+                else
+                    lInitialized = this.fhIsInitialized();
+                end
+            else
+                lInitialized = this.getDevice.isInitialized();
+            end
                 
             if this.lShowInitButton
                 if lInitialized
