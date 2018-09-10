@@ -442,6 +442,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         
         function onClock(this) 
            
+            if ~ishghandle(this.hPanel)
+                this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+            end
+            
             try
                 if this.lUseFunctionCallbacks
                     if this.fhIsVirtual()

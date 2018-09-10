@@ -1140,6 +1140,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   HardwareIO.onClock()
         %   updates the position reading and the hio status (=/~moving)
         
+            if ~ishghandle(this.hPanel)
+                this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+            end
+        
             if this.lDeleted
                 fprintf('onClock() %s returning (already deleted)', this.cName);
                 return

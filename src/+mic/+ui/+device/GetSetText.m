@@ -391,6 +391,10 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         %   HardwareIO.onClock()
         %   updates the position reading and the hio status (=/~moving)
         
+            if ~ishghandle(this.hPanel)
+                this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+            end
+            
             try
                 if this.lUseFunctionCallbacks
                     cVal = this.fhGet();
@@ -412,8 +416,8 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             if ~strcmp(this.cValPrev, cVal)
                 notify(this, 'eChange');
             end
-            this.uitxVal.set(cVal);
             
+            this.uitxVal.set(cVal);
             this.updateInitializedButton();
                 
             
