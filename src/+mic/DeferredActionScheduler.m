@@ -5,6 +5,7 @@
 % Instantiate a DeferredActionScheduler with function handle properties: 
 %   fhTrigger: function that evaluates to true when a condtion is met
 %   fhAction: function to be executed when trigger evaluates to true
+%   fhExpire: function to be executed when scheduler times out 
 %   clock: uses internal clock if this parameter is empty
 %   dDelay: how often to check fhTrigger
 
@@ -16,6 +17,8 @@ classdef DeferredActionScheduler < mic.Base
         
         % Evaluates to logical
         fhTrigger = @()true
+        
+        fhOnExpire = @()[]
         
         % DAS name
         cName = 'DAS_task'
@@ -75,6 +78,7 @@ classdef DeferredActionScheduler < mic.Base
                 if this.lShowExpirationMessage
                     msgbox(sprintf('DAF: Task %s timed out after %0.1f s', this.cName, this.dExpiration));
                 end
+                this.fhOnExpire();
             end
         end
         
