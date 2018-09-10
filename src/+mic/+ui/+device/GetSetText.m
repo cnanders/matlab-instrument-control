@@ -363,6 +363,10 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         %   HardwareIO.onClock()
         %   updates the position reading and the hio status (=/~moving)
         
+            if ~ishghandle(this.hPanel)
+                this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+            end
+            
             cVal = this.getDevice().get();
             if ~strcmp(this.cValPrev, cVal)
                 notify(this, 'eChange');
