@@ -64,6 +64,8 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                 end
                 %}
             end
+            
+            % this.lImg = false; % Temp performance check 2018.09.10
 
         end
 

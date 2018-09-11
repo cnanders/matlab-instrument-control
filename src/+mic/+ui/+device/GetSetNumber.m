@@ -610,6 +610,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 dLeft = dLeft + this.dWidthBtn;
             end
             
+            
+            if ~isempty(this.clock) && ...
+                ~this.clock.has(this.id())
+                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            end
+            
                     
         end
 
@@ -1142,6 +1148,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
             if ~ishghandle(this.hPanel)
                 this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+                
+                % Remove task
+                if isvalid(this.clock) && ...
+                   this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                end
+                
             end
         
             if this.lDeleted
@@ -1393,9 +1406,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             % this.updateRange();
             % this.load();
             
-            if ~isempty(this.clock)
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+            
             
             
         end

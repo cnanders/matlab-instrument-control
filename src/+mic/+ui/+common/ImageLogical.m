@@ -18,6 +18,8 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         u8ImgFalse
         cDirThis
         
+        uiText
+        
     end
 
 
@@ -26,6 +28,7 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         
         function this= ImageLogical(varargin)
 
+            %{
             this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             
             % Defaults
@@ -39,12 +42,21 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
+            %}
+            
+            this.uiText = mic.ui.common.Text('cVal', '', 'cAlign', 'right');
+
             
             
         end
 
         function build(this, hParent, dLeft, dTop)
+            
+            this.uiText.build(hParent, dLeft, dTop, this.dWidth, this.dHeight);
+            this.uiText.setBackgroundColor([0.8 0.8 0.8]);
 
+            return;
+            
             dPosition = mic.Utils.lt2lb([dLeft dTop this.dWidth this.dHeight], hParent);
             this.hAxes = axes( ...
                 'Parent', hParent, ...
@@ -76,6 +88,15 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         
         % @param {logical 1x1} the state
         function set(this, l)
+            
+            % Overriding with text to make more performant
+            if l
+                this.uiText.setBackgroundColor([0 0.8 0]);
+            else
+                this.uiText.setBackgroundColor([0.75 0.75 0.75]);
+            end
+            
+            return;
             
             if ~ishandle(this.hImage)
                 return

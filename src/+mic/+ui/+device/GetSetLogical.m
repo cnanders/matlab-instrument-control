@@ -280,7 +280,11 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                     this.dHeight ...
                 );
             end
-                        
+            
+            if ~isempty(this.clock) && ...
+                ~this.clock.has(this.id())
+                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            end
             
         end
 
@@ -400,7 +404,6 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             this.fhIsInitializedV   = @()this.deviceVirtual.isInitialized();
             this.fhInitializeV      = @()this.deviceVirtual.initialize();
         
-            this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             
         end
         
@@ -443,7 +446,13 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         function onClock(this) 
            
             if ~ishghandle(this.hPanel)
-                this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+                this.msg('onClock() returning and removing task since not build', this.u8_MSG_TYPE_INFO);
+                
+                % Remove task
+                if isvalid(this.clock) && ...
+                   this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                end
             end
             
             try

@@ -12,3 +12,4 @@ ui = mic.ui.common.ImageLogical();
 h = figure;
 ui.build(h, 10, 10);
 ui.set(true);
+ui.set(false);

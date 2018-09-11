@@ -43,12 +43,15 @@ classdef GetNumber < mic.interface.device.GetNumber
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
-            this.clock.add(@this.onClock, this.id(), this.dPeriod);
+            
+            
+            % this.clock.add(@this.onClock, this.id(), this.dPeriod);
 
         end
 
         function dReturn = get(this)
-            dReturn = this.dVal;
+            % dReturn = this.dVal;
+            dReturn = this.dMean + this.dSig * randn(1);
         end
 
         

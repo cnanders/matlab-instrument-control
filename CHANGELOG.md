@@ -1,3 +1,15 @@
+# 1.0.0-beta.41
+
+### mic.ui.device.*
+- Now remove clock task in onClock() when not visible and add clock task on build()
+
+### mic.device.GetNumber
+- No longer uses clock to update value. Instead returns new value only on get()
+
+### mic.ui.common.ImageLogical
+- Has been internally hacked to function as a mic.ui.common.Text that changes background colors between gray and green when set to `true` and `false`, respectively.  This change is 100X more performant during rendering since `mic.ui.common.ImageLogical` previously used an axes for the image and MATLAB doesn't handle many axes instances well.
+
+
 # 1.0.0-beta.40
 
 ### mic.ui.common.ListDir

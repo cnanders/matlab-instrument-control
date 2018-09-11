@@ -297,6 +297,11 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 this.uipStores.build(this.hPanel, dLeft, dTop, this.dWidthStores, this.dHeightPopup);
                 dLeft = dLeft + this.dWidthStores;
             end
+            
+            if ~isempty(this.clock) && ...
+                ~this.clock.has(this.id())
+                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            end
 
         end
       
@@ -393,6 +398,12 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         
             if ~ishghandle(this.hPanel)
                 this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
+                
+                % Remove task
+                if isvalid(this.clock) && ...
+                   this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                end
             end
             
             try
@@ -577,9 +588,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
             this.uieDest.setTooltip('Change the goal value');
             this.uibtPlay.setTooltip('Go to goal');
                         
-            if ~isempty(this.clock)
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+            
             
             
         end
