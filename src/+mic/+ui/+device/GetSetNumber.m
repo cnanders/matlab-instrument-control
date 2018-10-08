@@ -138,6 +138,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         dColorTextMoving = [0 170 0]./255;
         dColorTextStopped = [0 0 0]./255;
+        dColorTextWarning = [170 170 0]./255;
         
         
         u8Bg
@@ -1616,8 +1617,17 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
            
            % Update text color for IO (not O) when value is changing
            if ~this.lDisableSet
+               
                if this.lReady
-                   this.uitxVal.setColor(this.dColorTextStopped);
+                   
+                   % Check to see if value is within 1% of destination, if not color
+                   % as warning
+                   
+                   if abs(this.getValCalDisplay() - this.getDestCalDisplay()) < this.getDestCalDisplay() / 100                       
+                       this.uitxVal.setColor(this.dColorTextStopped);
+                   else
+                       this.uitxVal.setColor(this.dColorTextWarning);
+                   end
                else
                    this.uitxVal.setColor(this.dColorTextMoving);
                end

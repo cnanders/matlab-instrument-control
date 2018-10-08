@@ -14,7 +14,7 @@ test.ui.setDestCal(15, 'nm')
 test.ui.getDestCal('nm')
 test.ui.setDestCal(92, 'eV')
 test.ui.getDestCal('eV')
-test.ui.
+test.ui.moveToDest();
 
 
 % test.ui.setUnit('um')
