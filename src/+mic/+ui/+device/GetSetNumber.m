@@ -1147,6 +1147,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   HardwareIO.onClock()
         %   updates the position reading and the hio status (=/~moving)
         
+            
             if ~ishghandle(this.hPanel)
                 this.msg('onClock() returning since not build', this.u8_MSG_TYPE_INFO);
                 
@@ -1162,13 +1163,18 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 fprintf('onClock() %s returning (already deleted)', this.cName);
                 return
             end
+        
             
             try
                 
                 % 2016.11.02 CNA always cast as double.  Underlying unit
                 % may not be double
+                
+                
                   
                 if ~this.lDisableSet
+                    
+                    
                     if this.lUseFunctionCallbacks
                         if this.fhIsVirtual()
                             this.lReady = this.fhIsReadyV();
@@ -1179,6 +1185,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                         this.lReady = this.getDevice().isReady();
                     end
                     
+                    
                     this.updatePlayButton()
                 else
                     % The Device(V) doesn't implement isReady since this is a
@@ -1186,7 +1193,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 end
                 
                 this.updateDisplayValue();
+               
+                
                 this.updateInitializedButton();
+                
                                 
                
             catch mE
@@ -1579,6 +1589,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         function updateDisplayValue(this)
             
+            
             % Precision can be a number, or an asterisk (*) to refer to an
             % argument in the input list. For example, the input list
             % ('%6.4f', pi) is equivalent to ('%*.*f', 6, 4, pi).
@@ -1609,6 +1620,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
            );
            %}
            
+           
+           
            if ~strcmp(this.cValPrev, cVal)
                notify(this, 'eChange');
            end
@@ -1623,7 +1636,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                    % Check to see if value is within 1% of destination, if not color
                    % as warning
                    
-                   if abs(this.getValCalDisplay() - this.getDestCalDisplay()) < this.getDestCalDisplay() / 100                       
+                   if abs(this.getValCalDisplay() - this.getDestCalDisplay()) < abs(this.getDestCalDisplay() / 50 )                      
                        this.uitxVal.setColor(this.dColorTextStopped);
                    else
                        this.uitxVal.setColor(this.dColorTextWarning);

@@ -173,6 +173,10 @@ classdef Clock < mic.Base
     end
     
     properties (Access = private)
+        
+        % {double 1x1} - seconds of last timer execution 
+        
+        dDurationOfLastTimerExecution = 0;
         lBusy = false;
         lEcho = false;                      % Print statements
         t                                   % Timer
@@ -248,6 +252,10 @@ classdef Clock < mic.Base
             this.init();
         end
         
+        function d = getDurationOfLastTimerExecution(this)
+            d = this.dDurationOfLastTimerExecution;
+        end
+        
         function dReturn = getPeriod(this)
             dReturn = this.dPeriod;
         end
@@ -280,7 +288,7 @@ classdef Clock < mic.Base
             this.t =  timer( ...
                 'TimerFcn', @this.timerFcn, ...
                 'Period', this.dPeriod, ...
-                'ExecutionMode', 'fixedRate', ...
+                'ExecutionMode', 'fixedSpacing', ...
                 'Name', sprintf('Clock (%s)', this.cName) ...
                 );
             start(this.t);
@@ -560,21 +568,46 @@ classdef Clock < mic.Base
             
             ceTaskNameActive = this.ceTaskName(this.lTaskActive); % returns a cell
             dTaskPeriodActive = this.dTaskPeriod(this.lTaskActive);
+            
+            ceTaskFcnToDo = this.ceTaskFcn(this.lTaskActive);
+            
             if isempty(ceTaskNameActive)
                 cStr = 'No task running\n';
             else
                 cStr = 'List of running tasks :\n';
+                
+                dTimeStartTotal = tic;
+                
                 for n = 1:length(ceTaskNameActive)
+                    
+                    dTimeStart = tic;
+                    ceTaskFcnToDo{n}();
+                    dTimeElapsed = toc(dTimeStart);
+                    
+                    
                     cStr = sprintf(...
-                        '%s\t %1.0f. %s (%1.3f sec) \n', ...
+                        '%s\t %1.0f. %5.1f ms \t  (%1.3f s) \t %s \n', ...
                         cStr, ...
                         n, ...
-                        ceTaskNameActive{n}, ...
-                        dTaskPeriodActive(n) ...
+                        dTimeElapsed * 1000, ...
+                        dTaskPeriodActive(n), ...
+                        ceTaskNameActive{n} ...
                     );
                 end
+                
+                dTimeElapsedTotal = toc(dTimeStartTotal);
+                
+                cStr = sprintf(...
+                    '%s\t ALL. %5.1f ms \n', ...
+                    cStr, ...
+                    dTimeElapsedTotal * 1000 ...
+                );
+                
+                
             end
             fprintf(cStr);
+            
+            
         end
         
         function start(this)
@@ -610,6 +643,22 @@ classdef Clock < mic.Base
         function timerFcn(this, src, evt)
         %TIMERFCN Callback used by the clock to trigger the task executions
         %   Clock.timerFcn(src, evt)
+        
+        
+            this.dTicks = this.dTicks + 1;
+            
+            % Once dElapsedTime is larger than max(dTaskPeriod), we can
+            % reset dTicks so we are not dealing with large numbers.  It
+            % may be worthwhile to do this check each time through the
+            % loop.  It will add a small amount of overead once per clock,
+            % but my thought is that the extra overhead of large numbers.
+            % At 1kHz operation, it will tick 1000 ticks/s * 60 s/min * 60
+            % min/h * 24 h/day = 86e6 ticks.  I wonder.  
+            
+            % I did a test today and  mod is blazing fast.  Doing mod(243,
+            % 53453453453453) take around 4 us.  I'm not worried about this
+            % effect so we never need to reset dTicks
+            
             
             if this.lBusy
                 if this.lEcho
@@ -674,6 +723,13 @@ classdef Clock < mic.Base
                 this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);
             end
             
+            
+            if isempty(ceTaskFcnToDo)
+                return
+            end
+            
+            dTimeStart = tic;
+            
             for n = 1:length(ceTaskFcnToDo)
                 
 %                 if ~isvalid(ceTaskFcnToDo{n})
@@ -701,30 +757,17 @@ classdef Clock < mic.Base
                         sum(lItems), ...
                         ceTaskNameToDo{n} ...
                     );
-                    % this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
+                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
                     % error(mE.message);
-                    error(getReport(mE));
-                    % this.msg(mE.message, this.u8_MSG_TYPE_ERROR);
-                    % stop(this.t);
-                    rethrow(mE);
+                    
+                    % error(getReport(mE));
+                    % rethrow(mE);
                     
                 end
             end
             
-            
-            this.dTicks = this.dTicks + 1;
-            
-            % Once dElapsedTime is larger than max(dTaskPeriod), we can
-            % reset dTicks so we are not dealing with large numbers.  It
-            % may be worthwhile to do this check each time through the
-            % loop.  It will add a small amount of overead once per clock,
-            % but my thought is that the extra overhead of large numbers.
-            % At 1kHz operation, it will tick 1000 ticks/s * 60 s/min * 60
-            % min/h * 24 h/day = 86e6 ticks.  I wonder.  
-            
-            % I did a test today and  mod is blazing fast.  Doing mod(243,
-            % 53453453453453) take around 4 us.  I'm not worried about this
-            % effect so we never need to reset dTicks
+            dDuration = toc(dTimeStart);
+            this.dDurationOfLastTimerExecution = dDuration;
             
         end
         

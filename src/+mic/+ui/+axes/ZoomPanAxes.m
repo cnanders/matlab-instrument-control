@@ -358,14 +358,32 @@ classdef ZoomPanAxes < mic.Base
 
         
         function d = getPanX(this)
+            
+            if ~ishghandle(this.hSliderXPan)
+                d = 1;
+                return
+            end
+            
             d = get(this.hSliderXPan, 'Value');
         end
         
         function d = getPanY(this)
+            
+            
+            if ~ishghandle(this.hSliderYPan)
+                d = 0;
+                return
+            end
+            
             d = get(this.hSliderYPan, 'Value');
         end
         
         function d = getZoom(this)
+            if ~ishghandle(this.hSliderZoom)
+                d = 1;
+                return
+            end
+            
             d = get(this.hSliderZoom, 'Value'); 
         end
                 

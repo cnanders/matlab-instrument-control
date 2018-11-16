@@ -428,8 +428,10 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 notify(this, 'eChange');
             end
             
+            
             this.uitxVal.set(cVal);
             this.updateInitializedButton();
+            
                 
             
         end 
