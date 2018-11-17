@@ -47,7 +47,8 @@ classdef ListDir < mic.ui.common.List
     
     events
         
-        
+        % NOTE THIS EXTENDS mic.common.ui.List and has all events from 
+        % mic.common.ui.List
     end
     
     
