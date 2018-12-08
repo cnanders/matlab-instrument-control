@@ -1,3 +1,9 @@
+# 1.0.0-beta.42
+
+### mic.device.getSetNumberFromClosedLoopControl
+
+- Adding new device class to perform closed loop control
+
 # 1.0.0-beta.41
 
 ### mic.ui.device.*
