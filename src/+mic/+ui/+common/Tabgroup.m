@@ -25,7 +25,7 @@ classdef Tabgroup < mic.Base
         
         ceTabNames
         uitTabs
-        
+                
         % {logical}
         lIsBuilt = false;
         
@@ -47,7 +47,6 @@ classdef Tabgroup < mic.Base
         
         
         function this = Tabgroup(varargin)
-            
             this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
@@ -96,6 +95,44 @@ classdef Tabgroup < mic.Base
             end
             
             
+        end
+        
+        function l = doesTabExist(this, cTabname)
+            dIdx = find(strcmp(this.ceTabNames, cTabname));
+            l = ~isempty(dIdx);
+        end
+        
+        function uiTab = addTab(this, cTabname)
+            uiTab = uitab('parent', this.hUI, ...
+                                        'title', cTabname, ...
+                                        'Unit', 'pixels');
+            this.uitTabs{end + 1} = uiTab;
+            this.ceTabNames{end + 1} = cTabname;
+        end
+        
+        function removeTab(this, cTabname)
+            hTab = this.getTabByName(cTabname);
+            
+            if (isa(hTab, 'handle'))
+                dIdx = find(strcmp(this.ceTabNames, cTabname));
+                
+                this.uitTabs(dIdx) = [];
+                this.ceTabNames(dIdx) = [];
+                delete(hTab);
+            end
+        end
+        
+        function alphabetizeTabs(this)
+            if length(this.ceTabNames) < 2
+                return
+            end
+            
+            
+            [this.ceTabNames, idx] = sort(this.ceTabNames);
+            
+            % Use idx to sort tabs and tabgroup children:
+            this.uitTabs = this.uitTabs(idx);
+            this.hUI.Children = this.hUI.Children(idx);
         end
     
         

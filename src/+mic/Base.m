@@ -118,6 +118,24 @@ classdef Base < handle
             end
         end
         
+        function hFigure = getParentFigure(this)
+            if this.hasProp('hFigure') && isa(this.hFigure, 'figure')
+                hFigure = this.hFigure;
+                return
+            else
+                if this.hasProp('hParent')
+                    if (isa(this.hParent, 'figure'))
+                        hFigure = this.hParent;
+                        return
+                    else
+                        hFigure = this.getParentFigure(this.hParent);
+                        return
+                    end
+                end
+            end
+            hFigure = {};
+        end
+        
         
         %%
         % @param {char 1xm} c - name of property

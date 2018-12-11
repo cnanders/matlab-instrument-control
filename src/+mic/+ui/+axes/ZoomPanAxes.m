@@ -268,11 +268,19 @@ classdef ZoomPanAxes < mic.Base
             % set(this.hSliderZoom, 'Value', .99);
             set(this.hSliderZoom, 'Value', 1);
             this.onSliderZoom()
-            set(this.hParent, 'WindowScrollWheelFcn', @this.onScrollWheel);
             
-            set(this.hParent,'WindowButtonDownFcn', @this.onWindowButtonDown);
-            set(this.hParent,'WindowButtonUpFcn', @this.onWindowButtonUp);
-            set(this.hParent,'WindowButtonMotionFcn', @this.onWindowButtonMotion);
+            set(gcf,'WindowScrollWheelFcn', @this.onScrollWheel);
+            set(gcf,'WindowButtonDownFcn', @this.onWindowButtonDown);
+            set(gcf,'WindowButtonUpFcn', @this.onWindowButtonUp);
+            set(gcf,'WindowButtonMotionFcn', @this.onWindowButtonMotion);
+            
+            
+%             set(this.hParent,'WindowScrollWheelFcn', @this.onScrollWheel);
+%             set(this.hParent,'WindowButtonDownFcn', @this.onWindowButtonDown);
+%             set(this.hParent,'WindowButtonUpFcn', @this.onWindowButtonUp);
+%             set(this.hParent,'WindowButtonMotionFcn', @this.onWindowButtonMotion);
+            
+            
             % set(this.hParent,'WindowFocusLostFcn', @this.onWindowFocusLost);
             %set(this.hParent,'KeyPressFcn', @this.onKeyPress);
             %set(this.hParent,'KeyReleaseFcn', @this.onKeyRelease);
@@ -802,7 +810,7 @@ classdef ZoomPanAxes < mic.Base
              
             % [left bottom] location of cursor in parent figure.  
             % Will need to check if the cursor is inside this axes
-            dCursor = get(this.hParent, 'CurrentPoint');
+            dCursor = get(gcf, 'CurrentPoint');
             
             % {double 1x1} dLeft mouse position relative to left side of
             % the parent figure (pixels)
