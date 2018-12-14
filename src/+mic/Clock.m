@@ -561,6 +561,10 @@ classdef Clock < mic.Base
                       
         end 
         
+        function d = getNumberOfActiveTasks(this)
+             d = length(this.lTaskActive(this.lTaskActive));
+        end
+        
         function listTasks(this)
         %LISTTASKS Lists the tasks in the clock tasklist in the command wdw
         %   Clock.listTasks()
@@ -750,7 +754,17 @@ classdef Clock < mic.Base
 
                 catch mE
                     
+                    % Will craash the app, but gives lovely stack trace.
+                    % error(getReport(mE));
                 	
+                    % (CA) Code below makes it next to impossible to figure out
+                    % the problem.  Also, I can't figure otu why but if I
+                    % execute dthe code below and then have the
+                    % error(getReport(mE)) code below, the error report is
+                    % never output to the console.
+                    
+                    
+                    %{
                     cMsg = sprintf(...
                         'Clock.timerFcn() ERROR executing %1.0f of %1.0f: %s() ', ...
                         n, ...
@@ -758,10 +772,10 @@ classdef Clock < mic.Base
                         ceTaskNameToDo{n} ...
                     );
                     this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
-                    % error(mE.message);
+                    %}
                     
-                    % error(getReport(mE));
-                    % rethrow(mE);
+                    
+                    
                     
                 end
             end

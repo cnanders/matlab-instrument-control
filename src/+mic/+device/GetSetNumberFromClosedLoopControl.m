@@ -62,7 +62,7 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         dStageWaitTime = 30 % seconds
         
         % Delay between successive polling of fhGet calls
-        dStageCheckPeriod = 0.4 %seconds
+        dStageCheckPeriod = 0.5 %seconds
         
         % {logical 1x1} 
         lReady = true
@@ -105,7 +105,7 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         end
         
         function stop(this)
-            this.stage.stop();
+%             this.stage.stop();
             this.lReady = true;
         end
         
