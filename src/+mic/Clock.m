@@ -755,14 +755,13 @@ classdef Clock < mic.Base
                 catch mE
                     
                     % Will craash the app, but gives lovely stack trace.
-                    % error(getReport(mE));
+                    error(getReport(mE));
                 	
                     % (CA) Code below makes it next to impossible to figure out
                     % the problem.  Also, I can't figure otu why but if I
                     % execute dthe code below and then have the
                     % error(getReport(mE)) code below, the error report is
                     % never output to the console.
-                    
                     
                     %{
                     cMsg = sprintf(...
@@ -773,8 +772,6 @@ classdef Clock < mic.Base
                     );
                     this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
                     %}
-                    
-                    
                     
                     
                 end
