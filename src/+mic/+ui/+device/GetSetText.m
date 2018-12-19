@@ -203,8 +203,8 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent));
             drawnow
 
-            axis('image');
-            axis('off');
+            % axis('image');
+            % axis('off');
 
             dTop = -1;
             dTopLabel = -1;
