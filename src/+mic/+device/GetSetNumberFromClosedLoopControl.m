@@ -62,7 +62,7 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         dStageWaitTime = 30 % seconds
         
         % Delay between successive polling of fhGet calls
-        dStageCheckPeriod = 0.5 %seconds
+        dStageCheckPeriod = 1 %seconds
         
         % {logical 1x1} 
         lReady = true
@@ -122,13 +122,15 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
             u8iterationCt = 0;
             dLastError = 0;
             
-            while abs(dSensorDestination - this.fhGetSensor()) > this.dTolerance
+            dSensorValue    = this.fhGetSensor();
+            while abs(dSensorDestination - dSensorValue) > this.dTolerance
                 this.lReady = false;
                 u8iterationCt = u8iterationCt + 1;
                 
                 this.msg(sprintf('Making move move on iteration %d\n', u8iterationCt), this.u8_MSG_TYPE_SCAN);
                 
-                dErrorSensor    = dSensorDestination - this.fhGetSensor();
+                
+                dErrorSensor    = dSensorDestination - dSensorValue;
                 
                 dErrorMotorP    = dErrorSensor * this.dPID(1);
                 dErrorMotorI    = -dLastError * this.dPID(2);
@@ -148,6 +150,10 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
                 
                 this.fhSetMotor(dDestMotor);
                 
+                this.msg(sprintf('\n(CLOSED-LOOP-CONTROL): \n Destination: %0.3f\n Sensor value: %0.3f\n Current motor pos: %0.3f\n Corrected motor pos: %0.3f\n Delta %0.3f\n',...
+                    dSensorDestination, dSensorValue, this.fhGetMotor(), dDestMotor, dErrorMotor), this.u8_MSG_TYPE_SCAN);
+                
+                
                 if (~this.waitForStage(this.fhIsReadyMotor))
                     this.msg('Motor timed out\n', this.u8_MSG_TYPE_SCAN);
                     this.lReady = true;
@@ -161,6 +167,8 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
                     pause(this.dDelay)
                 end
                 
+                dSensorValue    = this.fhGetSensor();
+                 this.msg(sprintf('\nSensor value: %0.3f, Sensor destination: %0.3f\n', dSensorValue, dErrorSensor), this.u8_MSG_TYPE_SCAN);
             end
             
             this.msg('Close loop complete \n', this.u8_MSG_TYPE_SCAN);
