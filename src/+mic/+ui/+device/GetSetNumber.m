@@ -354,6 +354,21 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.init();
         end
 
+        
+        function l = isReady(this)
+            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    l = this.fhIsReadyV();
+                else
+                    l = this.fhIsReady();
+                end
+            else
+                l = this.getDevice().isReady();
+            end
+                    
+        end
+        
         % @param {double 1x1} dVal1 - current calibrated value (calculated
         % using config.slope and config.offset if in REL mode, or this.dOffsetRel if in REL
         % mode)

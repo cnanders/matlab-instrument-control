@@ -172,12 +172,13 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         function lSuccess = waitForStage(this, isReady)
             dNWaitCycles = this.dStageWaitTime / this.dStageCheckPeriod;
             for k = 1:dNWaitCycles
+                
                 if isReady()
                     this.msg('** Stage is ready!!\n', this.u8_MSG_TYPE_SCAN);
                     lSuccess = true;
                     return
                 end
-                this.msg('Stage is NOT ready\n', this.u8_MSG_TYPE_SCAN);
+                this.msg(sprintf('Stage is NOT ready, %d/%d\n', k, dNWaitCycles), this.u8_MSG_TYPE_SCAN);
                 pause(this.dStageCheckPeriod);
             end
             lSuccess = false;
