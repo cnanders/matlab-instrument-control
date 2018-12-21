@@ -335,7 +335,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
 
             if this.lUseFunctionCallbacks
                 if this.fhIsVirtual()
-                    l = this.fhGet();
+                    l = this.fhGetV();
                 else
                     l = this.fhGet();
                 end
