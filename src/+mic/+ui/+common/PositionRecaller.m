@@ -121,11 +121,20 @@ classdef PositionRecaller < mic.ui.common.Base
             );
             
             this.uiList.build(this.hPanel, 10, 20, dWidth - 140, dHeight - 72); % dWidth/2 + 25
-            this.uibLoad.build(this.hPanel,  dWidth - 120, 40, 110, 20);
+           
+            
+            dTop = 20;
+            this.uibLoad.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
+            
+            dTop = dTop + 24;
             
             if ~this.lDisableSave
-                this.uibSave.build(this.hPanel,  dWidth - 120, 110, 110, 20);
-                this.uiePosName.build(this.hPanel,  dWidth - 120, 70, 110, 20);
+                
+                this.uiePosName.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
+                dTop = dTop + 40;
+                
+                this.uibSave.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
+                
                 this.uiePosName.set('New');
             end
         end
