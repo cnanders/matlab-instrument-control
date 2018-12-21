@@ -10,15 +10,10 @@ addpath(genpath(cDirMic));
 
 clock = mic.Clock('Master');
 
-uiA = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'A');
-uiB = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'B');
-uiC = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'C');
-uiD = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'D');
-h = figure;
-uiA.build(h, 10, 10);
-uiB.build(h, 10, 50);
-uiC.build(h, 10, 100);
-uiD.build(h, 10, 200);
+uiA = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'A', 'cLabel', 'A');
+uiB = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'B', 'cLabel', 'B');
+uiC = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'C', 'cLabel', 'C');
+uiD = mic.ui.device.GetSetNumber('clock', clock, 'cName', 'D', 'cLabel', 'D');
 
 
 % Create a list of three states
@@ -63,5 +58,31 @@ state2 = mic.StateSequence(...
     'cName', 'ABCD' ...
 );
 
-state2.go();
+
+h = figure;
+uiA.build(h, 10, 10);
+uiB.build(h, 10, 50);
+uiC.build(h, 10, 100);
+uiD.build(h, 10, 200);
+
+
+uiButtonABC = mic.ui.common.ActiveButton(...
+    'clock', clock, ...
+    'cName', 'state-abc-test', ...
+    'fhOnClick', @() state.go(), ...
+    'fhGetColor', @() mic.Utils.tern(state.isThere(), [.85, 1, .85], [1, .85, .85]), ...
+    'fhGetText', @() mic.Utils.tern(state.isThere(), 'ABC In Position', 'ABC Not In Position') ...
+);
+
+
+uiButtonABCD = mic.ui.common.ActiveButton(...
+    'clock', clock, ...
+    'cName', 'state-abcd-test', ...
+    'fhOnClick', @() state2.go(), ...
+    'fhGetColor', @() mic.Utils.tern(state2.isThere(), [.85, 1, .85], [1, .85, .85]), ...
+    'fhGetText', @() mic.Utils.tern(state2.isThere(), 'ABCD In Position', 'ABCD Not In Position') ...
+);
+
+uiButtonABC.build(h, 10, 250, 200, 30);
+uiButtonABCD.build(h, 10, 280, 200, 30);
 
