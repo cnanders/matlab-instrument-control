@@ -197,10 +197,23 @@ classdef Utils
             end
         end
 
-
         % MATLAB functional programming utilities:
-
-
+        % @param {logical 1x1} lIf - condition of "if"
+        % @param {mixed} xValIf - return when if condition is true
+        % @param {logical 1x1} lElseIf - condition of "elseif"
+        % @param {mixed} xValElseIf - return when elseif condition is true
+        % @param {mixed} xValElse - return when if and elseif conditions
+        % not satisfied
+        function out = elseIf(lIf, xValIf, lElseIf, xValElseIf, xValElse)
+            if lIf
+                out = xValIf;
+            elseif lElseIf
+                out = xValElseIf;
+            else
+                out = xValElse;
+            end
+        end
+        
         function out = tern(lCondition, mixedTrueValue, mixedFalseValue)
         % Implements a ternary value operator.  Returns either
         % mixedTrueValue or mixedFalseValue depending on lCondition
