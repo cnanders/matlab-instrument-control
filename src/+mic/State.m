@@ -79,7 +79,7 @@ classdef State < mic.interface.State
     
     %{
     
-    CANNOT GET fhGo working with MATLABS crappy single-expression lambda syntax
+    CANNOT GET fhGo working with MATLABS crappy single-expression /lambda syntax
     
     methods (Static)
         
