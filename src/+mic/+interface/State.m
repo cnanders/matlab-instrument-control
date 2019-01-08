@@ -16,6 +16,10 @@ classdef State < mic.Base
         % @return {logical 1x1} 
         l = isThere(this)
         
+        % returns the message to dispaly to the user for this state
+        % @return {char 1xm}
+        c = getMessage(this)
+        
     end
     
 end

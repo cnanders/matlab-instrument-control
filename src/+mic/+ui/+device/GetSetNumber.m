@@ -700,6 +700,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             this.uieDest.set(dPosCal);
         end
        
+        % Calls setDestCal() and moveToDest()
+        function setDestCalAndGo(this, dCalAbs, cUnit)
+            this.setDestCal(dCalAbs, cUnit);
+            this.moveToDest();
+        end
+        
         function setDestCal(this, dCalAbs, cUnit)
         % SETDESTCALABS Update the destination inside the mic.ui.common.Edit based on
         % an absolute value in a particular unit.
