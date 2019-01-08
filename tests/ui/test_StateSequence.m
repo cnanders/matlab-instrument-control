@@ -73,7 +73,8 @@ state3 = mic.StateSequence(...
     'cName', 'ABC at 1,50,10' ...
 );
 
-`
+
+h = figure;
 uiA.build(h, 10, 10);
 uiB.build(h, 10, 55);
 uiC.build(h, 10, 85);
@@ -119,6 +120,6 @@ uiStateSequenceABCD = mic.ui.StateSequence(...
     'clock', clock ...
 );
 
-uiStateSequenceABC.build(h, 10, 250, 200);
-uiStateSequenceABCD.build(h, 10, 275, 200);
-uiStateSequenceABC2.build(h, 10, 300, 200);
+uiStateSequenceABC.build(h, 10, 150, 200);
+uiStateSequenceABCD.build(h, 10, 175, 200);
+uiStateSequenceABC2.build(h, 10, 200, 200);
