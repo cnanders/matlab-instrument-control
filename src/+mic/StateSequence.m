@@ -18,7 +18,9 @@ classdef StateSequence < mic.interface.State
         cName
         
         
+        
     end
+    
     
     properties (Access = private)
        
@@ -30,17 +32,13 @@ classdef StateSequence < mic.interface.State
         
         % {handle 1x1}
         hProgress
+                
+        % {double 1x1}
+        dPeriod
         
         % {mic.Scan 1x1}
         scan
         
-        % {double 1x1}
-        dPeriod
-        
-        % {function_handle 1x1} returns {char 1xm}
-        fhGetMessageThere = @() 'Ready'
-        fhGetMessageNotThere = @() 'Not Ready'
-        fhGetMessageMoving = @() 'Moving...'
     end
     
     
@@ -120,21 +118,25 @@ classdef StateSequence < mic.interface.State
            end
        end
        
+       
+       
+       
        function lVal = isGoing(this)
            
-           if ~isempty(this.scan)
+           if this.isScanning()
                lVal = true;
                return
            end
-           
-           %{
+               
+           %{           
            for n = 1 : length(this.ceStates)
-               if this.ceStates{n}.isGoing
+               if this.ceStates{n}.isGoing()
                    lVal = true;
                    return
                end
            end
            %}
+           
            
            lVal = false;
        end
@@ -149,32 +151,18 @@ classdef StateSequence < mic.interface.State
            lVal = true;
        end
        
-       %{
-       function c = getMessageThere(this)
-           c = this.fhGetMessageThere();
-       end
        
-       function c = getMessageNotThere(this)
-           c = this.fhGetMessageNotThere();
-       end
-       
-       function c = getMessageMoving(this)
-           c = this.fhGetMessageMoving();
-       end
-       %}
        
        % Returns {char 1xm} status message
        function c = getMessage(this)
            
+           
            if this.isGoing()
-               c = this.ceStates{this.scan.getCurrentStateIndex()}.getMessage(); % this.fhGetMessageMoving(); 
+               c = this.ceStates{this.scan.getCurrentStateIndex()}.getMessage(); 
                return;
            end
                       
-           c = mic.Utils.ifElse(...
-               this.isThere(), this.fhGetMessageThere(), ...
-               this.fhGetMessageNotThere() ...
-           );
+           c = this.cName;
            
        end
        
@@ -240,6 +228,7 @@ classdef StateSequence < mic.interface.State
        
        function push(this, state)
            
+            
             if isa(state, 'mic.StateSequence')                  
                 ceStatesOfSequence = state.getStates();
                 for l = 1 : length(ceStatesOfSequence)
@@ -248,6 +237,8 @@ classdef StateSequence < mic.interface.State
             else
               this.ceStates{end + 1} = state;
             end
+                      
+           % this.ceStates{end + 1} = state;
            
        end
             
@@ -255,6 +246,18 @@ classdef StateSequence < mic.interface.State
     end
     
     methods (Access = protected)
+        
+        
+        function lVal = isScanning(this)
+           
+           if ~isempty(this.scan)
+               lVal = true;
+               return
+           end
+           
+           lVal = false;
+        end
+       
         
         function setStates(this, ceStates)
            this.ceStates = {};

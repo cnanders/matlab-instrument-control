@@ -22,17 +22,14 @@ classdef StateSequence <  mic.ui.common.Base
         
         cName = 'ui-state-sequence-change-me'
         dDelay = 0.5
+        
+        hPanel
         uiTextMain
         uiTextSub
-        hPanel
         uiProgressBar
         uiButtonToggle
         
-        % {uint8 24x24} images for play/pause
-        u8Play = imread(fullfile(mic.Utils.pathImg(), 'play', '4', 'play-24.png'));
-        u8Pause = imread(fullfile(mic.Utils.pathImg(), 'play', '4', 'pause-24.png'));
-                
-        dHeightProgressBar = 2
+        dHeightProgressBar = 5
         
     end
 
@@ -103,11 +100,11 @@ classdef StateSequence <  mic.ui.common.Base
             this.uiProgressBar.build(this.hPanel, ...
                 0, ...
                 dHeight - this.dHeightProgressBar, ...
-                dWidth - 24, ...
+                dWidth - 25, ...
                 this.dHeightProgressBar ...
             )
             this.uiProgressBar.hide();
-            this.uiButtonToggle.build(this.hPanel, dWidth - 24, 0, 24, 24);
+            this.uiButtonToggle.build(this.hPanel, dWidth - 25, 0, 24, 24);
             
 
             this.clock.add(@this.onClock, this.id(), this.dDelay);
@@ -126,19 +123,18 @@ classdef StateSequence <  mic.ui.common.Base
                 return
             end
             
+            %{
             if this.state.getProgress() == 1
                 this.uiProgressBar.hide();
             end
+            %}
             
             dColor = this.state.getColor();
             
             this.uiTextMain.set(this.state.getMessage());
             this.uiTextMain.setBackgroundColor(dColor);
             this.uiTextSub.setBackgroundColor(dColor);
-            
-            this.uiProgressBar.set(this.state.getProgress());
-            
-            
+            this.uiProgressBar.set(this.state.getProgress());            
             set(this.hPanel, 'BackgroundColor', dColor);
             
             if this.state.isGoing()
@@ -146,6 +142,14 @@ classdef StateSequence <  mic.ui.common.Base
             else
                 this.uiButtonToggle.set(false);
             end
+            
+            if this.state.isGoing()
+                this.uiProgressBar.show();
+            else
+                this.uiProgressBar.hide();
+            end
+            
+
 
         end
         
@@ -155,11 +159,16 @@ classdef StateSequence <  mic.ui.common.Base
             this.uiTextSub = mic.ui.common.Text('fhButtonDownFcn', @this.onPanelButtonDown);
             this.uiProgressBar = mic.ui.common.ProgressBar();
             
+            % {uint8 24x24} images for play/pause
+            u8Play = imread(fullfile(mic.Utils.pathImg(), 'play', '4', 'play-24.png'));
+            u8Pause = imread(fullfile(mic.Utils.pathImg(), 'play', '4', 'pause-24.png'));
+        
+        
             this.uiButtonToggle = mic.ui.common.ButtonToggle( ...
                 'lImg', true, ...
                 'fhOnClick', @this.onUiButtonToggleClick, ...
-                'u8ImgT', this.u8Pause, ... % pressed
-                'u8ImgF', this.u8Play ...
+                'u8ImgT', u8Pause, ... % pressed
+                'u8ImgF', u8Play ...
             );
         
             
