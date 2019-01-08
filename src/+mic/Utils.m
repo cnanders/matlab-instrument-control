@@ -229,6 +229,22 @@ classdef Utils
           
         end
         
+        % See ifElse.  Same construct except that the list is alternating
+        % lambdas that return {logical} {mixed}
+        function out = ifElseLambda(varargin)
+            
+            for k = 1 : 2: length(varargin) - 1
+                if varargin{k}()
+                    out = varargin{k + 1}();
+                    return
+                end
+            end
+            
+            % If you make it here, return the last item
+            out = varargin{length(varargin)}();
+          
+        end
+        
         function out = tern(lCondition, mixedTrueValue, mixedFalseValue)
         % Implements a ternary value operator.  Returns either
         % mixedTrueValue or mixedFalseValue depending on lCondition

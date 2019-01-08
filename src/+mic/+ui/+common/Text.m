@@ -122,9 +122,7 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
            if ~isempty(this.hUI) && ishandle(this.hUI)
                set(this.hUI, 'String', this.cVal);
            end
-           
-           drawnow;
-            
+                       
            
        end
        

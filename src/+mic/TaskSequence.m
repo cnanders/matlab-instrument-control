@@ -1,4 +1,4 @@
-classdef StateSequence < mic.interface.State
+classdef TaskSequence < mic.interface.Task
     
     
     properties (Constant)
@@ -24,8 +24,8 @@ classdef StateSequence < mic.interface.State
     
     properties (Access = private)
        
-        % {cell of < mic.interfaceState}
-        ceStates
+        % {cell of < mic.interface.Task}
+        ceTasks
         
         % {mic.clock 1x1}
         clock
@@ -50,7 +50,7 @@ classdef StateSequence < mic.interface.State
     
     methods
                
-       function this = StateSequence(varargin)
+       function this = TaskSequence(varargin)
           
             % Override properties with varargin
             for k = 1 : 2: length(varargin)
@@ -58,8 +58,8 @@ classdef StateSequence < mic.interface.State
                 if this.hasProp(varargin{k})
                     
                     switch varargin{k}
-                        case 'ceStates'
-                            this.setStates(varargin{k + 1}); % special case need to handle in special way
+                        case 'ceTasks'
+                            this.setTasks(varargin{k + 1}); % special case need to handle in special way
                         otherwise
                             this.(varargin{k}) = varargin{k + 1};
                     end
@@ -70,30 +70,28 @@ classdef StateSequence < mic.interface.State
        end
        
         
-       function go(this)
+       function execute(this)
            
-            if this.isThere() 
+            if this.isDone() 
                 return
             end
             
             % this.hProgress = waitbar(0, [this.cName, '. Please wait...']);
             
-            fhSetState      = @(~, state) state.go();
-            fhIsAtState     = @(~, state) state.isThere() && ~state.isGoing();
-            fhAcquire       = @this.acquire;
-            fhIsAcquired    = @(~, state) true;
-            % fhOnComplete    = @(~, state) delete(this.hProgress);
-            % fhOnAbort       = @(~, state) delete(this.hProgress);
+            fhSetState      = @(~, task) task.execute();
+            fhIsAtState     = @(~, task) task.isDone() && ~task.isExecuting();
+            fhAcquire       = @(~, task) [];
+            fhIsAcquired    = @(~, task) true;
             
-            fhOnComplete    = @(~, state) [];
-            fhOnAbort       = @(~, state) [];
+            %fhOnComplete    = @(~, task) [];
+            %fhOnAbort       = @(~, task) [];
             
             fhOnComplete    = @this.onScanComplete;
             fhOnAbort       = @this.onScanAbort;
         
             
             stRecipe = struct;
-            stRecipe.values = this.ceStates; % this.getFlatCellOfStates();  % enumerable list of states that can be read by setState
+            stRecipe.values = this.ceTasks; % this.getFlatCellOfTasks();  % enumerable list of tasks that can be read by setTask
             stRecipe.unit = struct('unit', 'unit'); % not sure if we need units really, but let's fix later
             
             this.scan = mic.Scan(this.cName, ...
@@ -111,39 +109,29 @@ classdef StateSequence < mic.interface.State
            
        end
        
-       function stop(this)
+       function abort(this)
            this.scan.stop();
-           for n = 1 : length(this.ceStates)
-               this.ceStates{n}.stop();
+           for n = 1 : length(this.ceTasks)
+               this.ceTasks{n}.abort();
            end
        end
        
        
        
        
-       function lVal = isGoing(this)
+       function lVal = isExecuting(this)
            
            if this.isScanning()
                lVal = true;
                return
            end
                
-           %{           
-           for n = 1 : length(this.ceStates)
-               if this.ceStates{n}.isGoing()
-                   lVal = true;
-                   return
-               end
-           end
-           %}
-           
-           
            lVal = false;
        end
        
-       function lVal = isThere(this)
-           for n = 1 : length(this.ceStates)
-               if ~this.ceStates{n}.isThere()
+       function lVal = isDone(this)
+           for n = 1 : length(this.ceTasks)
+               if ~this.ceTasks{n}.isDone()
                    lVal = false;
                    return
                end
@@ -157,8 +145,8 @@ classdef StateSequence < mic.interface.State
        function c = getMessage(this)
            
            
-           if this.isGoing()
-               c = this.ceStates{this.scan.getCurrentStateIndex()}.getMessage(); 
+           if this.isExecuting()
+               c = this.ceTasks{this.scan.getCurrentStateIndex()}.getMessage(); 
                return;
            end
                       
@@ -166,13 +154,7 @@ classdef StateSequence < mic.interface.State
            
        end
        
-       function d = getColor(this)
-           d = mic.Utils.ifElse(...
-               this.isGoing(), [1 1 0.85], ...
-               this.isThere(), [.85, 1, .85], ...
-               [1, .85, .85] ...
-           );           
-       end
+       
        
        function d = getProgress(this)
            if isempty(this.scan)
@@ -184,61 +166,61 @@ classdef StateSequence < mic.interface.State
                d = 0;
                return
            end
-           % d = this.scan.getCurrentStateIndex() / length(this.ceStates);
+           % d = this.scan.getCurrentStateIndex() / length(this.ceTasks);
            d = this.scan.getCurrentStateIndex() / length(this.scan.ceValues);
        end
        
        
        %{
-       % Returns a {mic.State 1xm} from a cell that may contain
-       % {mic.State} and {mic.StateSequence}.  Since this.ceStates
-       % can contain mic.State and mic.StateSequence, could not use
+       % Returns a {mic.Task 1xm} from a cell that may contain
+       % {mic.Task} and {mic.TaskSequence}.  Since this.ceTasks
+       % can contain mic.Task and mic.TaskSequence, could not use
        % an object array to store the original list.  Could eventually
-       % simplify this if we only allow adding states through push().
+       % simplify this if we only allow adding tasks through push().
        
-       function states = getFlatStates(this)
+       function tasks = getFlatTasks(this)
                       
-           states = []; % storage for object list {state 1xm}
-           for k = 1 : length(this.ceStates)
-              if isa(this.ceStates{k}, 'mic.StateSequence')                  
-                  states = [states, this.ceStates{k}.getFlatStates()];
+           tasks = []; % storage for object list {task 1xm}
+           for k = 1 : length(this.ceTasks)
+              if isa(this.ceTasks{k}, 'mic.TaskSequence')                  
+                  tasks = [tasks, this.ceTasks{k}.getFlatTasks()];
               else
-                  states = [states, this.ceStates{k}];
+                  tasks = [tasks, this.ceTasks{k}];
               end
            end           
        end
        
-       % Returns {cell of mic.State}
-       function ce = getFlatCellOfStates(this)
-           states = this.getFlatStates();
+       % Returns {cell of mic.Task}
+       function ce = getFlatCellOfTasks(this)
+           tasks = this.getFlatTasks();
            ce = {};
-           for k = 1 : length(states)
-               ce{end + 1} = states(k);
+           for k = 1 : length(tasks)
+               ce{end + 1} = tasks(k);
            end
        end
        %}
        
-       function ce = getStates(this)
-           ce = this.ceStates;
+       function ce = getTasks(this)
+           ce = this.ceTasks;
        end
        
        
-       % Pushes a {mic.State} or {mic.StateSequence} to this StateSequence.
-       % if {mic.StateSequence} is passed, it flattens
+       % Pushes a {mic.Task} or {mic.TaskSequence} to this TaskSequence.
+       % if {mic.TaskSequence} is passed, it flattens
        
-       function push(this, state)
+       function push(this, task)
            
             
-            if isa(state, 'mic.StateSequence')                  
-                ceStatesOfSequence = state.getStates();
-                for l = 1 : length(ceStatesOfSequence)
-                    this.ceStates{end + 1} = ceStatesOfSequence{l};
+            if isa(task, 'mic.TaskSequence')                  
+                ceTasksOfSequence = task.getTasks();
+                for l = 1 : length(ceTasksOfSequence)
+                    this.ceTasks{end + 1} = ceTasksOfSequence{l};
                 end
             else
-              this.ceStates{end + 1} = state;
+              this.ceTasks{end + 1} = task;
             end
                       
-           % this.ceStates{end + 1} = state;
+           % this.ceTasks{end + 1} = task;
            
        end
             
@@ -259,25 +241,21 @@ classdef StateSequence < mic.interface.State
         end
        
         
-        function setStates(this, ceStates)
-           this.ceStates = {};
-           for k = 1 : length(ceStates)
-              this.push(ceStates{k});
+        function setTasks(this, ceTasks)
+           this.ceTasks = {};
+           for k = 1 : length(ceTasks)
+              this.push(ceTasks{k});
            end  
         end
         
-        function onScanComplete(this, unit, state)
+        function onScanComplete(this, unit, task)
             this.scan = [];
         end
         
-        function onScanAbort(this, unit, state)
+        function onScanAbort(this, unit, task)
             this.scan = [];
         end
         
-        function acquire(this, unit, state)
-            % waitbar( this.scan.getCurrentStateIndex() / length(this.ceStates), this.hProgress);
-            
-        end
         
     end
 
