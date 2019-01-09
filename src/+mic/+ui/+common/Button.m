@@ -20,12 +20,13 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         
         % {function_handle 1x1} is called any time eChange is emitted (if
         % is not null)
-        fhOnClick
+        fhOnClick = @(src, evt)[];
         
         % {function_handle 1x1} is called any time eChange is emitted 
         % need to deprecate fhOnClick
         fhDirectCallback = @(src, evt)[];
     end
+    
 
 
     events
@@ -58,11 +59,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                     this.msg(sprintf('settting %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_SET);
                     this.(varargin{k}) = varargin{k + 1};
                 end
-                %{
-                elseif strcmp(varargin{k}, 'fhDirectCallback')
-                    this.fhOnClick = varargin{k + 1};
-                end
-                %}
+                
             end
             
             % this.lImg = false; % Temp performance check 2018.09.10
@@ -111,9 +108,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         cAns = questdlg(this.cMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
                         switch cAns
                             case 'Yes'
-                                if ~isempty(this.fhOnClick)
-                                    this.fhOnClick();
-                                end
+                                this.fhOnClick();
                                 this.fhDirectCallback(this, evt);
                                 notify(this,'eChange');
 
@@ -123,9 +118,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
 
                     else
                         
-                        if ~isempty(this.fhOnClick)
-                            this.fhOnClick();
-                        end
+                        this.fhOnClick();
                         this.fhDirectCallback(this, evt);
                         notify(this,'eChange');
                     end

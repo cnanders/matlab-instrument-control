@@ -31,6 +31,10 @@ classdef ButtonToggle < mic.interface.ui.common.Logical & mic.ui.common.Base
         lImg = false          % use image?
         lAsk = false
         cMsg = 'Are you sure you want to do that?'
+        
+        % {function_handle 1x1} is called any time eChange is emitted (if
+        % is not null)
+        fhOnClick = @(src, evt)[];
     end
 
 
@@ -81,6 +85,7 @@ classdef ButtonToggle < mic.interface.ui.common.Logical & mic.ui.common.Base
                         switch cAns
                             case 'Yes'
                                 notify(this,'eChange');
+                                this.fhOnCLick();
 
                             otherwise
                                 return
@@ -88,6 +93,7 @@ classdef ButtonToggle < mic.interface.ui.common.Logical & mic.ui.common.Base
 
                     else
                         notify(this,'eChange');
+                        this.fhOnClick();
                     end
            end
         end
