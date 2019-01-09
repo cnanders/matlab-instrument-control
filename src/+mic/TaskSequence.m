@@ -27,7 +27,7 @@ classdef TaskSequence < mic.interface.Task
         % {cell of < mic.interface.Task}
         ceTasks
         
-        % {mic.clock 1x1}
+        % {mic.Clock 1x1}  NOT {mic.ui.Clock}
         clock
         
         % {handle 1x1}
@@ -65,6 +65,11 @@ classdef TaskSequence < mic.interface.Task
                     end
                     this.msg(sprintf('settting %s', varargin{k}),  this.u8_MSG_TYPE_VARARGIN_SET);
                 end
+            end
+            
+            % Check that clock is not a uiClock
+            if ~isa(this.clock, 'mic.Clock')
+                error('clock must be mic.Clock');
             end
             
        end
