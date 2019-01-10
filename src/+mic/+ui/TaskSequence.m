@@ -1,4 +1,4 @@
-classdef TaskSequence <  mic.ui.common.Base
+classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
     
     properties (Constant)
 
@@ -11,7 +11,7 @@ classdef TaskSequence <  mic.ui.common.Base
 
     properties (Access = private)
         
-        % {< mic.TaskSequence 1x1}
+        % {mic.TaskSequence 1x1}
         task
         
         % {mic.Clock or mic.ui.Clock 1x1}
@@ -72,13 +72,64 @@ classdef TaskSequence <  mic.ui.common.Base
             end
             
             if ~isa(this.task, 'mic.TaskSequence')
-                error('task must be mic.TaskSequence');
+                error('task must return a mic.TaskSequence');
             end
             
             this.init();
             
         end
         
+        function execute(this)
+           this.task.execute();
+       end
+
+       function abort(this)
+           this.task.abort();
+       end
+
+       function l = isExecuting(this)
+           l = this.task.isExecuting();
+       end
+
+       function l = isDone(this)
+           l = this.task.isDone();
+       end
+
+       function c = getMessage(this)
+           c = this.task.getMessage();
+       end
+        
+        function delete(this)
+            
+            
+            if ~isempty(this.clock) && ...
+                isvalid(this.clock) && ...
+                this.clock.has(this.id())
+                this.msg('delete() removing clock task', this.u8_MSG_TYPE_INFO); 
+                this.clock.remove(this.id());
+            end
+            
+        end
+        
+        function show(this)
+            if ishandle(this.hPanel)
+                set(this.hPanel, 'Visible', 'on');
+            end
+        end
+
+        function hide(this)
+            if ishandle(this.hPanel)
+                set(this.hPanel, 'Visible', 'off');
+            end
+        end
+        
+        function enable(this)
+            this.uiButton.enable();
+        end
+        
+        function disable(this)
+            this.uiButton.disable();
+        end
         
 
         %% Methods
@@ -190,7 +241,7 @@ classdef TaskSequence <  mic.ui.common.Base
         
         function onClock(this)
             
-            if ~ishandle(this.hUI)
+            if ~ishandle(this.hPanel)
                 return
             end
                         

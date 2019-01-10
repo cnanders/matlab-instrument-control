@@ -14,8 +14,8 @@ classdef TaskSequence < mic.interface.Task
     
     properties (SetAccess = private)
 
-        % {char 1xm}
-        cName
+        % {char 1xm} app-wide unique name for clock
+        cName = 'mic-task-sequence-change-me'
         
         
         
@@ -25,7 +25,10 @@ classdef TaskSequence < mic.interface.Task
     properties (Access = private)
        
         % {cell of < mic.interface.Task}
-        ceTasks
+        ceTasks = {}
+        
+        % {function_handle 1x1} that returns a {cell of < mic.interface.Task}
+        % fhGetTasks
         
         % {mic.Clock 1x1}  NOT {mic.ui.Clock}
         clock
@@ -38,6 +41,9 @@ classdef TaskSequence < mic.interface.Task
         
         % {mic.Scan 1x1}
         scan
+        
+        % {char 1xm} - description of the task/seqeunce/state
+        cDescription
         
     end
     
@@ -155,7 +161,7 @@ classdef TaskSequence < mic.interface.Task
                return;
            end
                       
-           c = this.cName;
+           c = this.cDescription;
            
        end
        
