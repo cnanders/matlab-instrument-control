@@ -136,7 +136,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         dColorBg = [.94 .94 .94]; % MATLAB default
         
         
-        dColorTextMoving = [0 170 0]./255;
+        dColorTextMoving = [56 162 183]/255; %[219 237 247]/255; %[0 170 0]./255;
         dColorTextStopped = [0 0 0]./255;
         dColorTextWarning = [170 170 0]./255;
         
@@ -184,7 +184,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
        
         % {logical 1x1} - show the clickable toggle / status that shows if
         % is using real Device or virtual Device
-        lShowDevice = true
+        lShowDevice = false
         % {logical 1x1} - show the clickable initialize toggle
         lShowInitButton = false
         % {logical 1x1} - show isInitialized() state
@@ -353,7 +353,59 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             
             this.init();
         end
+        
+        % Override
+        function turnOn(this)
+            turnOn@mic.ui.device.Base(this);
+            this.setColorOfBackgroundToDefault();
+        end
+        
+        function turnOff(this)
+            turnOff@mic.ui.device.Base(this);
+            this.setColorOfBackgroundToWarning();
+        end
+        
+        function setColorOfBackgroundToWarning(this)
+            this.setColorOfBackground([1 1 0.85]);
+        end
+        
+        function setColorOfBackgroundToDefault(this)
+            this.setColorOfBackground([0.94 0.94 0.94]);
+        end
+        
 
+        % @param {double 1x3} dColor - RGB triplet, i.e.,[0.5 0.5 0]
+        function setColorOfBackground(this, dColor)
+            if isempty(this.hPanel)
+                return
+            end
+            
+            this.uitxLabelDest.setBackgroundColor(dColor);
+            this.uitxLabelDevice.setBackgroundColor(dColor);
+            this.uitxLabelInit.setBackgroundColor(dColor);
+            this.uitxLabelInitState.setBackgroundColor(dColor);
+            this.uitxLabelJog.setBackgroundColor(dColor);
+            this.uitxLabelJogL.setBackgroundColor(dColor);
+            this.uitxLabelJogR.setBackgroundColor(dColor);
+            this.uitxLabelName.setBackgroundColor(dColor);
+            this.uitxLabelPlay.setBackgroundColor(dColor);
+            this.uitxLabelRange.setBackgroundColor(dColor);
+            this.uitxLabelStores.setBackgroundColor(dColor);
+            this.uitxLabelUnit.setBackgroundColor(dColor);
+            this.uitxLabelVal.setBackgroundColor(dColor);
+            this.uitxName.setBackgroundColor(dColor);
+            this.uitxRange.setBackgroundColor(dColor);
+            this.uitxVal.setBackgroundColor(dColor);
+            this.uibZero.setColorOfBackground(dColor);
+            this.uitRel.setColorOfBackground(dColor);
+            this.uipStores.setColorOfBackground(dColor);
+            this.uipUnit.setColorOfBackground(dColor);
+            this.uieDest.setColorOfBackground(dColor);
+            this.uieStep.setColorOfBackground(dColor);
+            set(this.hPanel, 'BackgroundColor', dColor);
+                       
+        end
+        
         
         function l = isReady(this)
             
@@ -631,6 +683,8 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 ~this.clock.has(this.id())
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
+            
+            this.setColorOfBackgroundToWarning();
             
                     
         end
@@ -1265,16 +1319,16 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
             );
         
             this.uitRel = mic.ui.common.Toggle( ...
-                'cTextFalse', 'abs', ... % off (showing abs)
-                'cTextTrue', 'rel', ... % on (showing rel)
-                'lImg', true, ...
+                'cTextFalse', 'ABS', ... % off (showing abs)
+                'cTextTrue', 'REL', ... % on (showing rel)
+                'lImg', false, ...
                 'u8ImgOff',  this.u8Abs, ...
                 'u8ImgOn', this.u8Rel ...
             );
         
              this.uibZero = mic.ui.common.Button( ...
-                'cText', 'Zero', ...
-                'lImg', true, ...
+                'cText', 'SET', ...
+                'lImg', false, ...
                 'u8Img', this.u8Zero ...
              );
 

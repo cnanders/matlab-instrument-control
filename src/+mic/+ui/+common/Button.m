@@ -154,7 +154,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         
         % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
         % 0]
-        function setColorBackground(this, dValue)
+        function setColorOfBackground(this, dValue)
             
             if ~ishandle(this.hUI)
                 return

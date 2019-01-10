@@ -17,4 +17,9 @@ test.ui.getDestCal('eV')
 test.ui.moveToDest();
 
 
+dColorYellow = [1 1 0.85];
+dColorGreen = [1 1 0.85];
+% test.ui.setColorOfBackground([.85, 1, .85])
+
+
 % test.ui.setUnit('um')
