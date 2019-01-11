@@ -108,7 +108,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                         cAns = questdlg(this.cMsg, 'Warning', 'Yes', 'Cancel', 'Cancel');
                         switch cAns
                             case 'Yes'
-                                this.fhOnClick();
+                                this.fhOnClick(this, evt);
                                 this.fhDirectCallback(this, evt);
                                 notify(this,'eChange');
 
@@ -118,7 +118,7 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
 
                     else
                         
-                        this.fhOnClick();
+                        this.fhOnClick(this, evt);
                         this.fhDirectCallback(this, evt);
                         notify(this,'eChange');
                     end

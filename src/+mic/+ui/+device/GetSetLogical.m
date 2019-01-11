@@ -288,13 +288,11 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             end
             
             
-            this.setColorOfBackgroundToWarning();
+            if ~this.isActive()
+                this.setColorOfBackgroundToWarning();
+            end
             
         end
-
-        
-        
-
 
         
 

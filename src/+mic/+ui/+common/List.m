@@ -52,7 +52,7 @@ classdef List < mic.Base
         
         % {function_handle 1x1} function to call when the list selection
         % changes
-        fhOnChange 
+        fhOnChange = @(src, evt)[];
         
         % {function_handle 1x1} callback when user presses up, down, or X
         fhDirectCallback = @()[];
@@ -324,7 +324,7 @@ classdef List < mic.Base
            end
            
            if ~isempty(this.fhOnChange)
-               this.fhOnChange()
+               this.fhOnChange(this)
            end
            
            notify(this,'eChange');
@@ -388,7 +388,7 @@ classdef List < mic.Base
             this.u8Selected = uint8(get(src, 'Value'));
             
             if ~isempty(this.fhOnChange)
-               this.fhOnChange()
+               this.fhOnChange(this, evt)
             end
            
             notify(this,'eChange');

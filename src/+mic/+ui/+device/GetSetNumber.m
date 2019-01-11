@@ -684,7 +684,9 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
             
-            this.setColorOfBackgroundToWarning();
+            if ~this.isActive()
+                this.setColorOfBackgroundToWarning();
+            end
             
                     
         end
