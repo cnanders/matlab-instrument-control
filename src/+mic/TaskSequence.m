@@ -103,7 +103,7 @@ classdef TaskSequence < mic.interface.Task
             
             stRecipe = struct;
             stRecipe.values = this.ceTasks; % this.getFlatCellOfTasks();  % enumerable list of tasks that can be read by setTask
-            stRecipe.unit = struct('unit', 'unit') % not sure if we need units really, but let's fix later
+            stRecipe.unit = struct('unit', 'unit'); % not sure if we need units really, but let's fix later
             
             this.scan = mic.Scan(this.cName, ...
                                 this.clock, ...
