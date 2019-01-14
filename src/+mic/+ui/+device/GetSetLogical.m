@@ -288,8 +288,14 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             end
             
             
-            if ~this.isActive()
-                this.setColorOfBackgroundToWarning();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.setColorOfBackgroundToWarning();
+                end
+            else
+                if ~this.isActive()
+                    this.setColorOfBackgroundToWarning();
+                end
             end
             
         end

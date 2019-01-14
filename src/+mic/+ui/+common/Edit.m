@@ -387,6 +387,9 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             end
             
             set(this.hUI, 'BackgroundColor', dValue) 
+            if this.lShowLabel
+                set(this.hLabel, 'BackgroundColor', dValue);
+            end
             
         end
         

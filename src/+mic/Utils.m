@@ -240,7 +240,8 @@ classdef Utils
                 end
             end
             
-            % If you make it here, return the last item
+            % If you make it here, return the retult of executing the last
+            % lambda
             out = varargin{length(varargin)}();
           
         end

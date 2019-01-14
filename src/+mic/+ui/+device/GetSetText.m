@@ -118,12 +118,12 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         fhSet = @(cVal) []
 
         % {function handle 1x1} 
-        fhIsInitialized
+        fhIsInitialized = @() true
 
         % {function handle 1x1} 
-        fhInitialize
-
+        fhInitialize = @()[]
         fhIsVirtual = @() true % overload this otherwise will always use virtual
+        
         fhGetV 
         fhSetV
         fhIsInitializedV
@@ -303,8 +303,14 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
             
-            if ~this.isActive()
-                this.setColorOfBackgroundToWarning();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.setColorOfBackgroundToWarning();
+                end
+            else
+                if ~this.isActive()
+                    this.setColorOfBackgroundToWarning();
+                end
             end
         end
       

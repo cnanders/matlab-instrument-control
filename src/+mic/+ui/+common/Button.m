@@ -161,6 +161,9 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             end
             
             set(this.hUI, 'BackgroundColor', dValue) 
+            if this.lShowLabel
+                set(this.hLabel, 'BackgroundColor', dValue);
+            end
             
         end
         
