@@ -1,4 +1,4 @@
-classdef PopupStruct < mic.Base
+classdef PopupStruct < mic.ui.common.Base
     
 %UIPOPUPSTRUCT - Similar to UIPopup except that each item in the
 %pulldown represents a structure rather than a char.  The idea is
@@ -240,60 +240,7 @@ classdef PopupStruct < mic.Base
             st= this.ceOptions{this.u8Selected};
        end
        
-       function show(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-                % Make sure correct item is showing if it was changed while
-                % the UI was not visible
-                set(this.hUI, 'Value', this.u8Selected);
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'on');
-            end
-
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'off');
-            end
-
-
-        end
-        
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
-        
-         function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
-        
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-            
-         end
-        
-         
+          
          function ce = getOptions(this)
              ce = this.ceOptions;
          end
