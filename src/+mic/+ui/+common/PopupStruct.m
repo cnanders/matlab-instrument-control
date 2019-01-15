@@ -42,18 +42,14 @@ classdef PopupStruct < mic.ui.common.Base
         % {logical 1x1} show the label?        
         lShowLabel = true;
         
-        % {char 1xm} the tooltip
-        cTooltip = 'Tooltip: set me!';
+
         
         % {logical 1x1} show the tooltip?
         lShowTooltip = true;
         
         % {uint8 1x1} the active / selected index
         u8Selected 
-        
-       
-        hLabel
-        hUI
+
         
         fhDirectCallback = @(src, evt)[];
     end

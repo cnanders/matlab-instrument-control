@@ -26,11 +26,8 @@ classdef Popup < mic.ui.common.Base
     
     properties (Access = private)
         
-        hLabel
-        hUI
         lShowLabel = true
         cLabel = 'Fix me'
-        cTooltip = 'Tooltip: set me!'
         
         % {uint8 1x1} - selected index
         u8Selected = uint8(1)

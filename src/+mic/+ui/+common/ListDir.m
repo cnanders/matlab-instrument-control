@@ -151,7 +151,11 @@ classdef ListDir < mic.ui.common.List
                 dHeightButton ...
             );
 
-            dTop = dTop + dHeightButton + 10;
+            if this.lShowChooseDir
+                dTop = dTop + dHeightButton + 10;
+            else
+                dTop = dTop + 20;
+            end
         
             build@mic.ui.common.List( ...
                 this, ...
