@@ -96,6 +96,10 @@ classdef Popup < mic.Base
                 'TooltipString', this.cTooltip, ...
                 'HorizontalAlignment','left'...
             );
+        
+            if ~this.lEnabled
+                this.disable();
+            end
                   
         
        end

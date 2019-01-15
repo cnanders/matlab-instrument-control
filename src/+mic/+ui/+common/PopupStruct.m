@@ -131,6 +131,10 @@ classdef PopupStruct < mic.Base
                 'HorizontalAlignment','left'...
             );
         
+            if ~this.lEnabled
+                this.disable();
+            end
+        
        end
        
        % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5

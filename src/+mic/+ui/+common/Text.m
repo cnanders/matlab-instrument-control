@@ -97,6 +97,10 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
                 'TooltipString', this.cTooltip, ...
                 'String', this.cVal ...
                 );
+            
+            if ~this.lEnabled
+                this.disable();
+            end
 
        end
        

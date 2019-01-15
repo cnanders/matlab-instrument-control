@@ -81,6 +81,10 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             else
                 set(this.hUI, 'String', this.cText);
             end
+            
+            if ~this.lEnabled
+                this.disable();
+            end
 
         end
         
