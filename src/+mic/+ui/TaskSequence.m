@@ -101,7 +101,6 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         
         function delete(this)
             
-            
             if ~isempty(this.clock) && ...
                 isvalid(this.clock) && ...
                 this.clock.has(this.id())
@@ -304,9 +303,28 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
             
         end
         
-        function onPanelButtonDown(this, ~, ~)
+        function printStatus(this)
             
+            fprintf('*******************************\n');
+            fprintf('STATUS: mic.ui.TaskSequence %s \n', this.task.getMessage());
+            ceTasks = this.task.getTasks();
+            for k = 1 : length(ceTasks)
+                fprintf('Task %1d of %1d: (%s) %s\n', ...
+                    k, ...
+                    length(ceTasks), ...
+                    mic.Utils.tern(ceTasks{k}.isDone(), 'done', 'not done'), ...
+                    ceTasks{k}.getMessage() ...
+                );
+            end
+            fprintf('*******************************\n');
+
             
+        end
+        
+        function onPanelButtonDown(this, src, ~)
+            
+            src
+            this.printStatus();
             
         end 
         

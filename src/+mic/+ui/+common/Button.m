@@ -25,6 +25,8 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         % {function_handle 1x1} is called any time eChange is emitted 
         % need to deprecate fhOnClick
         fhDirectCallback = @(src, evt)[];
+        
+        lShowLabel = false;
     end
     
 
