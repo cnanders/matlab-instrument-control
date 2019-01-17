@@ -360,6 +360,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 return
             end
             
+            if ~ishandle(this.hPanel)
+                return
+            end
+            
             this.uitxLabelCommand.setBackgroundColor(dColor)
             this.uitxLabelDevice.setBackgroundColor(dColor);
             this.uitxLabelInit.setBackgroundColor(dColor);

@@ -101,6 +101,8 @@ classdef ListDir < mic.ui.common.List
             % Set the refresh function
             this.setRefreshFcn(@this.refreshList);
             
+            this.refresh(); % Make sure this.ceOptions (parent prop) is populated with contents of dir
+
        end
        
        function build( ...
