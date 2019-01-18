@@ -91,7 +91,12 @@ classdef TaskSequence < mic.interface.Task
             
             % this.hProgress = waitbar(0, [this.cName, '. Please wait...']);
             
-            fhSetState      = @(~, task) task.execute();
+            fhSetState      = @(~, task) task.execute();  % NEVER BE TEMPTED ... (READ BELOW)
+            % TO GET CLEVER HERE and check task.isDone() and only do
+            % task.execute() if task.isDone() == false.  There are many
+            % times where it is useful to make a task to execute something
+            % and the concept of isDone doesnt make sense so you always
+            % have it return true.
             fhIsAtState     = @(~, task) task.isDone() && ~task.isExecuting();
             fhAcquire       = @(~, task) [];
             fhIsAcquired    = @(~, task) true;

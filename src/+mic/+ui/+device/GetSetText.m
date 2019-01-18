@@ -499,6 +499,10 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 return
             end
             
+            if ~ishandle(this.hPanel)
+                return
+            end
+            
             this.uitxLabelDest.setBackgroundColor(dColor);
             this.uitxLabelDevice.setBackgroundColor(dColor);
             this.uitxLabelInit.setBackgroundColor(dColor);
