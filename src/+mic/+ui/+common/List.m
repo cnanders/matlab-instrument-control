@@ -101,7 +101,7 @@ classdef List < mic.Base
        
        function this= List(varargin)
            
-           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
@@ -109,6 +109,7 @@ classdef List < mic.Base
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
+            
        end
        
        

@@ -101,6 +101,8 @@ classdef ListDir < mic.ui.common.List
             % Set the refresh function
             this.setRefreshFcn(@this.refreshList);
             
+
+            
        end
        
        function build( ...
