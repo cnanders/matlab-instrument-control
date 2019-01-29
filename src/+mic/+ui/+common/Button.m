@@ -101,11 +101,19 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
 
         end
         
+        % Returns {char 1xm} the text of the button
+        function c = getText(this)
+            c = this.cText;
+        end
+        
+        
         function setText(this, cText)
+            
+            this.cText = cText;
             if ~ishandle(this.hUI)
                 return
             end
-            set(this.hUI, 'String', cText);
+            set(this.hUI, 'String', this.cText);
         end
         
         function setColor(this, dColor)

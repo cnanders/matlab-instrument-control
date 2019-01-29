@@ -63,6 +63,9 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
             % onClock().  onClock() advances u8PathCycle, updating
             % dDest as dPath(u8PathCycle).
             
+            this.dVal = dDest;
+            return;
+            
             if isempty(this.clock)
                 this.dVal = dDest;
                 return;
