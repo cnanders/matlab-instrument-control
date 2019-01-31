@@ -1,11 +1,14 @@
+% Add mic
+try
+    purge
+    
+end
+
 [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
 
 cDirMic = fullfile(cDirThis, '..', '..', '..', 'src');
 
-% Add mic
 addpath(genpath(cDirMic));
-
-purge
 
 cPathImg = fullfile(mic.Utils.pathImg(), 'zero', 'axis-zero-24-2.png');
 
@@ -24,11 +27,14 @@ uiButton = mic.ui.common.Button( ...
     'cText', 'Zero', ...
     'lImg', true, ...
     'u8Img', u8Zero, ...
+    'fhOnPress', @(src, evt) disp('pressed'), ...
+    'fhOnRelease', @(src, evt) disp('released'), ...
     'fhDirectCallback', fhDirect ...
 );
 
 h = figure;
 uiButton.build(h, 10, 10, 24, 24);
+% uiButton.disable();
 
 cb = @(src, evt) (fprintf('mic.ui.common.Button press\n'));
 addlistener(uiButton, 'ePress', cb);

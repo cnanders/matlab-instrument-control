@@ -101,6 +101,9 @@ classdef ListDir < mic.ui.common.List
             % Set the refresh function
             this.setRefreshFcn(@this.refreshList);
             
+
+            this.refresh(); % Make sure this.ceOptions (parent prop) is populated with contents of dir
+
        end
        
        function build( ...
@@ -114,22 +117,17 @@ classdef ListDir < mic.ui.common.List
             
             
             
+            dWidthButton = 100;
+            dHeightButton = 24;
+                
+                
             if this.lShowChooseDir
-                
-                dTop = dTop;  
-                dWidthButton = 100;
-                dHeightButton = 24;
-                
+                                
                 this.uiButtonChooseDir = mic.ui.common.Button(...
                     'fhDirectCallback', @this.onUiButtonChooseDir, ...
                     'cText', 'Choose Dir' ...
                 );
-                this.uiTextDir = mic.ui.common.Text(...
-                    'cVal', '...' ...
-                );
-
-                % addlistener(this.uiButtonChooseDir, 'eChange', @this.onUiButtonChooseDir);
-
+            
                 this.uiButtonChooseDir.build(...
                     hParent, ...
                     dLeft, ...
@@ -137,16 +135,29 @@ classdef ListDir < mic.ui.common.List
                     dWidthButton, ...
                     dHeightButton ...
                 );
+            
+                dLeft = dLeft + 120;
+            
+            end
+            
+            this.uiTextDir = mic.ui.common.Text(...
+                'cVal', '...' ...
+            );
 
-                this.uiTextDir.build(...
-                    hParent, ...
-                    dLeft + dWidthButton + 10, ...
-                    dTop, ...
-                    dWidth - dWidthButton - 10, ...
-                    dHeightButton ...
-                );
+            % addlistener(this.uiButtonChooseDir, 'eChange', @this.onUiButtonChooseDir);
 
+            this.uiTextDir.build(...
+                hParent, ...
+                dLeft, ...
+                dTop, ...
+                dWidth - dLeft - 10, ...
+                dHeightButton ...
+            );
+
+            if this.lShowChooseDir
                 dTop = dTop + dHeightButton + 10;
+            else
+                dTop = dTop + 20;
             end
         
             build@mic.ui.common.List( ...
@@ -190,14 +201,6 @@ classdef ListDir < mic.ui.common.List
     methods (Access = protected)
         
         function updateUiTextDir(this)
-            
-            if isempty(this.uiTextDir)
-                return
-            end
-            
-            if ~this.lShowChooseDir
-                return
-            end
             
             
             if isempty(this.uiTextDir)

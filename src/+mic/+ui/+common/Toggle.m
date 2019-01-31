@@ -106,6 +106,10 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
             
             % update toggle string/cdata            
             this.set(this.lVal);
+            
+            if ~this.lEnabled
+                this.disable();
+            end
 
        end
        
@@ -251,6 +255,18 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
        function l = get(this)
            l = this.lVal;
        end
+       
+       % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
+        % 0]
+        function setColorOfBackground(this, dValue)
+            
+            if ~ishandle(this.hUI)
+                return
+            end
+            
+            set(this.hUI, 'BackgroundColor', dValue) 
+            
+        end
        
        function set(this, l)
            

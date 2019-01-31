@@ -52,7 +52,7 @@ classdef List < mic.Base
         
         % {function_handle 1x1} function to call when the list selection
         % changes
-        fhOnChange 
+        fhOnChange = @(src, evt)[];
         
         % {function_handle 1x1} callback when user presses up, down, or X
         fhDirectCallback = @()[];
@@ -101,7 +101,7 @@ classdef List < mic.Base
        
        function this= List(varargin)
            
-           this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
+            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
@@ -109,6 +109,7 @@ classdef List < mic.Base
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
+            
        end
        
        
@@ -324,7 +325,7 @@ classdef List < mic.Base
            end
            
            if ~isempty(this.fhOnChange)
-               this.fhOnChange()
+               this.fhOnChange(this)
            end
            
            notify(this,'eChange');
@@ -388,7 +389,7 @@ classdef List < mic.Base
             this.u8Selected = uint8(get(src, 'Value'));
             
             if ~isempty(this.fhOnChange)
-               this.fhOnChange()
+               this.fhOnChange(this, evt)
             end
            
             notify(this,'eChange');

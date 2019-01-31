@@ -1,4 +1,4 @@
-classdef PopupStruct < mic.Base
+classdef PopupStruct < mic.ui.common.Base
     
 %UIPOPUPSTRUCT - Similar to UIPopup except that each item in the
 %pulldown represents a structure rather than a char.  The idea is
@@ -42,18 +42,14 @@ classdef PopupStruct < mic.Base
         % {logical 1x1} show the label?        
         lShowLabel = true;
         
-        % {char 1xm} the tooltip
-        cTooltip = 'Tooltip: set me!';
+
         
         % {logical 1x1} show the tooltip?
         lShowTooltip = true;
         
         % {uint8 1x1} the active / selected index
         u8Selected 
-        
-       
-        hLabel
-        hUI
+
         
         fhDirectCallback = @(src, evt)[];
     end
@@ -131,7 +127,24 @@ classdef PopupStruct < mic.Base
                 'HorizontalAlignment','left'...
             );
         
+            if ~this.lEnabled
+                this.disable();
+            end
+        
        end
+       
+       % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
+        % 0]
+        function setColorOfBackground(this, dValue)
+            
+            if ~ishandle(this.hUI)
+                return
+            end
+            
+            set(this.hUI, 'BackgroundColor', dValue) 
+            
+        end
+        
        
        
        function onPopup(this, src, evt)
@@ -223,60 +236,7 @@ classdef PopupStruct < mic.Base
             st= this.ceOptions{this.u8Selected};
        end
        
-       function show(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-                % Make sure correct item is showing if it was changed while
-                % the UI was not visible
-                set(this.hUI, 'Value', this.u8Selected);
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'on');
-            end
-
-
-        end
-
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'off');
-            end
-
-
-        end
-        
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
-        
-         function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
-        
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-            
-         end
-        
-         
+          
          function ce = getOptions(this)
              ce = this.ceOptions;
          end

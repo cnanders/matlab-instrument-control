@@ -197,10 +197,55 @@ classdef Utils
             end
         end
 
-
         % MATLAB functional programming utilities:
-
-
+        % Evaluates each lambda passed in
+        % @param {lambda function_handle 1xm} using varargin
+        
+        function evalAll(varargin)
+            for k = 1 : length(varargin)
+                varargin{k}();
+            end
+        end
+        
+        % MATLAB functional programming utilities:
+        % @param varargin of alternating {logical} {mixed} pairs followed
+        % by a final {mixed}.  Returns varargin{2} if varargin{1} is true.
+        % ("if") If varargin{1} is false, checks the next {logical} {mixed}
+        % pair.  Returns varargin{4} if varargin{3} is
+        % true ("elseif"), It continues on this way (more "elseif").  If no odd-numbered varargin
+        % is true, returns the final {mixed} value as an ("else")
+       
+        function out = ifElse(varargin)
+            
+            for k = 1 : 2: length(varargin) - 1
+                if varargin{k}
+                    out = varargin{k + 1};
+                    return
+                end
+            end
+            
+            % If you make it here, return the last item
+            out = varargin{length(varargin)};
+          
+        end
+        
+        % See ifElse.  Same construct except that the list is alternating
+        % lambdas that return {logical} {mixed}
+        function out = ifElseLambda(varargin)
+            
+            for k = 1 : 2: length(varargin) - 1
+                if varargin{k}()
+                    out = varargin{k + 1}();
+                    return
+                end
+            end
+            
+            % If you make it here, return the retult of executing the last
+            % lambda
+            out = varargin{length(varargin)}();
+          
+        end
+        
         function out = tern(lCondition, mixedTrueValue, mixedFalseValue)
         % Implements a ternary value operator.  Returns either
         % mixedTrueValue or mixedFalseValue depending on lCondition

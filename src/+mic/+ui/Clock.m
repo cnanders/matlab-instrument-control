@@ -1,7 +1,9 @@
-classdef ClockGroup < mic.Base
+classdef Clock < mic.Base
 
-    % Implements the public clock interface (add, remove, has)
+    % Implements the public interface of mic.clock (add, remove, has)
     % Can be passed to any UI as a valid clock
+    % has additional methods start() and stop() to allow silencing of a
+    % group of clock tasks that update UIs.  
     
     %% Properties
     
@@ -42,29 +44,14 @@ classdef ClockGroup < mic.Base
     methods
 
         
-        function this = ClockGroup(clock)
+        function this = Clock(clock)
             this.clock = clock;
         end
         
+        % Returns true if the task name is on the task list and it is
+        % active
         
         function lReturn = has(this, cName)
-        %HAS Checks whether a task is already in the clock queue
-        % lReturn = clock.has('task name')
-            
-            % Clock.has(cName)  check if the task 'cName' is in the tasklist
-            % and that it is active
-            %
-            %   cName:char         name of task (must be unique)
-            %   lReturn:logical    true if the task is on the list, false otherwise
-
-            % Note on strcmp() function: strcmp(char, cell) returns a
-            % logical array.  FALSE for every element not equal to cName,
-            % TRUE for every element equal to cName.
-            % use & (not &&) to do a logical AND operation between the return from strcmp()
-            % and this.lTaskActive.  The result of this operation returns a
-            % type logical array.
-            % any() operating on a lotical array returns a logical true if
-            % any are true and false otherwise
                         
             if isempty(this.ceTaskName)
                 lReturn = false;
@@ -112,9 +99,10 @@ classdef ClockGroup < mic.Base
 
         end
         
+        % De-activates a task from this tasklist and removes it from the
+        % global clock if this mic.ui.Clock is running
         
         function remove(this, cName)
-        %REMOVE Removes a task from the clock tasklist
                     
             lItems = strcmp(cName, this.ceTaskName) & this.lTaskActive;
             
@@ -122,7 +110,7 @@ classdef ClockGroup < mic.Base
                 
                 if this.lEcho
                     cMsg = sprintf(...
-                        'Clock.remove() de-activating: %s() ', ...
+                        'mic.ui.Clock.remove() de-activating: %s() ', ...
                         this.ceTaskName{lItems} ...
                     );
                     this.msg(cMsg);
@@ -184,7 +172,6 @@ classdef ClockGroup < mic.Base
             % Remove all active tasks from the clock
             
             ceTaskNameActive = this.ceTaskName(this.lTaskActive);
-            
        
             if isempty(ceTaskNameActive)
                 return
@@ -195,7 +182,6 @@ classdef ClockGroup < mic.Base
             end
             
             this.lIsRunning = false;
-
             
         end
         

@@ -54,7 +54,7 @@ classdef test_PositionRecaller < mic.Base
             this.uieParam2.set(10.1234);
             
             
-            this.uiprTest.build(hFigure, 20, 100, 380, 200);
+            this.uiprTest.build(hFigure, 20, 100, 580, 200);
             this.uieParam1.build(hFigure, 10, 50, 80, 20);
             this.uieParam2.build(hFigure, 150, 50, 80, 20);   
             

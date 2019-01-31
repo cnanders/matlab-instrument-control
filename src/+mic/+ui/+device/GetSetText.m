@@ -90,7 +90,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         lShowPlay = true
         lShowLabels = true
         lShowStores = true
-        lShowDevice = true
+        lShowDevice = false % 2019.01 replacing by background color
         lDisableSet = false
         lShowInitButton = true
                 
@@ -118,12 +118,12 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         fhSet = @(cVal) []
 
         % {function handle 1x1} 
-        fhIsInitialized
+        fhIsInitialized = @() true
 
         % {function handle 1x1} 
-        fhInitialize
-
+        fhInitialize = @()[]
         fhIsVirtual = @() true % overload this otherwise will always use virtual
+        
         fhGetV 
         fhSetV
         fhIsInitializedV
@@ -203,8 +203,8 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent));
             drawnow
 
-            axis('image');
-            axis('off');
+            % axis('image');
+            % axis('off');
 
             dTop = -1;
             dTopLabel = -1;
@@ -302,7 +302,16 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 ~this.clock.has(this.id())
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
-
+            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.setColorOfBackgroundToWarning();
+                end
+            else
+                if ~this.isActive()
+                    this.setColorOfBackgroundToWarning();
+                end
+            end
         end
       
         
@@ -455,6 +464,60 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         
         function setDest(this, cVal)
             this.uieDest.set(cVal);
+        end
+        
+        
+        
+        % Override
+        function turnOn(this)
+            
+            % Call superclass method
+            turnOn@mic.ui.device.Base(this);
+            this.setColorOfBackgroundToDefault();
+        end
+      
+        
+        function turnOff(this)
+            
+            % https://www.mathworks.com/help/matlab/matlab_oop/calling-superclass-methods-on-subclass-objects.html
+            turnOff@mic.ui.device.Base(this);
+            this.setColorOfBackgroundToWarning();
+        end
+        
+        function setColorOfBackgroundToWarning(this)
+            this.setColorOfBackground([1 1 0.85]);
+        end
+        
+        function setColorOfBackgroundToDefault(this)
+            this.setColorOfBackground([0.94 0.94 0.94]);
+        end
+        
+
+        % @param {double 1x3} dColor - RGB triplet, i.e.,[0.5 0.5 0]
+        function setColorOfBackground(this, dColor)
+            if isempty(this.hPanel)
+                return
+            end
+            
+            if ~ishandle(this.hPanel)
+                return
+            end
+            
+            this.uitxLabelDest.setBackgroundColor(dColor);
+            this.uitxLabelDevice.setBackgroundColor(dColor);
+            this.uitxLabelInit.setBackgroundColor(dColor);
+            this.uitxLabelInitState.setBackgroundColor(dColor);
+            this.uitxLabelName.setBackgroundColor(dColor);
+            this.uitxLabelPlay.setBackgroundColor(dColor);
+            this.uitxLabelStores.setBackgroundColor(dColor);
+            this.uitxLabelVal.setBackgroundColor(dColor);
+            this.uitxName.setBackgroundColor(dColor);
+            this.uitxVal.setBackgroundColor(dColor);
+            
+            this.uieDest.setColorOfBackground(dColor);
+            
+            set(this.hPanel, 'BackgroundColor', dColor);
+                       
         end
         
         

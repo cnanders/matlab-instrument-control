@@ -7,6 +7,7 @@ classdef Base < mic.Base
         hUI
         hLabel
         cTooltip = 'Tooltip: set me!';
+        lEnabled = true
     end
 
     methods
@@ -44,6 +45,9 @@ classdef Base < mic.Base
         end
         
         function enable(this)
+            
+            this.lEnabled = true;
+            
             if ishandle(this.hUI)
                 set(this.hUI, 'Enable', 'on');
             end
@@ -54,6 +58,9 @@ classdef Base < mic.Base
         end
         
         function disable(this)
+            
+            this.lEnabled = false;
+            
             if ishandle(this.hUI)
                 set(this.hUI, 'Enable', 'off');
             end

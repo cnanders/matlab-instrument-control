@@ -56,7 +56,8 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         lShowLabels = true
         
         % {logical 1x1} show the API toggle on the left
-        lShowDevice = true
+        % 2019 replaced with background colors
+        lShowDevice = false
         
         % {logical 1x1} show the name
         lShowName = true
@@ -286,11 +287,18 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
             
+            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.setColorOfBackgroundToWarning();
+                end
+            else
+                if ~this.isActive()
+                    this.setColorOfBackgroundToWarning();
+                end
+            end
+            
         end
-
-        
-        
-
 
         
 
@@ -323,7 +331,51 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             end
             
         end
-                
+          
+        % Override
+        function turnOn(this)
+            
+            turnOn@mic.ui.device.Base(this);
+            this.setColorOfBackgroundToDefault();
+        end
+      
+        
+        function turnOff(this)
+            turnOff@mic.ui.device.Base(this);
+            this.setColorOfBackgroundToWarning();
+        end
+        
+        function setColorOfBackgroundToWarning(this)
+            this.setColorOfBackground([1 1 0.85]);
+        end
+        
+        function setColorOfBackgroundToDefault(this)
+            this.setColorOfBackground([0.94 0.94 0.94]);
+        end
+        
+
+        % @param {double 1x3} dColor - RGB triplet, i.e.,[0.5 0.5 0]
+        function setColorOfBackground(this, dColor)
+            if isempty(this.hPanel)
+                return
+            end
+            
+            if ~ishandle(this.hPanel)
+                return
+            end
+            
+            this.uitxLabelCommand.setBackgroundColor(dColor)
+            this.uitxLabelDevice.setBackgroundColor(dColor);
+            this.uitxLabelInit.setBackgroundColor(dColor);
+            this.uitxLabelInitState.setBackgroundColor(dColor);
+            this.uitxLabelName.setBackgroundColor(dColor);
+            this.uitxLabelVal.setBackgroundColor(dColor);
+            this.uitxName.setBackgroundColor(dColor);
+            
+            set(this.hPanel, 'BackgroundColor', dColor);
+                       
+        end
+        
         
         function set(this, l)
             % Programatic equivalent of pressing the command toggle to
@@ -335,7 +387,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
 
             if this.lUseFunctionCallbacks
                 if this.fhIsVirtual()
-                    l = this.fhGet();
+                    l = this.fhGetV();
                 else
                     l = this.fhGet();
                 end
