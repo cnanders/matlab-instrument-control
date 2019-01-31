@@ -271,13 +271,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         fhIsReady 
 
         % {function handle 1x1} 
-        fhIsInitialized
+        fhIsInitialized = @() true
 
         % {function handle 1x1} 
-        fhInitialize
+        fhInitialize = @() []
         
         % {function handle 1x1} 
-        fhIndex
+        fhIndex = @() []
         
         % Adding virtual methods
         fhIsVirtual = @() true % overload this otherwise will always use virtual
