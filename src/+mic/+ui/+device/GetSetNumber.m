@@ -172,7 +172,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   allowed.  Is expected that the higher-level class that
         %   implements this (which may access more than one HardwareIO
         %   instance) implements this function
-        fhValidateDest = {}
+        fhValidateDest = @() true
         
         
         uipStores % UIPopupStruct
