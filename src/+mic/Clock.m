@@ -751,6 +751,10 @@ classdef Clock < mic.Base
                 catch mE
                     
                 	
+                    error(getReport(mE));
+                    
+                    %{
+
                     cMsg = sprintf(...
                         'Clock.timerFcn() ERROR executing %1.0f of %1.0f: %s() ', ...
                         n, ...
@@ -758,6 +762,8 @@ classdef Clock < mic.Base
                         ceTaskNameToDo{n} ...
                     );
                     this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
+                    
+                    %}
                     % error(mE.message);
                     
                     % error(getReport(mE));
