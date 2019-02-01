@@ -115,6 +115,7 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             );
         
             %'BackgroundColor', [1 1 1] ...
+            set(this.hUI, 'String', this.cData);
 
            
         end
@@ -395,6 +396,9 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             end
             
             set(this.hUI, 'BackgroundColor', dValue) 
+            if this.lShowLabel
+                set(this.hLabel, 'BackgroundColor', dValue);
+            end
             
         end
         
@@ -647,6 +651,10 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             % ui
             if ~isempty(this.hUI) && ishandle(this.hUI)
                set(this.hUI, 'String', this.cData);
+            else
+%                 fprintf('mic.ui.common.Edit.set.cData(%s) this.cLabel = %s\n', ...
+%                         this.cData, ...
+%                          this.cLabel);
             end
 
         %             fprintf('Edit.set.cData(%s) this.cLabel = %s\n', ...

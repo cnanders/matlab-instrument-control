@@ -106,6 +106,10 @@ classdef Toggle < mic.interface.ui.common.Logical & mic.ui.common.Base
             
             % update toggle string/cdata            
             this.set(this.lVal);
+            
+            if ~this.lEnabled
+                this.disable();
+            end
 
        end
        

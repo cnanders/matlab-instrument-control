@@ -63,6 +63,9 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
             % onClock().  onClock() advances u8PathCycle, updating
             % dDest as dPath(u8PathCycle).
             
+            %this.dVal = dDest;
+            %return;
+            
             if isempty(this.clock)
                 this.dVal = dDest;
                 return;
@@ -97,9 +100,34 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
             this.dDest = this.dVal;
             
             if ~isempty(this.clock)
-                this.clock.remove(this.id());
+                
+                if this.clock.has(this.id())
+                    this.clock.remove(this.id());
+                    
+                end
+                
+                if this.clock.has([this.id(), '-decrease'])
+                    this.clock.remove([this.id(), '-decrease'])
+                end
+                
+                if this.clock.has([this.id(), '-increase'])
+                    this.clock.remove([this.id(), '-increase'])
+                end
+                
             end
         end
+        
+        % @param {int8 1x1} positive number increases value, negative
+        % number decreases value
+        function moveIndefinitely(this, i8Direction)
+            
+            if i8Direction < 0
+                this.clock.add(@this.onClockDecrease, [this.id(), '-decrease'], 0.1);
+            else
+            	this.clock.add(@this.onClockIncrease, [this.id(), '-increase'], 0.1);
+            end
+        end
+        
 
        
         function delete(this)
@@ -130,6 +158,15 @@ classdef GetSetNumber < mic.interface.device.GetSetNumber
     end %methods
     
     methods (Access = protected)
+        
+        function onClockDecrease(this)
+            this.dVal = this.dVal - 1;
+        end
+        
+        function onClockIncrease(this)
+            this.dVal = this.dVal + 1;
+        end
+        
         
         
         function onClock(this)

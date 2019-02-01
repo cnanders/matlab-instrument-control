@@ -16,6 +16,9 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         
         % {mic.Clock or mic.ui.Clock 1x1}
         clock
+        
+        % {logical 1x1} stores if this UI is updating itself
+        lIsRunning = true
     end
     
     properties (SetAccess = private)
@@ -80,11 +83,19 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         end
         
         function execute(this)
-           this.task.execute();
+            
+            if this.task.isDone()
+                return;
+            end
+            
+            this.start(); % always make sure UI is updating
+            this.task.execute();
+            this.uiProgressBar.show();
        end
 
        function abort(this)
            this.task.abort();
+           this.uiProgressBar.hide();
        end
 
        function l = isExecuting(this)
@@ -100,7 +111,6 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
        end
         
         function delete(this)
-            
             
             if ~isempty(this.clock) && ...
                 isvalid(this.clock) && ...
@@ -190,8 +200,36 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
             end
             
 
-            this.clock.add(@this.onClock, this.id(), this.dDelay);
+            if this.lIsRunning
+                this.clock.add(@this.onClock, this.id(), this.dDelay);
+            end
             
+        end
+        
+        function start(this)
+            
+            if this.lIsRunning
+                return
+            end
+            
+            if ishandle(this.hPanel)
+                this.clock.add(@this.onClock, this.id(), this.dDelay);
+            end
+            
+            this.lIsRunning = true;
+        end
+        
+        function stop(this)
+            
+            if ~this.lIsRunning
+                return
+            end
+            
+            if this.clock.has(this.id())
+                this.clock.remove(this.id());
+            end
+            
+            this.lIsRunning = false;
         end
         
        
@@ -265,6 +303,13 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
                 this.uiProgressBar.hide();
             end
             
+            if ~this.lShowIsDone && ...
+                ~this.task.isExecuting()
+                % when not showing is done, no need to constantly
+                % update the UI based when the task is not executing
+                this.stop();
+            end
+            
 
 
         end
@@ -289,24 +334,37 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         
         function onUiButtonClick(this, ~, ~)
             
-            if this.task.isDone()
+            if this.task.isExecuting() % button shows pause
+                this.abort();
                 return;
             end
             
-            if this.task.isExecuting()
-                this.task.abort();
-                this.uiProgressBar.hide();
-                return;
-            end
-            
-            this.task.execute();
-            this.uiProgressBar.show();
+            this.execute()
             
         end
         
-        function onPanelButtonDown(this, ~, ~)
+        function printStatus(this)
             
+            fprintf('*******************************\n');
+            fprintf('STATUS: mic.ui.TaskSequence %s \n', this.task.getMessage());
+            ceTasks = this.task.getTasks();
+            for k = 1 : length(ceTasks)
+                fprintf('Task %1d of %1d: (%s) %s\n', ...
+                    k, ...
+                    length(ceTasks), ...
+                    mic.Utils.tern(ceTasks{k}.isDone(), 'done', 'not done'), ...
+                    ceTasks{k}.getMessage() ...
+                );
+            end
+            fprintf('*******************************\n');
+
             
+        end
+        
+        function onPanelButtonDown(this, src, ~)
+            
+            src
+            this.printStatus();
             
         end 
         

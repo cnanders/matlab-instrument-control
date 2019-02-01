@@ -1,4 +1,4 @@
-classdef Popup < mic.Base
+classdef Popup < mic.ui.common.Base
     
     % uip
     
@@ -26,11 +26,8 @@ classdef Popup < mic.Base
     
     properties (Access = private)
         
-        hLabel
-        hUI
         lShowLabel = true
         cLabel = 'Fix me'
-        cTooltip = 'Tooltip: set me!'
         
         % {uint8 1x1} - selected index
         u8Selected = uint8(1)
@@ -96,6 +93,10 @@ classdef Popup < mic.Base
                 'TooltipString', this.cTooltip, ...
                 'HorizontalAlignment','left'...
             );
+        
+            if ~this.lEnabled
+                this.disable();
+            end
                   
         
        end
@@ -221,58 +222,10 @@ classdef Popup < mic.Base
             out = this.ceOptions{this.u8Selected};
        end
        
-       function show(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'on');
-                % Make sure correct item is showing if it was changed while
-                % the UI was not visible
-                set(this.hUI, 'Value', this.u8Selected);
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'on');
-            end
 
 
-        end
 
-        function hide(this)
-
-            if ishandle(this.hUI)
-                set(this.hUI, 'Visible', 'off');
-            end
-
-            if ishandle(this.hLabel)
-                set(this.hLabel, 'Visible', 'off');
-            end
-
-
-        end
-        
-        function enable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'on');
-            end
-        end
-        
-        function disable(this)
-            if ishandle(this.hUI)
-                set(this.hUI, 'Enable', 'off');
-            end
-            
-        end
-        
-        function setTooltip(this, cText)
-        %SETTOOLTIP
-        %   @param {char 1xm} cText - the text of the tooltip
-        
-            this.cTooltip = cText;
-            if ishandle(this.hUI)        
-                set(this.hUI, 'TooltipString', this.cTooltip);
-            end
-            
-        end
+       
 
 
         % @return {struct} state to save

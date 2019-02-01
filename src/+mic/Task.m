@@ -20,16 +20,16 @@ classdef Task < mic.interface.Task
     properties (Access = private)
        
         % {function_handle 1x1} called by execute()
-        fhExecute
+        fhExecute = @() []
         
         % {function_handle 1x1} called by abort()
-        fhAbort
+        fhAbort = @() []
         
         % {function_handle 1x1} called by isExecuting() returns {logical 1x1}
-        fhIsExecuting 
+        fhIsExecuting = @() false
         
         % {function_handle 1x1} called by isDone() returns {logical 1x1}
-        fhIsDone
+        fhIsDone = @() true
         
         % {function_handle 1x1} returns {char 1xm} message to display when 
         % moving to this state
@@ -91,6 +91,45 @@ classdef Task < mic.interface.Task
     
     
     methods (Static)
+        
+        
+        % @param {mic.ui.device.GetSetLogical 1x1}
+        % @param {logical} lVal - the value to set
+        % [@param {char 1xm} [cName = ui.cName] - optional name to display 
+        % in the auto-generated message.  Message will look like: 
+        % 'Set {cName} to true/false'
+        function task = fromUiGetSetLogical(ui, lVal, cName)
+           
+            if nargin == 2
+                cName = ui.cName;
+            end
+            
+            if ~isa(ui, 'mic.ui.device.GetSetLogical')
+                error('ui must be {mic.ui.device.GetSetLogial}');
+            end
+            
+            if ~islogical(lVal)
+                error('lVal must be {logical}');
+            end
+            
+            if ~ischar(cName)
+                error('cName must be {char}');
+            end
+                    
+            cMsg = sprintf(...
+                'Set %s to %s...', ...
+                cName, ...
+                mic.Utils.tern(lVal, 'true', 'false') ...
+            );
+            task = mic.Task(...
+                'fhExecute', @() ui.set(lVal), ...
+                'fhAbort', @() [], ...
+                'fhIsExecuting', @() false, ...
+                'fhIsDone', @() ui.get() == lVal, ...
+                'fhGetMessage', @() cMsg ... 
+            );
+        end
+        
         
         % @param {mic.ui.device.GetSetText 1x1}
         % @param {char 1xm} cVal - the value to set
@@ -191,6 +230,33 @@ classdef Task < mic.interface.Task
                 'fhGetMessage', fhGetMessage ... 
             );
             
+        end
+        
+        % Special case that uses the current (at time the sequence is executed)
+        % value of the the destion and unit of the UI as the
+        % target and unit
+        function task = fromUiGetSetNumberMoveToDest(ui, dTolerance, cName)
+            
+            if nargin == 2
+                cName = ui.cName;
+            end
+        
+            
+            fhGetMessage = @() sprintf(...
+                'Set %s to %1.3f %s...', ...
+                cName, ...
+                ui.getDestCal(ui.getUnit().name), ...
+                ui.getUnit().name ...
+            );
+        
+            task = mic.Task(...
+                'fhExecute', @() ui.moveToDest(), ...
+                'fhAbort', @() ui.stop(), ...
+                'fhIsExecuting', @() ~ui.getDevice().isReady(), ...
+                'fhIsDone', @() abs(ui.getValCal(ui.getUnit().name) - ui.getDestCal(ui.getUnit().name)) <= dTolerance, ...
+                'fhGetMessage', fhGetMessage ... 
+            );
+
         end
         
     end

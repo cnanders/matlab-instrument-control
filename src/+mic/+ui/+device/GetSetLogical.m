@@ -127,10 +127,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         fhSet = @(lVal) [] % Called when button is pressed
 
         % {function handle 1x1} 
-        fhIsInitialized % Controls state of display
+        fhIsInitialized = @() true % Controls state of display
 
         % {function handle 1x1} 
-        fhInitialize % Not used
+        fhInitialize = @() [] % Not used
         
         fhIsVirtual = @() true % overload this otherwise will always use virtual
         fhGetV 
@@ -288,8 +288,14 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             end
             
             
-            if ~this.isActive()
-                this.setColorOfBackgroundToWarning();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.setColorOfBackgroundToWarning();
+                end
+            else
+                if ~this.isActive()
+                    this.setColorOfBackgroundToWarning();
+                end
             end
             
         end
@@ -351,6 +357,10 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         % @param {double 1x3} dColor - RGB triplet, i.e.,[0.5 0.5 0]
         function setColorOfBackground(this, dColor)
             if isempty(this.hPanel)
+                return
+            end
+            
+            if ~ishandle(this.hPanel)
                 return
             end
             

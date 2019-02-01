@@ -754,7 +754,7 @@ classdef Clock < mic.Base
 
                 catch mE
                     
-                    % Will craash the app, but gives lovely stack trace.
+                    % Will crash the app, but gives lovely stack trace.
                     error(getReport(mE));
                 	
                     % (CA) Code below makes it next to impossible to figure out
@@ -770,8 +770,12 @@ classdef Clock < mic.Base
                         sum(lItems), ...
                         ceTaskNameToDo{n} ...
                     );
-                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);
+                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);                    
                     %}
+                    
+                    % error(mE.message);
+
+
                     
                     
                 end

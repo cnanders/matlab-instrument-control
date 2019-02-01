@@ -26,7 +26,8 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
         lShowLabel = false;
         
         dWidth = 0;
-        fhButtonDownFcn
+        fhButtonDownFcn = @(src, evt)[]
+
     end
     
     
@@ -43,8 +44,6 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
        function this = Text(varargin)
                
            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
-           
-           this.fhButtonDownFcn = @(~, ~)[];
            
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
@@ -76,6 +75,7 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
                     'BackgroundColor', this.dColorBg, ...
                     'ButtonDownFcn', @this.fhButtonDownFcn, ...
                     'Callback', @this.fhButtonDownFcn, ...
+                    ... %'Enable', 'Off', ... % allows left click to fire ButtonDownFcn
                     'HorizontalAlignment', 'left' ...
                 );
 
@@ -92,11 +92,16 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent), ...
                 'Style', 'text', ...
                 'Callback', @this.fhButtonDownFcn, ...
-                'ButtonDownFcn', @this.fhButtonDownFcn, ...
+                'ButtonDownFcn', @this.fhButtonDownFcn, ...  % allows left click to fire ButtonDownFcn
                 'BackgroundColor', this.dColorBg, ...
                 'TooltipString', this.cTooltip, ...
+                ... %'Enable', 'Off', ...
                 'String', this.cVal ...
                 );
+            
+            if ~this.lEnabled
+                this.disable();
+            end
 
        end
        

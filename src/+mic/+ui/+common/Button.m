@@ -21,10 +21,14 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
         % {function_handle 1x1} is called any time eChange is emitted (if
         % is not null)
         fhOnClick = @(src, evt)[];
+        fhOnPress = @(src, evt)[];
+        fhOnRelease = @(src, evt)[];
         
         % {function_handle 1x1} is called any time eChange is emitted 
         % need to deprecate fhOnClick
         fhDirectCallback = @(src, evt)[];
+        
+        lShowLabel = false;
     end
     
 
@@ -73,22 +77,43 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
                 'Position', mic.Utils.lt2lb([dLeft dTop dWidth dHeight], hParent),...
                 'Style', 'pushbutton',...
                 'TooltipString', this.cTooltip, ...
+                ... % 'ButtonDownFcn', @this.fhOnPress, ...
                 'Callback', @this.cb ...
              );
+         
+            % "undocumented MATLAB" hack for press and release callbacks
+            % https://www.mathworks.com/matlabcentral/answers/316039-get-mouse-down-and-mouse-up-events-from-slider
+            % https://www.mathworks.com/matlabcentral/fileexchange/14317-findjobj-find-java-handles-of-matlab-graphic-objects
+            
+            jUI = findjobj(this.hUI);
+            jUI.MousePressedCallback           = @this.fhOnPress;
+            jUI.MouseReleasedCallback          = @this.fhOnRelease;
 
             if this.lImg
                 set(this.hUI, 'CData', this.u8Img);
             else
                 set(this.hUI, 'String', this.cText);
             end
+            
+            if ~this.lEnabled
+                this.disable();
+            end
 
         end
         
+        % Returns {char 1xm} the text of the button
+        function c = getText(this)
+            c = this.cText;
+        end
+        
+        
         function setText(this, cText)
+            
+            this.cText = cText;
             if ~ishandle(this.hUI)
                 return
             end
-            set(this.hUI, 'String', cText);
+            set(this.hUI, 'String', this.cText);
         end
         
         function setColor(this, dColor)
@@ -161,6 +186,9 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             end
             
             set(this.hUI, 'BackgroundColor', dValue) 
+            if this.lShowLabel
+                set(this.hLabel, 'BackgroundColor', dValue);
+            end
             
         end
         

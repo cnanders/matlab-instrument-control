@@ -172,7 +172,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         %   allowed.  Is expected that the higher-level class that
         %   implements this (which may access more than one HardwareIO
         %   instance) implements this function
-        fhValidateDest = {}
+        fhValidateDest = @() true
         
         
         uipStores % UIPopupStruct
@@ -271,13 +271,13 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         fhIsReady 
 
         % {function handle 1x1} 
-        fhIsInitialized
+        fhIsInitialized = @() true
 
         % {function handle 1x1} 
-        fhInitialize
+        fhInitialize = @() []
         
         % {function handle 1x1} 
-        fhIndex
+        fhIndex = @() []
         
         % Adding virtual methods
         fhIsVirtual = @() true % overload this otherwise will always use virtual
@@ -377,6 +377,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % @param {double 1x3} dColor - RGB triplet, i.e.,[0.5 0.5 0]
         function setColorOfBackground(this, dColor)
             if isempty(this.hPanel)
+                return
+            end
+            
+            if ~ishandle(this.hPanel)
                 return
             end
             
@@ -684,8 +688,14 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             end
             
-            if ~this.isActive()
-                this.setColorOfBackgroundToWarning();
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.setColorOfBackgroundToWarning();
+                end
+            else
+                if ~this.isActive()
+                    this.setColorOfBackgroundToWarning();
+                end
             end
             
                     

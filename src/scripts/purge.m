@@ -34,6 +34,15 @@ fprintf('*** purge.m end workspace variables *** \n\n');
 
 
 for n = 1:length(ceVars)
+    
+    if isa(eval(ceVars{n}), 'mic.Clock') || isa(eval(ceVars{n}), 'mic.ui.Clock')
+        fprintf(...
+            'purge.m skipping variable %s since mic.Clock or mic.ui.Clock\n', ...
+            ceVars{n} ...
+        );
+        continue
+    end
+    
     if isobject(eval(ceVars{n}))
         if ishandle(eval(ceVars{n}))
             if isvalid(eval(ceVars{n}))
@@ -71,7 +80,19 @@ for n = 1:length(ceVars)
     end
 end
 
+% Check for clock and uiClock instances
 
+for n = 1:length(ceVars)
+    
+    if isa(eval(ceVars{n}), 'mic.Clock') || isa(eval(ceVars{n}), 'mic.ui.Clock')
+        try
+            delete(eval(ceVars{n}));
+        catch
+            fprintf('purge.m delete failed in try/catch\n');
+        end
+    end
+    
+end
 
 clear variables
 close all
