@@ -79,7 +79,7 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 
         config
         dZeroRaw = 0;
-        fhValidateDest
+        fhValidateDest = @() true
         dValRaw % value in raw units (updated by clock)
         
         uipStores % UIPopupStruct
