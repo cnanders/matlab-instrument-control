@@ -378,6 +378,14 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
             this.lNotify = true;
         end
         
+        
+        % Allow editbox to be multiple lines
+        function makeMax(this)
+            set(this.hUI, 'max', 2);
+        end
+        
+        
+        
         % @param {double 1x3} dColor - RGB triplet, i.e., [1 1 0] [0.5 0.5
         % 0]
         function setColorOfBackground(this, dValue)
