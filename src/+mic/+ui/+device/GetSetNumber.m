@@ -265,10 +265,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         fhSet
 
         % {function handle 1x1} 
-        fhStop
+        fhStop = @() []
 
         % {function handle 1x1} 
-        fhIsReady 
+        fhIsReady = @() true
 
         % {function handle 1x1} 
         fhIsInitialized = @() true
@@ -350,6 +350,17 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 this.lShowPlay = false; 
                 this.lShowDest = false; 
             end
+            
+            if this.lUseFunctionCallbacks
+                if ~isa(this.fhGet, 'function_handle')
+                    error('fhGet must function_handle');
+                end
+                
+                if ~isa(this.fhSet, 'function_handle')
+                    error('fhSet must function_handle');
+                end
+            end
+                
             
             this.init();
         end
