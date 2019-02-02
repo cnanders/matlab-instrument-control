@@ -70,7 +70,8 @@ classdef GetSetText < mic.Base
 
               
             if ~this.validateJson()
-                return;
+                mE = MException('mic.config.GetSetText', 'Invalid JSON');
+                throw(mE);
             end
             
             % delay is requires
@@ -106,6 +107,26 @@ classdef GetSetText < mic.Base
                     this.msg(msg, 2);
                     lOut = false;
                     return;
+                end
+            end
+            
+            % If stores are present, check each field of stores
+            
+            if isfield(this.stJson, 'stores') 
+                fields = { 'name', 'val' };
+                for n = 1:length(this.stJson.stores)
+                    for m = 1:length(fields)
+                        if ~isfield(this.stJson.stores{n}, fields{m})
+                            msg = sprintf(...
+                                'Invalid config file. Store definition %1.0f must contain property "%s"', ...
+                                n, ...
+                                fields{m} ...
+                            );
+                            this.msg(msg, this.u8_MSG_TYPE_ERROR);                
+                            lOut = false;
+                            return;
+                        end
+                    end
                 end
             end
             

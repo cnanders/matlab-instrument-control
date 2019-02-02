@@ -298,10 +298,12 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
                 dLeft = dLeft + this.dWidthStores;
             end
             
-            if ~isempty(this.clock) && ...
-                ~this.clock.has(this.id())
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+            this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            
+%             if ~isempty(this.clock) && ...
+%                 ~this.clock.has(this.id())
+%                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+%             end
             
             if this.lUseFunctionCallbacks
                 if this.fhIsVirtual()

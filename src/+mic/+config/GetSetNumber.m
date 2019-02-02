@@ -92,7 +92,8 @@ classdef GetSetNumber < mic.Base
 
               
             if ~this.validateJson()
-                return;
+                mE = MException('mic.config.GetSetNumber', 'Invalid JSON');
+                throw(mE);
             end
             
             this.dDelay = this.stJson.delay;
@@ -213,7 +214,7 @@ classdef GetSetNumber < mic.Base
                         'Invalid config file. Must contain property "%s"', ...
                         fields{n} ...
                     );
-                    this.msg(msg, 2);
+                    this.msg(msg, this.u8_MSG_TYPE_ERROR);
                     lOut = false;
                     return;
                 end
@@ -230,9 +231,29 @@ classdef GetSetNumber < mic.Base
                             n, ...
                             fields{m} ...
                         );
-                        this.msg(msg, 2);                
+                        this.msg(msg, this.u8_MSG_TYPE_ERROR);                
                         lOut = false;
                         return;
+                    end
+                end
+            end
+            
+            % If stores are present, check each field of stores
+            if isfield(this.stJson, 'stores')
+                fields = { 'name', 'raw' };
+
+                for n = 1:length(this.stJson.stores)
+                    for m = 1:length(fields)
+                        if ~isfield(this.stJson.stores{n}, fields{m})
+                            msg = sprintf(...
+                                'Invalid config file. Store definition %1.0f must contain property "%s"', ...
+                                n, ...
+                                fields{m} ...
+                            );
+                            this.msg(msg, this.u8_MSG_TYPE_ERROR);                
+                            lOut = false;
+                            return;
+                        end
                     end
                 end
             end

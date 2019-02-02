@@ -356,8 +356,10 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                     error('fhGet must function_handle');
                 end
                 
-                if ~isa(this.fhSet, 'function_handle')
-                    error('fhSet must function_handle');
+                if ~this.lDisableSet
+                    if ~isa(this.fhSet, 'function_handle')
+                        error('fhSet must function_handle');
+                    end
                 end
             end
                 
@@ -693,11 +695,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                 dLeft = dLeft + this.dWidthBtn;
             end
             
+            this.clock.add(@this.onClock, this.id(), this.config.dDelay);
             
-            if ~isempty(this.clock) && ...
-                ~this.clock.has(this.id())
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+%             if ~isempty(this.clock) && ...
+%                 ~this.clock.has(this.id())
+%                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+%             end
             
             if this.lUseFunctionCallbacks
                 if this.fhIsVirtual()

@@ -282,10 +282,12 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
                 );
             end
             
-            if ~isempty(this.clock) && ...
-                ~this.clock.has(this.id())
-                this.clock.add(@this.onClock, this.id(), this.config.dDelay);
-            end
+            this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+            
+%             if ~isempty(this.clock) && ...
+%                 ~this.clock.has(this.id())
+%                 this.clock.add(@this.onClock, this.id(), this.config.dDelay);
+%             end
             
             
             if this.lUseFunctionCallbacks
