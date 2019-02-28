@@ -178,6 +178,7 @@ classdef GetSetNumber < mic.Base
         
             % Loop through list of unit structure definitions and check
             % the label property of each one for equality with cUnit.
+                            
             
             for n = 1:length(this.ceUnits)
                 if (strcmp(this.ceUnits{n}.name, cName)) 
@@ -186,14 +187,13 @@ classdef GetSetNumber < mic.Base
                 end
             end
 
-            
             msgID = 'UNIT:NotSupported';
             msg = sprintf('+mic/+config/+GetSetNumber The unit %s is not supported', cName);
-            
-            %{
+
             exception = MException(msgID,msg);
             throw(exception);
-            %}
+            
+            
             
         end
         
