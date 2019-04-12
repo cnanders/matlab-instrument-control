@@ -85,10 +85,15 @@ classdef Button < mic.interface.ui.common.Button & mic.ui.common.Base
             % https://www.mathworks.com/matlabcentral/answers/316039-get-mouse-down-and-mouse-up-events-from-slider
             % https://www.mathworks.com/matlabcentral/fileexchange/14317-findjobj-find-java-handles-of-matlab-graphic-objects
             
-            jUI = findjobj(this.hUI);
-            jUI.MousePressedCallback           = @this.fhOnPress;
-            jUI.MouseReleasedCallback          = @this.fhOnRelease;
-
+            try
+                jUI = findjobj(this.hUI);
+                jUI.MousePressedCallback           = @this.fhOnPress;
+                jUI.MouseReleasedCallback          = @this.fhOnRelease;
+            catch mE
+                
+            end
+            
+            
             if this.lImg
                 set(this.hUI, 'CData', this.u8Img);
             else

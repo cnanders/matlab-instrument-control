@@ -71,6 +71,7 @@ classdef Base < handle
         % @param {uint8 1x1} u8Type - see this.u8_MSG_TYPE_*
         function msg(this, cMsg, u8Type)
         
+            
             if nargin == 2
                 u8Type = this.u8_MSG_TYPE_INFO;
             end

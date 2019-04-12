@@ -762,18 +762,19 @@ classdef Clock < mic.Base
                     % execute dthe code below and then have the
                     % error(getReport(mE)) code below, the error report is
                     % never output to the console.
-                    
                     %{
+                    
                     cMsg = sprintf(...
-                        'Clock.timerFcn() ERROR executing %1.0f of %1.0f: %s() ', ...
+                        'Clock.timerFcn() problem executing %1.0f of %1.0f: %s() ', ...
                         n, ...
                         sum(lItems), ...
                         ceTaskNameToDo{n} ...
                     );
-                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);                    
-                    %}
+                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);  
+                  %}
                     
-                    % error(mE.message);
+                    
+                     getReport(mE)
 
 
                     
