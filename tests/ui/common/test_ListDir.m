@@ -17,7 +17,7 @@ ui = mic.ui.common.ListDir(...
     'cLabel', 'Hello, World!' ...
 );
 
-ui.build(h, 10, 10, 550, 100);
+ui.build(h, 10, 10, 550, 200);
 
 % Define callback functions
 
