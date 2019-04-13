@@ -120,7 +120,7 @@ classdef PositionRecaller < mic.ui.common.Base
                 ) ...
             );
             
-            this.uiList.build(this.hPanel, 10, 20, dWidth - 140, dHeight - 72); % dWidth/2 + 25
+            this.uiList.build(this.hPanel, 10, 20, dWidth - 140, dHeight - 55); % dWidth/2 + 25
            
             
             dTop = 20;

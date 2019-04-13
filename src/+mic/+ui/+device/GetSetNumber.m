@@ -1317,7 +1317,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                     this.clock.remove(this.id());
                 end
                 
-                error(mE);
+                % error(mE);
                 
             end %try/catch
 
