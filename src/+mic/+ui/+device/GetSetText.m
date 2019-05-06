@@ -121,13 +121,13 @@ classdef GetSetText < mic.interface.ui.device.GetSetText & ...
         fhIsInitialized = @() true
 
         % {function handle 1x1} 
-        fhInitialize = @()[]
-        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        % fhInitialize = @()[]
+        % fhIsVirtual = @() true % overload this otherwise will always use virtual
         
         fhGetV 
         fhSetV
         fhIsInitializedV
-        fhInitializeV
+        % fhInitializeV
         
     end
     

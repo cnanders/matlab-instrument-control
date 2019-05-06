@@ -82,8 +82,13 @@ classdef Base < mic.Base
 
         % {Logical 1x1} - "Set" function 
         lUseFunctionCallbacks = false
-
-
+        
+        % {function handle 1x1} 
+        fhInitialize = @() []
+        fhInitializeV
+        
+        % Adding virtual methods
+        fhIsVirtual = @() true % overload this otherwise will always use virtual
 
     end
     
@@ -276,7 +281,16 @@ classdef Base < mic.Base
         function initialize(this)
             
             this.lIsInitializing = true;
-            this.getDevice().initialize();
+            
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    this.fhInitializeV();
+                else
+                    this.fhInitialize();
+                end
+            else
+                this.getDevice().initialize();
+            end
             
         end
 

@@ -273,20 +273,21 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         % {function handle 1x1} 
         fhIsInitialized = @() true
 
-        % {function handle 1x1} 
-        fhInitialize = @() []
+        % {function handle 1x1} - 2019.05.06 configure in
+        % mic.ui.device.Base
+        % fhInitialize = @() []
         
         % {function handle 1x1} 
         fhIndex = @() []
         
-        % Adding virtual methods
-        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        
         fhGetV 
         fhSetV
         fhIsReadyV
         fhStopV
         fhIsInitializedV
-        fhInitializeV
+        % fhInitializeV - 2019.05.06 configure in
+        % mic.ui.device.Base
         fhIndexV
 
     end
@@ -1002,8 +1003,36 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         
         
         
+        function dOut = getValCalAbs(this, cUnit)
+        %VALCAL Get the value in a calibrated unit ignoring the active
+        %abs/rel state (rel state allows user-set offsets
+        %
+        %   @param {char} cUnit - the name of the unit you want the result
+        %       calibrated in.  We intentionally don't support a default
+        %       unit so the coder is forced to provide units everywhere in
+        %       the code.  This keeps the code readabale. 
+        %   @returns {double} - the calibrated value
+        %
+        %   If you want the value showed in the display (with the active
+        %   display unit and abs/rel state use getValCalDisplay()
+
+            lRel = false;
+            if this.lUseFunctionCallbacks
+                if this.fhIsVirtual()
+                    dOut = this.raw2cal(this.fhGetV(), cUnit, lRel);
+                else
+                    dOut = this.raw2cal(this.fhGet(), cUnit, lRel);
+                end
+            else
+                dOut = this.raw2cal(this.getDevice().get(), cUnit, lRel);
+            end
+            
+            
+        end
+        
         function dOut = getValCal(this, cUnit)
-        %VALCAL Get the abs value (not relative to a stored zero) in a calibrated unit.
+        %VALCAL Get the value in a calibrated unit using the active abs/rel
+        %state
         %
         %   @param {char} cUnit - the name of the unit you want the result
         %       calibrated in.  We intentionally don't support a default
@@ -1016,12 +1045,12 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
 
             if this.lUseFunctionCallbacks
                 if this.fhIsVirtual()
-                    dOut = this.raw2cal(this.fhGetV(), cUnit, false);
+                    dOut = this.raw2cal(this.fhGetV(), cUnit, this.uitRel.get());
                 else
-                    dOut = this.raw2cal(this.fhGet(), cUnit, false);
+                    dOut = this.raw2cal(this.fhGet(), cUnit, this.uitRel.get());
                 end
             else
-                dOut = this.raw2cal(this.getDevice().get(), cUnit, false);
+                dOut = this.raw2cal(this.getDevice().get(), cUnit, this.uitRel.get());
             end
             
             
