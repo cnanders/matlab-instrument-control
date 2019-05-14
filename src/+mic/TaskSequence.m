@@ -42,8 +42,8 @@ classdef TaskSequence < mic.interface.Task
         % {mic.Scan 1x1}
         scan
         
-        % {char 1xm} - description of the task/seqeunce/state
-        cDescription
+        % {function_handle 1x1} returns {char 1xm} - description of the task/seqeunce/state
+        fhGetMessage
         
     end
     
@@ -78,6 +78,9 @@ classdef TaskSequence < mic.interface.Task
                 error('clock must be mic.Clock');
             end
             
+            if ~isa(this.fhGetMessage, 'function_handle')
+                error('fhGetMessage must be function_handle');
+            end
        end
        
 
@@ -168,7 +171,7 @@ classdef TaskSequence < mic.interface.Task
                return;
            end
                       
-           c = this.cDescription;
+           c = this.fhGetMessage();
            
        end
        
