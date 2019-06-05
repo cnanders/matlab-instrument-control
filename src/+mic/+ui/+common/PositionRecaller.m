@@ -28,6 +28,8 @@ classdef PositionRecaller < mic.ui.common.Base
         uibLoad
         
         lDisableSave = false
+        lShowLoadButton = true
+        lLoadOnSelect = false
         
         uiePosName
         
@@ -69,6 +71,7 @@ classdef PositionRecaller < mic.ui.common.Base
                 'cLabel', this.cName, ...
                 'lShowRefresh', false, ...
                 'lShowLabel', this.lShowLabelOfList, ...
+                'fhOnChange', @this.onListChange, ...
                 'fhDirectCallback', @this.syncAndSave);
             
             % Try loading corresponding JSON
@@ -124,9 +127,10 @@ classdef PositionRecaller < mic.ui.common.Base
            
             
             dTop = 20;
-            this.uibLoad.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
-            
-            dTop = dTop + 24;
+            if this.lShowLoadButton
+                this.uibLoad.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
+                dTop = dTop + 24;
+            end
             
             if ~this.lDisableSave
                 
@@ -139,6 +143,12 @@ classdef PositionRecaller < mic.ui.common.Base
             end
         end
 
+        function onListChange(this, src, evt)
+            if this.lLoadOnSelect
+                this.loadPosition();
+            end
+        end
+        
         function syncAndSave(this)
             ceListOptions = this.uiList.getOptions();
             
@@ -211,7 +221,9 @@ classdef PositionRecaller < mic.ui.common.Base
         
         function loadPosition(this, ~, ~)
             % get selected option:
-            cSelectedVal = this.uiList.get();
+            cecSelectedVal = this.uiList.get();
+            cSelectedVal = cecSelectedVal{1};
+            
             
             % find this entry in our options list:
             val = [];

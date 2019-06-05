@@ -435,6 +435,8 @@ classdef Edit < mic.interface.ui.common.Edit & mic.ui.common.Base
                );
                this.msg(cMsg);
                msgbox(cMsg, 'Edit.set() invalid type', 'error');
+               
+               
            end
            
            if this.lNotifyOnProgrammaticSet
