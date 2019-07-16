@@ -80,6 +80,10 @@ classdef PositionRecaller < mic.ui.common.Base
             fid = fopen(this.cJsonPath, 'r');
             if (fid ~= -1)
                 cTxt = fread(fid, inf, 'uint8=>char');
+                if size(cTxt, 1) > size(cTxt,2)
+                    cTxt = cTxt';
+                end
+                
                 this.stPositionsArray = jsondecode(cTxt);
                 fclose(fid);
             end
