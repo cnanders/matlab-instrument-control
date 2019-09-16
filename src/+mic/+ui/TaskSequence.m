@@ -24,7 +24,7 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
     properties (SetAccess = private)
         
         cName = 'ui-task-sequence-change-me'
-        dDelay = 0.5
+        dDelay = 1 % how often the UI updates
         
         hPanel
         uiTextMain

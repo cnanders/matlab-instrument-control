@@ -30,8 +30,7 @@ fprintf('\n*** purge.m listing workspace variables: *** \n');
 ceVars = who
 fprintf('*** purge.m end workspace variables *** \n\n');
 
-
-
+% delete(timerfind)
 
 for n = 1:length(ceVars)
     
@@ -94,5 +93,6 @@ for n = 1:length(ceVars)
     
 end
 
+delete(timerfind)
 clear variables
 close all

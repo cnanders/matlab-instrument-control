@@ -77,7 +77,7 @@ classdef Base < handle
             end
             
             % Always show error types
-            u8MsgStyle = [this.u8MsgStyle this.u8_MSG_TYPE_ERROR];
+            u8MsgStyle = [this.u8MsgStyle this.u8_MSG_TYPE_ERROR this.u8_MSG_TYPE_DELETE];
 
             if any(ismember(u8MsgStyle, u8Type))
                  cTimestamp = datestr(datevec(now), 'yyyymmdd-HHMMSS', 'local');
