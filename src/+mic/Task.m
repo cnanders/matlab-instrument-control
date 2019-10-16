@@ -31,8 +31,8 @@ classdef Task < mic.interface.Task
         % {function_handle 1x1} called by isDone() returns {logical 1x1}
         fhIsDone = @() true
         
-        % {function_handle 1x1} returns {char 1xm} message to display when 
-        % moving to this state
+        % {function_handle 1x1} return of this function is returned by public
+        % method getMessage() must return {char 1xm}
         fhGetMessage = @() 'Moving...'
         
     end

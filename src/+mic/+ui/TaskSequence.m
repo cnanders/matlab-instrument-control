@@ -49,6 +49,10 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         % visible
         lShowIsDone = true
         
+        % {logical 1x1} shows the text + red/green status of the sequence
+        % and progress bar
+        lShowStatus = true
+        
     end
 
 
@@ -165,40 +169,43 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
                 ) ...
             );
         
-            dLeft = 10;
+            
             dTop = 4;
             dSep = 16;
+            dLeft = 0;
             
-            this.uiTextMain.build(this.hPanel, dLeft, dTop, dWidth - 20, 16);
-            dTop = dTop + dSep;
+            if this.lShowStatus
+                dLeft = 10;
+                this.uiTextMain.build(this.hPanel, dLeft, dTop, dWidth - 20, 16);
+                dTop = dTop + dSep;
             
-            %{
-            this.uiTextSub.build(this.hPanel, dLeft, dTop, dWidth - 20, 16);
-            dTop = dTop + dSep;
-            %}
-            
-            %{
-            if (this.lShowButton)
+                %{
+                this.uiTextSub.build(this.hPanel, dLeft, dTop, dWidth - 20, 16);
+                dTop = dTop + dSep;
+                %}
+
+                %{
+                if (this.lShowButton)
+                    dWidthProgressBar = dWidth - 25;
+                else
+                    dWidthProgressBar = dWidth;
+                end
+                %}
+
                 dWidthProgressBar = dWidth - 25;
-            else
-                dWidthProgressBar = dWidth;
+
+                this.uiProgressBar.build(this.hPanel, ...
+                    0, ...
+                    dHeight - this.dHeightProgressBar, ...
+                    dWidthProgressBar, ...
+                    this.dHeightProgressBar ...
+                )
+                this.uiProgressBar.hide();
             end
-            %}
-            
-            dWidthProgressBar = dWidth - 25;
-            
-            this.uiProgressBar.build(this.hPanel, ...
-                0, ...
-                dHeight - this.dHeightProgressBar, ...
-                dWidthProgressBar, ...
-                this.dHeightProgressBar ...
-            )
-            this.uiProgressBar.hide();
             
             if (this.lShowButton || this.lShowIsDone)
                 this.uiButton.build(this.hPanel, dWidth - 25, 1, 24, 24);
             end
-            
 
             if this.lIsRunning
                 this.clock.add(@this.onClock, this.id(), this.dDelay);
@@ -317,6 +324,8 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         
         
         function init(this)
+            
+            
             this.uiTextMain = mic.ui.common.Text('fhButtonDownFcn', @this.onPanelButtonDown);
             this.uiTextSub = mic.ui.common.Text('fhButtonDownFcn', @this.onPanelButtonDown);
             this.uiProgressBar = mic.ui.common.ProgressBar();

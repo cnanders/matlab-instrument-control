@@ -1,4 +1,4 @@
-classdef TaskSequence < mic.interface.Task
+ classdef TaskSequence < mic.interface.Task
     
     
     properties (Constant)
