@@ -38,6 +38,8 @@ classdef ListDir < mic.ui.common.List
         
         % { char 1xm} title of the panel
         cTitle
+        
+        fhOnChangeDir = @(src, evt)[];
     end
     
     properties (Access = private)
@@ -262,7 +264,8 @@ classdef ListDir < mic.ui.common.List
             
             this.cDir = mic.Utils.path2canonical(cName);
             this.refresh(); 
-            this.updateUiTextDir();            
+            this.updateUiTextDir();  
+            this.fhOnChangeDir(this, evt);
         end
         
         

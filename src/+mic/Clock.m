@@ -760,26 +760,26 @@ classdef Clock < mic.Base
                 catch mE
                     
                     % Will crash the app, but gives lovely stack trace.
-                    error(getReport(mE));
+                    % error(getReport(mE));
                 	
                     % (CA) Code below makes it next to impossible to figure out
                     % the problem.  Also, I can't figure otu why but if I
                     % execute dthe code below and then have the
                     % error(getReport(mE)) code below, the error report is
                     % never output to the console.
-                    %{
-                    
-                    cMsg = sprintf(...
-                        'Clock.timerFcn() problem executing %1.0f of %1.0f: %s() ', ...
-                        n, ...
-                        sum(lItems), ...
-                        ceTaskNameToDo{n} ...
-                    );
-                    this.msg(cMsg, this.u8_MSG_TYPE_ERROR);  
-                  %}
                     
                     
-                     % getReport(mE)
+%                     cMsg = sprintf(...
+%                         'Clock.timerFcn() problem executing %1.0f of %1.0f: %s() ', ...
+%                         n, ...
+%                         sum(lItems), ...
+%                         ceTaskNameToDo{n} ...
+%                     );
+%                     this.msg(cMsg, this.u8_MSG_TYPE_ERROR);  
+%                  
+%                     
+%                     
+%                      getReport(mE)
 
 
                     
