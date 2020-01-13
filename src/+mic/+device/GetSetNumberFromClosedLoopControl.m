@@ -123,6 +123,8 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
             dLastError = 0;
             
             dSensorValue    = this.fhGetSensor();
+            
+            dTic = tic;
             while abs(dSensorDestination - dSensorValue) > this.dTolerance
                 this.lReady = false;
                 u8iterationCt = u8iterationCt + 1;
@@ -171,7 +173,10 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
                  this.msg(sprintf('\nSensor value: %0.3f, Sensor destination: %0.3f\n', dSensorValue, dErrorSensor), this.u8_MSG_TYPE_SCAN);
             end
             
-            this.msg('Close loop complete \n', this.u8_MSG_TYPE_SCAN);
+            dToc = toc(dTic);
+            
+            cMsg = sprintf('Close loop complete on iteration %d. Elapsed time: %1.2f sec\n', u8iterationCt, dToc);
+            this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
             this.lReady = true;
         end
         
