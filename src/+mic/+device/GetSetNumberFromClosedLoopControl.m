@@ -50,6 +50,9 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         dTolerance
         
         % {double 1x1 - specifies the delay in seconds before checking acceptance condition}
+        % Delay time to wait for a sensor to update, useful in
+        % control systems where the sensor does not react
+        % immediately to a motor move
         dDelay = 0
         
         % {double 1x3 specifies the P, I, and D coefficients}
@@ -128,10 +131,7 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
             while abs(dSensorDestination - dSensorValue) > this.dTolerance
                 this.lReady = false;
                 u8iterationCt = u8iterationCt + 1;
-                
-                this.msg(sprintf('Making move move on iteration %d\n', u8iterationCt), this.u8_MSG_TYPE_SCAN);
-                
-                
+                                
                 dErrorSensor    = dSensorDestination - dSensorValue;
                 
                 dErrorMotorP    = dErrorSensor * this.dPID(1);
@@ -148,12 +148,26 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
                      return
                 end
                 
-                dDestMotor = this.fhGetMotor() + dErrorMotor;
+                dValueMotor = this.fhGetMotor();
+                dDestMotor = dValueMotor + dErrorMotor;
                 
+                % Move the motor
                 this.fhSetMotor(dDestMotor);
                 
-                this.msg(sprintf('\n(CLOSED-LOOP-CONTROL): \n Destination: %0.3f\n Sensor value: %0.3f\n Current motor pos: %0.3f\n Corrected motor pos: %0.3f\n Delta %0.3f\n',...
-                    dSensorDestination, dSensorValue, this.fhGetMotor(), dDestMotor, dErrorMotor), this.u8_MSG_TYPE_SCAN);
+                % Echo what you did. 
+                
+                cMsg = [...
+                    sprintf(' \n'), ...
+                    sprintf('\tCL Control set() #%d setting motor ...\n', u8iterationCt), ...
+                    sprintf('\tSensor Dest: %0.3f\n', dSensorDestination), ...
+                    sprintf('\tSensor Value: %0.3f\n', dSensorValue), ...
+                    sprintf('\tSensor Error: %0.3f (tol %0.3f)\n', dErrorSensor, this.dTolerance), ...
+                    sprintf('\tMotor Value: %0.3f\n', dValueMotor), ...
+                    sprintf('\tMotor Delta: (from PID params and sensor error) %0.3f\n', dErrorMotor), ...
+                    sprintf('\tMotor Dest: %0.3f', dDestMotor) ...
+                ];
+                this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
+                
                 
                 
                 if (~this.waitForStage(this.fhIsReadyMotor))
@@ -170,7 +184,15 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
                 end
                 
                 dSensorValue    = this.fhGetSensor();
-                 this.msg(sprintf('\nSensor value: %0.3f, Sensor destination: %0.3f\n', dSensorValue, dErrorSensor), this.u8_MSG_TYPE_SCAN);
+                
+                cMsg = [...
+                    sprintf(' \n'), ...
+                    sprintf('\tCL Control set() #%d read sensor after motor move #%d...\n', u8iterationCt, u8iterationCt), ...
+                    sprintf('\tSensor Value: %0.3f\n', dSensorValue), ...
+                    sprintf('\tSensor Error: %0.3f (tol %0.3f)', dSensorDestination - dSensorValue, this.dTolerance) ...
+                ];
+            
+                this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
             end
             
             dToc = toc(dTic);
@@ -187,11 +209,14 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
             for k = 1:dNWaitCycles
                 
                 if isReady()
-                    this.msg('** Stage is ready!!\n', this.u8_MSG_TYPE_SCAN);
+                    this.msg('Stage ready!', this.u8_MSG_TYPE_SCAN);
                     lSuccess = true;
                     return
                 end
-                this.msg(sprintf('Stage is NOT ready, %d/%d\n', k, dNWaitCycles), this.u8_MSG_TYPE_SCAN);
+                
+                cMsg = sprintf('Stage NOT ready, %d/%d pausing %0.2f sec', k, dNWaitCycles, this.dStageCheckPeriod);
+                
+                this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
                 pause(this.dStageCheckPeriod);
             end
             lSuccess = false;
