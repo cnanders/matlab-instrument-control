@@ -761,6 +761,7 @@ classdef Clock < mic.Base
                     
                     % Will crash the app, but gives lovely stack trace.
                     error(getReport(mE));
+
                 	
                     % (CA) Code below makes it next to impossible to figure out
                     % the problem.  Also, I can't figure otu why but if I
