@@ -228,6 +228,14 @@ classdef Scan < mic.Base
             end
             
         end
+        
+        function l = getIsPaused(this)
+            l = this.lPaused;
+        end
+        
+        function l = getIsStopped(this)
+            l = this.lStopped;
+        end
        
         function start(this) 
         %START start the scan 

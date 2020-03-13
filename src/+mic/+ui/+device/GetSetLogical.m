@@ -137,6 +137,8 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         fhSetV
         fhIsInitializedV
         % fhInitializeV
+        
+        cAlign = 'left'
                         
     end
     
@@ -444,7 +446,7 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
             init@mic.ui.device.Base(this);                        
 
                        
-            this.uitxName = mic.ui.common.Text('cVal', this.cLabel);
+            this.uitxName = mic.ui.common.Text('cVal', this.cLabel, 'cAlign', this.cAlign);
                         
             this.initCommandToggle();
             this.initValueImageLogical();

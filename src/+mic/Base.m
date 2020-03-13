@@ -102,7 +102,7 @@ classdef Base < handle
                     'modal' ...
                 );
                 %}
-                error(cMsg);
+                %error(cMsg);
             end
            
         end

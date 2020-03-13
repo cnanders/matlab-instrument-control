@@ -84,7 +84,15 @@
        end
        
 
-       
+       function delete(this)
+            
+           if isempty(this.scan)
+               return
+           end
+           
+           this.scan.stop();
+            
+       end
         
        function execute(this)
            
