@@ -324,10 +324,7 @@ classdef List < mic.Base
                set(this.hUI, 'Value', this.u8Selected);
            end
            
-           if ~isempty(this.fhOnChange)
-               this.fhOnChange(this)
-           end
-           
+           this.fhOnChange(this)
            notify(this,'eChange');
                
        end
@@ -340,6 +337,10 @@ classdef List < mic.Base
                 this.setOptions(this.ceOptions);
            end
            
+           this.fhOnChange(this)
+           this.fhDirectCallback();
+           
+           
        end
        
        function append(this, cVal)
@@ -350,6 +351,8 @@ classdef List < mic.Base
                 this.setOptions(this.ceOptions);
            end
            
+           this.fhOnChange(this)
+           this.fhDirectCallback();
            
        end
        

@@ -6,10 +6,16 @@ classdef Scan < mic.Base
         
     end
     
+    properties (SetAccess = private)
+        dHeight = 95
+       dWidth = 240
+       
+    end
+    
+    
     properties (Access = private)
         
-       dHeight = 95
-       dWidth = 240
+       
        
        dWidthButton = 60
        dHeightButton = 24
