@@ -278,6 +278,15 @@ classdef PopupStruct < mic.ui.common.Base
                
        end
        
+       function setSelectedByLabel(this, cLabel)
+           for n = 1 : length(this.ceOptions)
+               if strcmpi(this.ceOptions{n}.(this.cField), cLabel)
+                   this.setSelectedIndex(uint8(n));
+                   return
+               end
+           end
+       end
+       
        % @returns {struct 1x1} the u8Selected index of this.ceOptions 
        function st = get(this)       
             st= this.ceOptions{this.u8Selected};
