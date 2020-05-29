@@ -552,9 +552,6 @@ classdef Clock < mic.Base
                 
                 this.lTaskActive(lItems) = false;
                 
-                
-                
-                
             end
             
             this.lBusy = false;
@@ -824,7 +821,7 @@ classdef Clock < mic.Base
         %   Clock.delete()
         %
         % See also CLOCK, INIT, BUILD
-            this.msg('delete()', this.u8_MSG_TYPE_CLASS_INIT_DELETE);         
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_DELETE);         
             try
                 if isvalid(this.t)
                 

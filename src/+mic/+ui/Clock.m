@@ -48,6 +48,10 @@ classdef Clock < mic.Base
             this.clock = clock;
         end
         
+        function delete(this)
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_DELETE);  
+        end
+        
         % Returns true if the task name is on the task list and it is
         % active
         
@@ -118,7 +122,10 @@ classdef Clock < mic.Base
                 
                 this.lTaskActive(lItems) = false;
                 
+            else
+                return
             end
+            
             
             if this.lIsRunning
                 this.clock.remove(cName);

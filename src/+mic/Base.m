@@ -11,7 +11,7 @@ classdef Base < handle
         u8_MSG_TYPE_JAVA = 6
         u8_MSG_TYPE_CLOCK = 7
         u8_MSG_TYPE_LOAD_SAVE = 8
-        u8_MSG_TYPE_CLASS_INIT_DELETE = 9
+        u8_MSG_TYPE_CLASS_INIT = 9
         u8_MSG_TYPE_VARARGIN_SET = 10
         u8_MSG_TYPE_VARARGIN_PROPERTY = 11
         u8_MSG_TYPE_FILE_IO = 12
@@ -22,6 +22,7 @@ classdef Base < handle
         u8_MSG_TYPE_PROP_DELETE_SKIPPED = 17
         u8_MSG_TYPE_PROP_DELETE_CHECK = 18
         u8_MSG_TYPE_SCAN = 19
+        u8_MSG_TYPE_CLASS_DELETE = 20
         
         u8_MSG_STYLE_ALL = [1 : 19]
         u8_MSG_STYLE_ALL_LESS_CLOCK = [1 : 6, 8 : 19]
@@ -34,7 +35,7 @@ classdef Base < handle
         u8_MSG_STYLE_NONE = []
         u8_MSG_STYLE_CREATE_UI_DEVICE = [15]
         u8_MSG_STYLE_CREATE = [14, 15] 
-        u8_MSG_STYLE_CLASS_INIT_DELETE = [9, 16, 17, 18]
+        u8_MSG_STYLE_CLASS_INIT_DELETE = [9, 20, 16, 17, 18]
         u8_MSG_STYLE_SCAN = [19]
         u8_MSG_STYLE_INFO = [1]
         
@@ -50,8 +51,8 @@ classdef Base < handle
         function this = Base()
            % this.u8MsgStyle = this.u8_MSG_STYLE_ALL;
             % this.u8MsgStyle = this.u8_MSG_STYLE_INFO;
-             this.u8MsgStyle = this.u8_MSG_STYLE_SCAN;
-            %this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; 
+            % this.u8MsgStyle = this.u8_MSG_STYLE_SCAN;
+            this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; 
            % this.u8MsgStyle = this.u8_MSG_STYLE_NONE;
         end
 

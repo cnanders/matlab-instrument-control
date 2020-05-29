@@ -167,7 +167,7 @@ Fixed but with `ui.common.PopupStruct`, `ui.common.Text` and `ui.common.Toggle` 
 
 # 1.0.0-beta.20
 
-Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that should have been `u8_MSG_TYPE_CLASS_INIT_DELETE`
+Fixed bug with several classes referencing property `u8_MSG_TYPE_DELETE` that should have been `u8_MSG_TYPE_CLASS_DELETE`
 
 # 1.0.0-beta.19
 
