@@ -82,6 +82,10 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
                 error('task must return a mic.TaskSequence');
             end
             
+            if ~isa(this.clock, 'mic.Clock') && ~isa(this.clock, 'mic.ui.Clock')
+                error('clock must be mic.Clock | mic.ui.Clock');
+            end
+            
             this.init();
             
         end
@@ -115,14 +119,8 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
        end
         
         function delete(this)
-            
-            if ~isempty(this.clock) && ...
-                isvalid(this.clock) && ...
-                this.clock.has(this.id())
-                this.msg('delete() removing clock task', this.u8_MSG_TYPE_INFO); 
-                this.clock.remove(this.id());
-            end
-            
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_DELETE);  
+            this.clock.remove(this.id());
         end
         
         function show(this)

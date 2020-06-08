@@ -142,6 +142,8 @@ classdef PopupStruct < mic.ui.common.Base
                 if ~this.lEnabled
                     this.disable();
                 end
+                
+                this.setSelectedIndex(this.getSelectedIndex());
             
                 return 
                
@@ -177,6 +179,9 @@ classdef PopupStruct < mic.ui.common.Base
             if ~this.lEnabled
                 this.disable();
             end
+            
+            this.setSelectedIndex(this.getSelectedIndex());
+
         
        end
        

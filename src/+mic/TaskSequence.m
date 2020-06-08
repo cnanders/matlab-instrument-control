@@ -86,11 +86,14 @@
 
        function delete(this)
             
+           this.msg('delete()', this.u8_MSG_TYPE_CLASS_DELETE);  
+
            if isempty(this.scan)
                return
            end
            
            this.scan.stop();
+           this.scan.delete();
             
        end
         
