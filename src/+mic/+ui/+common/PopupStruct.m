@@ -143,7 +143,7 @@ classdef PopupStruct < mic.ui.common.Base
                     this.disable();
                 end
                 
-                this.setSelectedIndex(this.getSelectedIndex());
+                this.setSelectedIndex(this.getSelectedIndex(), false);
             
                 return 
                
@@ -180,7 +180,7 @@ classdef PopupStruct < mic.ui.common.Base
                 this.disable();
             end
             
-            this.setSelectedIndex(this.getSelectedIndex());
+            this.setSelectedIndex(this.getSelectedIndex(), false);
 
         
        end
@@ -257,7 +257,11 @@ classdef PopupStruct < mic.ui.common.Base
        % Programatically set the active item of the Popup as if the user
        % had done it
        % @param {uint8 1x1} the desired index
-       function setSelectedIndex(this, u8Val)
+       function setSelectedIndex(this, u8Val, lNotify)
+           
+           if nargin == 2
+               lNotify = true;
+           end
            
            % prop
            if isinteger(u8Val)
@@ -278,8 +282,10 @@ classdef PopupStruct < mic.ui.common.Base
                set(this.hUI, 'Value', this.u8Selected);
            end
            
-           notify(this,'eChange');
-           this.fhDirectCallback(this, 'setSelectedIndex');
+           if lNotify
+                notify(this,'eChange');
+                this.fhDirectCallback(this, 'setSelectedIndex');
+           end
                
        end
        

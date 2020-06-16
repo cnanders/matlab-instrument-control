@@ -1558,7 +1558,6 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
         function onStoresChange(this, src, evt)
             this.setDestRaw(src.get().raw);
             this.moveToDest();
-            
         end
         
         function onDestChange(this, src, evt)
