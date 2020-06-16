@@ -37,6 +37,9 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         % {lambda(varargin) 1x1: double - gets the current sensor reading}
         fhGetSensor
         
+         % {lambda() 1x1: boolean - if false, disables a moveToDest command}
+        fhIsSensorValid = @() true
+        
         % {lambda() 1x1: double - gets the current motor reading}
         fhGetMotor
         
@@ -45,6 +48,8 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         
         % {lambda() 1x1: boolean - returns if the motor is ready}
         fhIsReadyMotor
+        
+        
         
         % {double 1x1 - specifies the tolerance in default units for acceptance}
         dTolerance
@@ -121,6 +126,12 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         
         % Called when destination is set
         function set(this, dSensorDestination)
+            
+            if (~this.fhIsSensorValid)
+                cWarnMessage = sprintf('Sensor data for %s appears to be invalid, aborting command', this.cName);
+                warndlg(cWarnMessage)
+                return
+            end
             
             u8iterationCt = 0;
             dLastError = 0;
