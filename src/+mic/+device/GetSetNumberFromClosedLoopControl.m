@@ -127,7 +127,7 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         % Called when destination is set
         function set(this, dSensorDestination)
             
-            if (~this.fhIsSensorValid)
+            if (~this.fhIsSensorValid())
                 cWarnMessage = sprintf('Sensor data for %s appears to be invalid, aborting command', this.cName);
                 warndlg(cWarnMessage)
                 return
