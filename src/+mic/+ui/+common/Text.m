@@ -112,7 +112,7 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
        function set(this, cVal)
            
            % prop
-           if ischar(cVal)
+           if ischar(cVal) || iscell(cVal)
                this.cVal = cVal;
            else
                cMsg = sprintf('Text.set.cVal() requires type "char".  You supplied type "%s".  Not overwriting the cVal property.', ...
@@ -172,6 +172,10 @@ classdef Text < mic.interface.ui.common.Text & mic.ui.common.Base
         end
         
         function delete(this)
+            if iscell(this.cVal)
+                return
+            end
+            
             cMsg = sprintf('delete() %s', this.cVal);
             % this.msg(cMsg);
         end

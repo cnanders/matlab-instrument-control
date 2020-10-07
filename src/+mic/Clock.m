@@ -226,7 +226,8 @@ classdef Clock < mic.Base
         
         % ceTaskName, dTaskPeriod, and lTaskActive will always be the same size
         
-        dTicks = 0;             % 
+        dTicks = 0;     % 
+        lIsStopped = false
         
         
             
@@ -285,14 +286,38 @@ classdef Clock < mic.Base
             
             
             % timer
+            % 2020.10.05
+            %{
             this.t =  timer( ...
                 'TimerFcn', @this.timerFcn, ...
                 'Period', this.dPeriod, ...
                 'ExecutionMode', 'fixedSpacing', ...
                 'Name', sprintf('Clock (%s)', this.cName) ...
                 );
+            %}
+            
+            % 2020.10.06 moving to singleShot timer that is restarted
+            % again in the StopFcn in an attempt to resolve the
+            % matlab timers slow down after inactivity issue.
+            this.t =  timer( ...
+                'TimerFcn', @this.timerFcn, ...
+                'StartDelay', this.dPeriod, ...
+                'StopFcn', @this.onTimerStop, ... % restarts
+                'ExecutionMode', 'singleShot', ...
+                'Name', sprintf('Clock (%s)', this.cName) ...
+            );
             start(this.t);
 
+        end
+        
+        function onTimerStop(this, t, evt)
+            
+            if this.lIsStopped
+                return
+            end
+            % restart
+            start(t);
+            
         end
         
         function lReturn = has(this, cName)
@@ -621,6 +646,9 @@ classdef Clock < mic.Base
         %   Clock.start()
         %
         % See also STOP
+        
+            this.lIsStopped = false;
+            
             if isvalid(this) && ...
                     isvalid(this.t)
                 
@@ -635,6 +663,12 @@ classdef Clock < mic.Base
         %   Clock.stop()
         %
         % See also START
+        
+            % 2020.10.06 moving to singleShot timer
+            this.lIsStopped = true;
+            return;
+           
+            % < 2020.10.06
             if isvalid(this) && ...
                     isvalid(this.t)
                 
@@ -718,16 +752,7 @@ classdef Clock < mic.Base
             ceTaskNameToDo = this.ceTaskName(lItems);
                        
             
-            if this.lEcho
-                 cMsg = sprintf( ...
-                    'Clock.timerFcn() @ %1.3f with %1.0f tasks (%1.0f active).  Executing %1.0f', ...
-                    dElapsedTime, ...
-                    length(this.ceTaskName), ...
-                    sum(this.lTaskActive), ...
-                    sum(lItems) ...
-                );
-                this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);
-            end
+           
             
             
             if isempty(ceTaskFcnToDo)
@@ -744,15 +769,19 @@ classdef Clock < mic.Base
                 % Execute
                 try
                     
-                    cMsg = sprintf(...
-                        'Clock.timerFcn() executing %1.0f of %1.0f: %s() ', ...
-                        n, ...
-                        sum(lItems), ...
-                        ceTaskNameToDo{n} ...
-                    );
-                    this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);                    
+                                    
+                    % dTimeStartTask = tic;
+                    ceTaskFcnToDo{n}();
+                    % dDurationTask = toc(dTimeStartTask);
                     
-                    ceTaskFcnToDo{n}();                     
+%                     cMsg = sprintf(...
+%                         'Clock.timerFcn() executed %1.0f of %1.0f (%1.0f ms): %s() ', ...
+%                         n, ...
+%                         sum(lItems), ...
+%                         ceTaskNameToDo{n}, ...
+%                         dDurationTask * 1000 ...
+%                     );
+%                     this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);    
 
                 catch mE
                     
@@ -789,6 +818,18 @@ classdef Clock < mic.Base
             dDuration = toc(dTimeStart);
             this.dDurationOfLastTimerExecution = dDuration;
             
+             %if this.lEcho
+                 cMsg = sprintf( ...
+                    'Clock.timerFcn() #%1.0f with %1.0f tasks (%1.0f active).  Executed %1.0f (%1.0f ms)', ...
+                    this.dTicks, ...
+                    length(this.ceTaskName), ...
+                    sum(this.lTaskActive), ...
+                    sum(lItems), ...
+                    dDuration * 1000 ...
+                );
+                this.msg(cMsg, this.u8_MSG_TYPE_CLOCK);
+            % end
+            
         end
         
         
@@ -821,7 +862,10 @@ classdef Clock < mic.Base
         %   Clock.delete()
         %
         % See also CLOCK, INIT, BUILD
-            this.msg('delete()', this.u8_MSG_TYPE_CLASS_DELETE);         
+            this.msg('delete()', this.u8_MSG_TYPE_CLASS_DELETE);  
+            
+            this.lIsStopped = true;
+            
             try
                 if isvalid(this.t)
                 
@@ -831,7 +875,7 @@ classdef Clock < mic.Base
                     
                     this.msg('delete() deleting timer', this.u8_MSG_TYPE_INFO);
 
-                    set(this.t, 'TimerFcn', '');
+                    % set(this.t, 'TimerFcn', '');
                     delete(this.t);
                 end
                 
