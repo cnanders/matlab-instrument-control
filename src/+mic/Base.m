@@ -51,7 +51,7 @@ classdef Base < handle
         function this = Base()
            % this.u8MsgStyle = this.u8_MSG_STYLE_ALL;
             % this.u8MsgStyle = this.u8_MSG_STYLE_INFO;
-            this.u8MsgStyle = [this.u8_MSG_STYLE_SCAN this.u8_MSG_STYLE_CLOCK];
+            this.u8MsgStyle = [this.u8_MSG_STYLE_SCAN]; % this.u8_MSG_STYLE_CLOCK];
             % this.u8MsgStyle = this.u8_MSG_STYLE_CLASS_INIT_DELETE; 
            % this.u8MsgStyle = this.u8_MSG_STYLE_NONE;
         end
