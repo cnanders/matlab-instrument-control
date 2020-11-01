@@ -686,20 +686,26 @@ function lOut = onScanIsAtState(this, stUnit, stValue)
 
                 if lReady
                     if this.lDebugScan
-                        this.msg(sprintf('onScanIsAtState() %s required, issued, complete', cField));
+                        cMsg = sprintf('onScanIsAtState() %s required,
+                        issued, complete', cField);
+                        this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
                     end
 
                 else
                     % still isn't there.
                     if this.lDebugScan
-                        this.msg(sprintf('onScanIsAtState() %s required, issued, incomplete', cField));
+                        cMsg = sprintf('onScanIsAtState() %s required,
+                        issued, incomplete', cField);
+                        this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
                     end
                     lOut = false;
                     return;
                 end
             else
                 if this.lDebugScan
-                    this.msg(sprintf('onScanIsAtState() %s required, not issued.', cField));
+                    cMsg = sprintf('onScanIsAtState() %s required, not
+                    issued.', cField);
+                    this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
                 end
 
                 lOut = false;
@@ -708,7 +714,9 @@ function lOut = onScanIsAtState(this, stUnit, stValue)
         else
 
             if this.lDebugScan
-                this.msg(sprintf('onScanIsAtState() %s not required', cField));
+                cMsg = sprintf('onScanIsAtState() %s not required',
+                cField);
+                this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
             end
         end
     end
@@ -744,19 +752,25 @@ function lOut = onScanIsAcquired(this, stUnit, stValue)
 
                 if lReady
                     if this.lDebugScan
-                        this.msg(sprintf('onScanIsAcquired() %s required, issued, complete', cField));
+                        cMsg = sprintf('onScanIsAcquired() %s required,
+                        issued, complete', cField);
+                        this.msg(cMsg,  this.u8_MSG_TYPE_SCAN);
                     end
 
                 else
                     if this.lDebugScan
-                        this.msg(sprintf('onScanIsAcquired() %s required, issued, incomplete', cField));
+                        cMsg = sprintf('onScanIsAcquired() %s required,
+                        issued, incomplete', cField);
+                        this.msg(cMsg,  this.u8_MSG_TYPE_SCAN);
                     end
                     lOut = false;
                     return;
                 end
             else
                 if this.lDebugScan
-                    this.msg(sprintf('onScanIsAcquired() %s required, not issued.', cField));
+                    cMsg = sprintf('onScanIsAcquired() %s required, not
+                    issued.', cField);
+                    this.msg(cMsg,  this.u8_MSG_TYPE_SCAN);
                 end
 
                 lOut = false;
@@ -765,7 +779,9 @@ function lOut = onScanIsAcquired(this, stUnit, stValue)
         else
 
             if this.lDebugScan
-                this.msg(sprintf('onScanIsAcquired() %s not required', cField));
+                cMsg = sprintf('onScanIsAcquired() %s not required',
+                cField);
+                this.msg(cMsg,  this.u8_MSG_TYPE_SCAN);
             end
         end
     end

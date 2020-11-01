@@ -95,4 +95,4 @@ end
 
 delete(timerfind)
 clear variables
-close all
+% close all

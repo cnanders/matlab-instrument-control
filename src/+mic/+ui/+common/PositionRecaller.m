@@ -38,6 +38,8 @@ classdef PositionRecaller < mic.ui.common.Base
         lShowLabelOfList = true
         cTitleOfPanel = ''
         
+        dWidthLoadSave = 110
+        
         
     end
  
@@ -106,6 +108,10 @@ classdef PositionRecaller < mic.ui.common.Base
 
         
         end
+        
+        function setSaveName(this, cVal)
+            this.uiePosName.set(cVal);
+        end
 
         % Build
         function build(this, hParent, dLeft, dTop, dWidth, dHeight)
@@ -127,22 +133,25 @@ classdef PositionRecaller < mic.ui.common.Base
                 ) ...
             );
             
-            this.uiList.build(this.hPanel, 10, 20, dWidth - 140, dHeight - 55); % dWidth/2 + 25
+            dWidthList = dWidth - this.dWidthLoadSave - 30;
+            this.uiList.build(this.hPanel, 10, 20, dWidthList, dHeight - 55); % dWidth/2 + 25
            
             
             dTop = 20;
+            dLeft = dWidth - this.dWidthLoadSave - 10;
+            
+            
             if this.lShowLoadButton
-                this.uibLoad.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
+                this.uibLoad.build(this.hPanel,  dLeft, dTop, this.dWidthLoadSave, 20);
                 dTop = dTop + 24;
             end
             
             if ~this.lDisableSave
                 
-                this.uiePosName.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
+                this.uiePosName.build(this.hPanel,  dLeft, dTop, this.dWidthLoadSave, 20);
                 dTop = dTop + 40;
                 
-                this.uibSave.build(this.hPanel,  dWidth - 120, dTop, 110, 20);
-                
+                this.uibSave.build(this.hPanel,  dLeft, dTop, this.dWidthLoadSave, 20);
                 this.uiePosName.set('New');
             end
         end
