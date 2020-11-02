@@ -7,7 +7,7 @@ classdef Scan < mic.Base
     end
     
     properties (SetAccess = private)
-        dHeight = 95
+       dHeight = 75
        dWidth = 240
        
     end
@@ -59,7 +59,8 @@ classdef Scan < mic.Base
         % {logical 1x1} - true when stop command is called, set to false
         % when start() is called
         lStopped = true;
-
+        
+        
     end
     
     events
@@ -84,6 +85,9 @@ classdef Scan < mic.Base
             this.init();
         end  
         
+        function setStartLabel(this, cVal)
+            this.uiButtonStart.setText(cVal);
+        end
         
         function build(this, hParent, dLeft, dTop)
             
@@ -314,7 +318,7 @@ classdef Scan < mic.Base
         end
         
         
-       
+        
         
         
         function start(this)
