@@ -212,13 +212,6 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         end
         
         
-        
-       
-
-    end
-    
-    methods (Access = protected)
-        
         function start(this)
             
             if this.lIsRunning
@@ -244,6 +237,15 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
             
             this.lIsRunning = false;
         end
+        
+        
+       
+
+    end
+    
+    methods (Access = protected)
+        
+        
         
         function updateButtonWhenShowingButton(this)
             
