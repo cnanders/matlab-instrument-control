@@ -786,7 +786,7 @@ classdef Clock < mic.Base
                 catch mE
                     
                     % Will crash the app, but gives lovely stack trace.
-                   error(getReport(mE));
+                   % error(getReport(mE));
 
 
                 	
