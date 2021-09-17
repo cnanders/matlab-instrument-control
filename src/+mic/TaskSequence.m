@@ -99,9 +99,9 @@
         
        function execute(this)
            
-            if this.isDone() 
-                return
-            end
+%             if this.isDone() 
+%                 return
+%             end
             
             % this.hProgress = waitbar(0, [this.cName, '. Please wait...']);
             
@@ -142,7 +142,10 @@
        end
        
        function abort(this)
-           this.scan.stop();
+           
+           if (this.scan)
+          	this.scan.stop();
+           end
            for n = 1 : length(this.ceTasks)
                this.ceTasks{n}.abort();
            end

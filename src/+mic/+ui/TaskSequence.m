@@ -92,9 +92,9 @@ classdef TaskSequence <  mic.ui.common.Base & mic.interface.Task
         
         function execute(this)
             
-            if this.task.isDone()
-                return;
-            end
+%             if this.task.isDone()
+%                 return;
+%             end
             
             this.start(); % always make sure UI is updating
             this.task.execute();
