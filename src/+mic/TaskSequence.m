@@ -143,8 +143,8 @@
        
        function abort(this)
            
-           if (this.scan)
-          	this.scan.stop();
+           if this.notEmptyAndIsA(this.scan, 'mic.Scan')
+                this.scan.stop();
            end
            for n = 1 : length(this.ceTasks)
                this.ceTasks{n}.abort();

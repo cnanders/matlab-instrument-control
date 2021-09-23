@@ -150,6 +150,23 @@ classdef Base < handle
             end
         end
         
+        % Wrapper around built-in isa that also checks first if the first
+        % arg is not empty
+        function lReturn = notEmptyAndIsA(this, var, type)
+            
+            lReturn = false;
+            
+            % return immediately if var is empty
+            if isempty(var)
+                return
+            end
+            
+            % check
+            if isa(var, type)
+                lReturn = true;
+            end
+        end
+        
         
     end
     
