@@ -351,7 +351,7 @@ classdef List < mic.Base
                 this.setOptions(this.ceOptions);
            end
            
-           this.fhOnChange(this)
+           this.fhOnChange(this);
            this.fhDirectCallback();
            
        end
