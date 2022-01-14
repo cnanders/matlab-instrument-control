@@ -132,7 +132,6 @@ classdef GetSetLogical <    mic.interface.ui.device.GetSetLogical & ...
         % {function handle 1x1} 
         % fhInitialize = @() [] % Not used
         
-        % fhIsVirtual = @() true % overload this otherwise will always use virtual
         fhGetV 
         fhSetV
         fhIsInitializedV

@@ -88,7 +88,7 @@ classdef Base < mic.Base
         fhInitializeV
         
         % Adding virtual methods
-        fhIsVirtual = @() true % overload this otherwise will always use virtual
+        fhIsVirtual = @() false % overload this otherwise will always use virtual
 
     end
     

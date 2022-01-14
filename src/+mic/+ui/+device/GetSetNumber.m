@@ -272,7 +272,7 @@ classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
 
         % {function handle 1x1} 
         fhIsInitialized = @() true
-
+        
         % {function handle 1x1} - 2019.05.06 configure in
         % mic.ui.device.Base
         % fhInitialize = @() []
