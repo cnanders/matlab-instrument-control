@@ -49,6 +49,10 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         % {lambda() 1x1: boolean - returns if the motor is ready}
         fhIsReadyMotor
         
+        % {function handle 1x1} function evoked after a set operaton
+        % completes successfully added 2021.10.19
+        fhOnSetSuccess = @(src, evt)[]
+        
         
         
         % {double 1x1 - specifies the tolerance in default units for acceptance}
@@ -123,6 +127,13 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
         function l = isInitialized(~)
             l = true;
         end
+        
+        % Function to programmatically set the OnSetSuccess callback that is
+        % evoked after a set operation completes succesfully
+        function setOnSetSuccess(this, fh)
+            this.fhOnSetSuccess = fh;
+        end
+        
         
         % Called when destination is set
         function set(this, dSensorDestination)
@@ -208,6 +219,7 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
             
             dToc = toc(dTic);
             
+            
             cMsg = [...
                 newline, ...
                 sprintf('\tCL set() complete\n'), ...
@@ -215,6 +227,9 @@ classdef GetSetNumberFromClosedLoopControl < mic.interface.device.GetSetNumber
             ];
             this.msg(cMsg, this.u8_MSG_TYPE_SCAN);
             this.lReady = true;
+            
+            this.fhOnSetSuccess(); % Evoke the on set success function
+
         end
         
         % Waits for a stage to be ready
