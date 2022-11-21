@@ -71,8 +71,8 @@ classdef List < mic.Base
         % {cell 1xn} list of options
         ceOptions              
 
-        % {uint8 1xm} list of selected indexes
-        u8Selected 
+        % {uint16 1xm} list of selected indexes
+        u16Selected 
                    
     end
     
@@ -232,13 +232,13 @@ classdef List < mic.Base
        
         % @return % {cell 1xm} list of selected values
        function ce = get(this)
-            ce = this.ceOptions(this.u8Selected);
+            ce = this.ceOptions(this.u16Selected);
        end
 
 
-        % @return {uint8 1xm} list of selected indexes
+        % @return {uint16 1xm} list of selected indexes
         function u8 = getSelectedIndexes(this)
-            u8 = this.u8Selected;
+            u8 = this.u16Selected;
         end
 
         
@@ -256,34 +256,34 @@ classdef List < mic.Base
                 if isempty(this.ceOptions)
                     % no options in list ...
                     
-                    this.u8Selected = uint8([]); % uint8 [0x0] empty array is allowed
+                    this.u16Selected = uint16([]); % uint16 [0x0] empty array is allowed
                 else
                     % options...
                     
-                    if ~isempty(this.u8Selected)
+                    if ~isempty(this.u16Selected)
                         
-                        % Check max(u8Selected) to make sure there are all
-                        % selected indicies are valid and modify u8Selected
+                        % Check max(u16Selected) to make sure there are all
+                        % selected indicies are valid and modify u16Selected
                         % if needed to make it comply (this happens when
                         % you update to a list cell with less items than the
                         % previous one and a selected item on the previous
                         % cell would extend past thi new option cell
                     
-                        if max(this.u8Selected) > length(this.ceOptions)
-                            this.u8Selected = uint8(length(this.ceOptions));
+                        if max(this.u16Selected) > length(this.ceOptions)
+                            this.u16Selected = uint16(length(this.ceOptions));
                         else
-                            % Make sure to re-set u8Selected so the setter
+                            % Make sure to re-set u16Selected so the setter
                             % is called which updates this.ceSelected.  If
                             % you don't call the setter (or manualy update
                             % ceSelected, it won't be updated)
                             
-                            this.u8Selected = this.u8Selected; 
+                            this.u16Selected = this.u16Selected; 
                             
                         end
                     else
                         
                         % default to first item 
-                        this.u8Selected = uint8(1); 
+                        this.u16Selected = uint16(1); 
                     end
                 end
                 
@@ -291,7 +291,7 @@ classdef List < mic.Base
            
            % ui
            if ~isempty(this.hUI) && ishandle(this.hUI)
-                set(this.hUI, 'Value', this.u8Selected);
+                set(this.hUI, 'Value', this.u16Selected);
                 set(this.hUI, 'String', this.ceOptions);               
            end
            
@@ -299,29 +299,29 @@ classdef List < mic.Base
            
        end
        
-        % @param {uint8 1xm} list of indexes to programatically select
-       function setSelectedIndexes(this, u8Val)
+        % @param {uint16 1xm} list of indexes to programatically select
+       function setSelectedIndexes(this, u16Val)
            
            % prop
-           if isinteger(u8Val) % uint8 [0x0] empty array is allowed
+           if isinteger(u16Val) % uint16 [0x0] empty array is allowed
                
-               if isempty(u8Val)
-                   this.u8Selected = [];
-               elseif(max(u8Val) <= length(this.ceOptions))
-                   this.u8Selected = u8Val; 
+               if isempty(u16Val)
+                   this.u16Selected = [];
+               elseif(max(u16Val) <= length(this.ceOptions))
+                   this.u16Selected = u16Val; 
                end
                
                
            else
-                cMsg = sprintf('The indexes you provided are not {uint8} type.  Please cast as uint8 and try again.');
-                cTitle = 'uint8 index type required';
+                cMsg = sprintf('The indexes you provided are not {uint16} type.  Please cast as uint16 and try again.');
+                cTitle = 'uint16 index type required';
                 msgbox(cMsg, cTitle, 'warn') 
                
            end
            
            % ui
            if ~isempty(this.hUI) && ishandle(this.hUI)
-               set(this.hUI, 'Value', this.u8Selected);
+               set(this.hUI, 'Value', this.u16Selected);
            end
            
            this.fhOnChange(this)
@@ -347,7 +347,7 @@ classdef List < mic.Base
            % adds item to end of ceOptions
            if ischar(cVal)
                this.ceOptions{end+1} = cVal;
-               this.u8Selected = uint8(length(this.ceOptions));
+               this.u16Selected = uint16(length(this.ceOptions));
                 this.setOptions(this.ceOptions);
            end
            
@@ -371,12 +371,12 @@ classdef List < mic.Base
         % @return {struct} state to save
         function st = save(this)
             st = struct();
-            st.u8Selected = this.u8Selected;
+            st.u16Selected = this.u16Selected;
         end
         
         % @param {struct} state to load
         function load(this, st)
-            this.setSelectedIndexes(st.u8Selected);
+            this.setSelectedIndexes(st.u16Selected);
         end
 
         function refresh(this)
@@ -389,7 +389,7 @@ classdef List < mic.Base
     methods (Access = protected)
 
        function onList(this, src, evt)
-            this.u8Selected = uint8(get(src, 'Value'));
+            this.u16Selected = uint16(get(src, 'Value'));
             
             if ~isempty(this.fhOnChange)
                this.fhOnChange(this, evt)
@@ -407,18 +407,18 @@ classdef List < mic.Base
         function onMoveDown(this, src, evt)
            % moves selected options down the list
            
-           if max(this.u8Selected) ~= length(this.ceOptions)
+           if max(this.u16Selected) ~= length(this.ceOptions)
                % loop through each selected item and swap it with the one
                % above it
 
                % 2017.03.24 Need to go in reverse order when moving down
                % multiple
 
-               for n = fliplr(this.u8Selected)
+               for n = fliplr(this.u16Selected)
                    this.ceOptions([n, n + 1]) = this.ceOptions([n + 1, n]);
                end
                
-               this.u8Selected = this.u8Selected + 1;
+               this.u16Selected = this.u16Selected + 1;
 
                this.setOptions(this.ceOptions);
                 
@@ -430,14 +430,14 @@ classdef List < mic.Base
        function onMoveUp(this, src, evt)
            % moves selected options up the list
            
-           if min(this.u8Selected) ~= 1
+           if min(this.u16Selected) ~= 1
                % loop through each selected item and swap it with the one
                % above it
-               for n = this.u8Selected
+               for n = this.u16Selected
                    this.ceOptions([n, n - 1]) = this.ceOptions([n - 1, n]);
                end
                
-               this.u8Selected = this.u8Selected - 1;
+               this.u16Selected = this.u16Selected - 1;
                this.setOptions(this.ceOptions);
                
                % perform callback
@@ -461,10 +461,10 @@ classdef List < mic.Base
            
            
            stData = struct();
-           stData.ceOptions = this.ceOptions(this.u8Selected);
+           stData.ceOptions = this.ceOptions(this.u16Selected);
            notify(this, 'eDelete', mic.EventWithData(stData));
            
-           this.ceOptions(this.u8Selected) = [];
+           this.ceOptions(this.u16Selected) = [];
 
            this.setOptions(this.ceOptions);
            

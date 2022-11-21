@@ -104,7 +104,7 @@
 %             end
             
             % this.hProgress = waitbar(0, [this.cName, '. Please wait...']);
-            
+                        
             fhSetState      = @(~, task) task.execute();  % NEVER BE TEMPTED ... (READ BELOW)
             % TO GET CLEVER HERE and check task.isDone() and only do
             % task.execute() if task.isDone() == false.  There are many
