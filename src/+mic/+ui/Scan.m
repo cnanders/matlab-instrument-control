@@ -7,7 +7,7 @@ classdef Scan < mic.Base
     end
     
     properties (SetAccess = private)
-       dHeight = 75
+       dHeight = 85
        dWidth = 240
        
     end
