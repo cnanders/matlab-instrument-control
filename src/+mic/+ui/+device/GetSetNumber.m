@@ -1,3 +1,4 @@
+
 classdef GetSetNumber < mic.interface.ui.device.GetSetNumber & ...
                         mic.ui.device.Base 
     
