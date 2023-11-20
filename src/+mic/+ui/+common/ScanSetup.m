@@ -156,9 +156,9 @@ classdef ScanSetup < mic.Base
             
             % Get current scan parameters and route to param change
             % callback:
-            [ceScanStates, u8ScanAxisIdx, lUseDeltas] = this.buildScanStateArray();
+            [ceScanStates, u8ScanAxisIdx, lUseDeltas, ceScanRanges] = this.buildScanStateArray();
             cAxisNames = this.ceScanAxisLabels(u8ScanAxisIdx);
-            this.fhOnScanChangeParams(ceScanStates, u8ScanAxisIdx, lUseDeltas, cAxisNames);
+            this.fhOnScanChangeParams(ceScanStates, u8ScanAxisIdx, lUseDeltas, cAxisNames, ceScanRanges);
         end
         
         % Called when the stop button is pressed
@@ -166,7 +166,7 @@ classdef ScanSetup < mic.Base
             this.fhOnStopScan();
         end
         
-        function [ceScanStates, u8ScanAxisIdx, lUseDeltas] = buildScanStateArray(this)
+        function [ceScanStates, u8ScanAxisIdx, lUseDeltas, ceScanRanges] = buildScanStateArray(this)
             
             % Save the scan idx of each axis and whether to use deltas
             u8ScanAxisIdx = [];

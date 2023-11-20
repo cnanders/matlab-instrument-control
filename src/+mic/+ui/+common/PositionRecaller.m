@@ -134,7 +134,7 @@ classdef PositionRecaller < mic.ui.common.Base
             );
             
             dWidthList = dWidth - this.dWidthLoadSave - 30;
-            this.uiList.build(this.hPanel, 10, 20, dWidthList, dHeight - 55); % dWidth/2 + 25
+            this.uiList.build(this.hPanel, 10, 20, dWidthList, dHeight - 75); % dWidth/2 + 25
            
             
             dTop = 20;
