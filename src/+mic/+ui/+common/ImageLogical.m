@@ -20,6 +20,8 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         
         uiText
         
+        u8TrueColor = [0, 0.8, 0]
+        u8FalseColor = [0.75, 0.75, 0.75]
     end
 
 
@@ -28,13 +30,7 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         
         function this= ImageLogical(varargin)
 
-            %{
-            this.msg('constructor', this.u8_MSG_TYPE_CREATE_UI_COMMON);
-            
-            % Defaults
-            this.u8ImgTrue = imread(fullfile(mic.Utils.pathImg(), 'image-logical-true-1.png'));
-            this.u8ImgFalse = imread(fullfile(mic.Utils.pathImg(), 'image-logical-false-1.png'));
-            
+
             for k = 1 : 2: length(varargin)
                 this.msg(sprintf('passed in %s', varargin{k}), this.u8_MSG_TYPE_VARARGIN_PROPERTY);
                 if this.hasProp( varargin{k})
@@ -42,7 +38,7 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
                     this.(varargin{k}) = varargin{k + 1};
                 end
             end
-            %}
+            
             
             this.uiText = mic.ui.common.Text('cVal', '', 'cAlign', 'right');
 
@@ -53,7 +49,7 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
         function build(this, hParent, dLeft, dTop)
             
             this.uiText.build(hParent, dLeft, dTop, this.dWidth, this.dHeight);
-            this.uiText.setBackgroundColor([0.8 0.8 0.8]);
+            this.uiText.setBackgroundColor(this.u8FalseColor);
 
             return;
             
@@ -91,9 +87,9 @@ classdef ImageLogical < mic.interface.ui.common.ImageLogical & mic.ui.common.Bas
             
             % Overriding with text to make more performant
             if l
-                this.uiText.setBackgroundColor([0 0.8 0]);
+                this.uiText.setBackgroundColor(this.u8TrueColor);
             else
-                this.uiText.setBackgroundColor([0.75 0.75 0.75]);
+                this.uiText.setBackgroundColor(this.u8FalseColor);
             end
             
             return;
