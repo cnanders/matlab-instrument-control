@@ -141,16 +141,19 @@ classdef Clock < mic.Base
         % Adds all active tasks to the clock
         
         function start(this)
+            
+            ceTaskFcnActive = this.ceTaskFcn(this.lTaskActive);
+            ceTaskNameActive = this.ceTaskName(this.lTaskActive);
+            dTaskPeriodActive = this.dTaskPeriod(this.lTaskActive) ;   
+            
         
-            if this.lIsRunning
+            if this.lIsRunning && ~isempty(ceTaskNameActive)
                 return
             end
             
             % Add all active tasks to the clock
             
-            ceTaskFcnActive = this.ceTaskFcn(this.lTaskActive);
-            ceTaskNameActive = this.ceTaskName(this.lTaskActive);
-            dTaskPeriodActive = this.dTaskPeriod(this.lTaskActive) ;   
+           
             
             if isempty(ceTaskNameActive)
                 return

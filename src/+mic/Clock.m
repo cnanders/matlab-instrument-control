@@ -497,6 +497,15 @@ classdef Clock < mic.Base
             this.lBusy = false;
 
         end
+
+        function clearAllTasks(this)
+            this.lBusy = true;
+            this.ceTaskFcn = {};
+            this.ceTaskName = {};
+            this.dTaskPeriod = [];
+            this.lTaskActive = true(0);
+            this.lBusy = false;
+        end
         
         
         function remove(this, cName)
@@ -590,6 +599,10 @@ classdef Clock < mic.Base
         
         function d = getNumberOfActiveTasks(this)
              d = length(this.lTaskActive(this.lTaskActive));
+        end
+
+        function d = getActiveTaskMask(this)
+            d = this.lTaskActive;
         end
         
         function listTasks(this)
