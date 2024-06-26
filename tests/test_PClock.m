@@ -10,12 +10,16 @@ clock = mic.PClock('Master', dPeriod);
 
 
 % Create some tasks:
-taskA = mic.PClockTask('Task A', 'dPeriod', 1, 'cSource', 'Task A', 'cFn', @() disp('Task A'));
-taskB = mic.PClockTask('Task B', 'dPeriod', 2, 'cSource', 'Task B', 'cFn', @() disp('Task B'));
-taskC = mic.PClockTask('Task C', 'dPeriod', 1, 'cSource', 'Task C', 'cFn', @() disp('Task C'));
+taskA = mic.PClockTask('Task A', 'dPeriod', 1, 'cSource', 'Task A', 'hFn', @() disp('Task A'));
+taskB = mic.PClockTask('Task B', 'dPeriod', 2, 'cSource', 'Task B', 'hFn', @() disp('Task B'));
+taskC = mic.PClockTask('Task C', 'dPeriod', 1, 'cSource', 'Task C', 'hFn', @() disp('Task C'));
 
 
-clock.add(taskA);
-clock.add(taskB);
-clock.add(taskC);
+clock.addTask(taskA);
+clock.addTask(taskB);
+clock.addTask(taskC);
 
+%%
+
+% Try removing tasks:
+clock.removeTask(taskA);

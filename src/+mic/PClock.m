@@ -6,9 +6,10 @@ classdef PClock < mic.Base
         The key differences are:
         1) The class executes tasks asynronously in separate threads from the main display thread.
         2) Task events are organized into their own class and their execution is staggered
-        3) Tasks are not added and removed; they are activated and deactivated
-        4) Tasks do not rely on a period that is a multiple of the clock period
-        5) Tasks can be persistent
+        3) Tasks do not accrue timing debt: delay time is inserted between finishing of one task and the start of the next as opposed to being on a fixed interval
+        4) Tasks are not added and removed; they are activated and deactivated
+        5) Tasks do not rely on a period that is a multiple of the clock period
+        6) Tasks can be persistent
     %}
 
 	properties
@@ -82,8 +83,29 @@ classdef PClock < mic.Base
             lValue = isfield(this.stTasks, sanitizedStr);            
         end
         
-        % Adds a task to the task list
-        function lAdded = add(this, hPClockTask)
+       
+
+        % Legacy add
+        function add(this, hFn, cName, dPeriod)
+            % Create a new task with the given function handle, name, and period
+            sanitizedStr = this.sanitizeForStructName(cName);
+            hPClockTask = mic.PClockTask(sanitizedStr, 'cSource', 'main', 'dPeriod', dPeriod, 'hFn', hFn);
+            this.addTask(hPClockTask);
+        end
+
+        % Legacy remove
+        function remove(this, cName)
+            % Remove a task by name
+            sanitizedStr = this.sanitizeForStructName(cName);
+            this.stTasks = rmfield(this.stTasks, sanitizedStr);
+        end
+
+        function clearAllTasks(this)
+            this.stTasks = struct;
+        end
+        
+         % Adds a task to the task list
+         function lAdded = addTask(this, hPClockTask)
 
             % Don't add a task if it already exists
             if this.has(hPClockTask)
@@ -97,13 +119,14 @@ classdef PClock < mic.Base
             this.stTasks.(sanitizedStr) = hPClockTask;
             lAdded = true;
         end
+        
+        function lRemoved = removeTask(this, hPClockTask)
+            % if hPClockTask is a string, call removeByName:
+            if ischar(hPClockTask)
+                this.removeByName(hPClockTask);
+                return
+            end
 
-        function clearAllTasks(this)
-            this.stTasks = struct;
-        end
-        
-        
-        function lRemoved = remove(this, hPClockTask)
             if ~this.has(hPClockTask)
                 mE = MException( 'PClock:remove',  sprintf('Trying to remove cName of %s does not exist.', hPClockTask.cName));
                 throw(mE)
@@ -200,7 +223,7 @@ classdef PClock < mic.Base
             santizedStr = this.sanitizeForStructName(hPClockTask.cName);
 
             if (this.stTasks.(santizedStr).lOneShot)
-                this.remove(hPClockTask);
+                this.removeTask(hPClockTask);
                 return
             end
 

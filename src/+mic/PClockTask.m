@@ -14,7 +14,7 @@ classdef PClockTask < mic.Base
         lPersistent = false % task does not deactivate when deactivated by source
         lOneShot = false
         cSource = 'none'
-        cFn = @()[]
+        hFn = @()[]
     end
     
     
@@ -32,8 +32,8 @@ classdef PClockTask < mic.Base
                         this.lPersistent = varargin{k + 1};
                     case 'cSource'
                         this.cSource = varargin{k + 1};
-                    case 'cFn'
-                        this.cFn = varargin{k + 1};
+                    case 'hFn'
+                        this.hFn = varargin{k + 1};
                     case 'lOneShot'
                         this.lOneShot = varargin{k + 1};
                     otherwise
